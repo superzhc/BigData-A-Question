@@ -1,0 +1,181 @@
+阮一鸣的《Elasticsearch核心技术与实战》的知识图谱
+
+- [ ] 索引
+  - [ ] 数据的基本操作
+    - [ ] 文档的 CRUD
+    - [ ] 文档的 Bulk 操作
+    - [ ] 读写文档的并发操作
+  - [ ] 数据建模
+    - [ ] 对索引建模
+      - [ ] 时间序列数据
+    - [ ] 对文档建模
+      - [ ] 嵌套字段
+      - [ ] 父子关系
+    - [ ] Mapping & Setting
+      - [ ] Field Datatypes
+        - [ ] 简单类型
+        - [ ] 层级类型
+        - [ ] 特殊类型（geo/percolator）
+      - [ ] Multi-Fields
+      - [ ] Dynamic Mapping
+      - [ ] Mapping Parameters
+      - [ ] Dynamic Template
+      - [ ] Index Template
+  - [ ] 修复数据
+    - [ ] 使用 Pipeline 加工数据
+    - [ ] 使用 Painless Script 加工数据
+    - [ ] Update By Query
+    - [ ] Reindex 重建索引
+  - [ ] 文本 Analysis
+    - [ ] Analyzer 的组成
+      - [ ] Character Filter
+      - [ ] Tokenizer
+      - [ ] Token Filter
+    - [ ] 内置 Analyzer
+    - [ ] 自定义 Analyzer
+    - [ ] 使用 Analyzer API 测试
+  - [ ] 索引管理
+    - [ ] Shrink/Split/Rollover
+    - [ ] Open/Close API
+    - [ ] Lifecycle Management Policy
+    - [ ] Index Alias
+- [ ] 搜索
+  - [ ] Search API
+    - [x] URI Query(Query String Syntax)
+    - [x] DSL Query
+    - [x] Query Context
+    - [x] Filtering Context
+  - [ ] 结构化查询
+    - [x] Term/Terms 查询
+    - [x] Range 查询
+    - [x] Exists/missing 查询
+    - [x] 模糊匹配
+      - [x] Prefix 查询
+      - [x] Wildcard 查询
+      - [x] Regexp 查询
+      - [x] Fuzzy 查询
+  - [ ] 全文检索
+    - [ ] Query String/Simple Query String Query
+    - [x] Match Query
+    - [x] Match Phrase Query
+    - [x] Match Phrase Prefix
+    - [x] Multi-Match Query
+    - [ ] Common Terms Query
+    - [ ] Intervals Query
+  - [ ] Join 查询
+    - [ ] Nested
+    - [ ] Has Child/Parent Query
+    - [ ] Parent id Query
+  - [ ] 复合查询
+    - [ ] Constant Score
+    - [ ] Bool Query
+    - [ ] Dis Max Query
+    - [ ] Function Score Query
+    - [ ] Boosting Query
+  - [ ] 地理信息查询
+  - [ ] 处理搜索结果
+    - [ ] Source Filtering
+    - [ ] 搜索结果高亮
+    - [ ] 结果排序
+    - [ ] 搜索结果分页
+      - [x] From/Size
+      - [ ] Search After
+      - [ ] Scroll API
+  - [ ] 控制相关度
+    - [ ] Boosting
+      - [ ] 查询时权重提升
+      - [ ] 映射时权重提升
+    - [ ] 使用查询结构改变相关度
+    - [ ] 忽略TF-IDF
+    - [ ] 按欢迎程度提升权重
+    - [ ] Function Score Query
+- [ ] 聚合
+  - [ ] Bucket Aggregation
+    - [ ] Terms
+    - [ ] Data Histogram
+    - [ ] Range
+    - [ ] Sampler
+  - [ ] Metric Aggregation
+    - [ ] Avg/Min/Max/Sum/Stats
+    - [ ] Percentiles
+  - [ ] Pipeline Aggregation
+    - [ ] Parent
+    - [ ] Sibling
+  - [ ] Matrix Aggregation
+    - [ ] Matrix Stats
+- [ ] 原理
+  - [ ] 核心概念
+    - [ ] 物理视角
+      - [ ] 集群
+      - [ ] 节点
+      - [ ] 分片
+    - [ ] 逻辑视角
+      - [ ] 索引
+      - [ ] 文档
+  - [ ] 分布式架构
+    - [ ] 分片的原理
+    - [ ] 集群选主流程
+    - [ ] 避免集群脑裂
+    - [ ] 文档读写流程
+    - [ ] 节点故障转移
+    - [ ] 分布式搜索
+  - [ ] 搜索引擎
+    - [ ] 倒排索引
+      - [ ] 分词器
+        - [ ] 内置分词器
+        - [ ] 多语言分词器
+          - [ ] 中文分词器
+          - [ ] 拼音分词器
+    - [ ] 搜索相关性
+      - [ ] 相关度算分
+        - [ ] TF-IDF/BM25
+        - [ ] 向量空间模型/余弦定理
+      - [ ] 相关度指标：Precision/Recall/FScore
+- [ ] 运维
+  - [ ] 集群部署与水平扩展
+    - [ ] 容量规划
+    - [ ] 性能测试
+    - [ ] 合理的部署架构
+      - [ ] 配置 Hot & Warm Architecture
+      - [ ] 节点反亲和性设定
+    - [ ] 分片的配置与优化
+    - [ ] 时间序列数据的管理与优化
+    - [ ] 配置跨集群搜索
+  - [ ] 集群备份与升级
+    - [ ] 滚动升级
+    - [ ] 重启升级
+    - [ ] 数据备份与恢复
+  - [ ] 集群安全
+    - [ ] 身份认证与鉴权
+    - [ ] 集群内部数据加密
+    - [ ] 集群外部数据加密
+  - [ ] 基于云计算的集群运维
+    - [ ] 公有云
+      - [ ] Elastic Cloud
+      - [ ] 阿里云/腾讯云/亚马逊 AWS
+    - [ ] 私有云
+      - [ ] 基于虚拟机自建管理平台
+      - [ ] Operator On Kubernetes
+      - [ ] ECE-Elastic Cloud Enterprise
+  - [ ] 集群监控
+    - [ ] Stats API
+    - [ ] Task Monitoring
+    - [ ] Cluster API
+    - [ ] CAT API
+    - [ ] X-PACK Monitoring & Alerting
+  - [ ] 诊断与问题排查
+    - [ ] 索引配置诊断
+    - [ ] 分片配置诊断
+    - [ ] 内存和垃圾回收问题
+    - [ ] 集群状态变黄及变红的诊断与修复
+    - [ ] 集群性能优化
+- [ ] 扩展
+  - [ ] 插件开发
+    - [ ] Security
+    - [ ] Analysis
+    - [ ] Alerting
+    - [ ] API 扩展
+    - [ ] Management
+    - [ ] Mapper
+    - [ ] Scripting
+    - [ ] Backup/Restore
