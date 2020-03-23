@@ -2,24 +2,30 @@
 
 > Elasticsearch 是分布式的**文档存储**。它能存储和检索复杂的数据结构（序列化成为 JSON 文档）以实时的方式。换句话说，一旦一个文档被存储在 Elasticsearch 中，它就可以被集群中的任意节点检索到。
 
+其实文档就是类似数据库里面的一条记录（或一行数据）。文档（Document）是索引信息的基本单位。
+
+文档被序列化化成为 JSON 格式，物理存储在一个索引重
+
 **在 Elasticsearch 中，每个字段的所有数据都是默认被索引的**。
 
 ## 文档元数据
 
 Elasticsearch 的文档的元数据必须有以下三个：
 
-- `_index`：文档所在的索引
-- `_type`：文档的对象类型
+- `_index`：文档所属索引名称
+- ~~`_type`：文档的对象类型~~
+  - 6.0.0 以前，一个索引可以设置多个 types
+  - 6.0.0开始，被 Deprecated 了。一个索引只能包含一个 type，首选的类型名称为 `_doc`，这样索引 API 具有与 7.0 版本相同的路径
 - `_id`：文档的唯一标识
 
 > 根据上述的三个必须元数据元素就可以唯一确定 Elasticsearch 中的一个文档。
 
 ## 文档操作
 
-### 新增/更新文档
+### 新增文档
 
 ```http
-PUT /superz2/employee/1
+PUT /superz2/_doc/1
 {
     "first_name" : "John",
     "last_name" :  "Smith",
@@ -32,19 +38,27 @@ PUT /superz2/employee/1
 注意，路径 `/superz2/employee/1` 包含了三部分的信息：
 
 - `superz2`：索引名称
-- `employee`：类型名称
 - `1`：数据的唯一标识
+
+### 更新文档
+
+```http
+POST /superz2/_doc/1/_update
+{
+	"doc":{"first_name":"Jane","age:20"}
+}
+```
 
 ### 判断文档是否存在
 
 ```http
-HEAD /superz2/employee/1
+HEAD /superz2/_doc/1
 ```
 
 ### 获取文档
 
 ```http
-GET /superz2/employee/1
+GET /superz2/_doc/1
 ```
 
 返回结果包含了文档的一些元数据，以及 `_source` 属性。
@@ -52,7 +66,7 @@ GET /superz2/employee/1
 ### 删除文档
 
 ```http
-DELETE /superz2/employee/1
+DELETE /superz2/_doc/1
 ```
 
 ### 获取多个文档
@@ -63,12 +77,12 @@ GET /_mget
    "docs" : [
       {
          "_index" : "website",
-         "_type" :  "blog",
+         "_type" :  "_doc",
          "_id" :    2
       },
       {
          "_index" : "website",
-         "_type" :  "pageviews",
+         "_type" :  "_doc",
          "_id" :    1,
          "_source": "views"
       }
@@ -76,24 +90,12 @@ GET /_mget
 }
 ```
 
-如果想检索的数据都在相同的 `_index` 中（甚至相同的 `_type` 中），则可以在 URL 中指定默认的 `/_index` 或者默认的 `/_index/_type`，如下：
+如果想检索的数据都在相同的 `_index` 中（~~甚至相同的 `_type` 中~~），则可以在 URL 中指定默认的 `/_index` ~~或者默认的 `/_index/_type`~~，如下：
 
 ```http
-GET /website/blog/_mget
+GET /website/_doc/_mget
 {
    "ids" : [ "2", "1" ]
-}
-```
-
-即使在 URL 指定了 `_index` 或 `_type`，也可以通过单独请求覆盖这些值：
-
-```http
-GET /website/blog/_mget
-{
-   "docs" : [
-      { "_id" : 2 },
-      { "_type" : "pageviews", "_id" :   1 }
-   ]
 }
 ```
 
@@ -142,7 +144,7 @@ POST /_bulk
 { "doc" : {"title" : "My updated blog post"} }
 ```
 
-> 对于操作的文档都是有相同的 `_index` 和 `_type`，可以类似 `_mget` 一样在 URL 中设置默认的 `_index` 或者 `/_index/_type`
+> 对于操作的文档都是有相同的 `_index`  ~~和`_type`~~，可以类似 `_mget` 一样在 URL 中设置默认的 `_index`  ~~或者 `/_index/_type`~~
 
 ## 文档存储
 

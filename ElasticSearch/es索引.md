@@ -34,6 +34,8 @@ PUT http://localhost:9200/superz1
 > action.auto_create_index : false
 > ```
 
+**注意**：索引的名称必须都是小写，不然报 400 错误
+
 ### 删除索引
 
 用以下的请求来删除索引：

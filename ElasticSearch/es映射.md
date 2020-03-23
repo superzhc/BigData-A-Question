@@ -1,24 +1,24 @@
 # 映射
 
-## 核心简单域类型
+> Elasticsearch 中的映射（Mapping）用来定义一个文档，可以定义所包含的字段以及字段的类型、分词器及属性等。
 
-Elasticsearch 支持如下简单域类型：
+映射可以分为**动态映射**和**静态映射**：
 
-- 字符串：string
-- 整数：byte，short，integer，long
-- 浮点数：float，double
-- 布尔型：boolean
-- 日期：date
+- 动态映射
 
-当用户索引一个包含新域的文档，Elasticsearch 会使用动态映射，通过 JSON 中基本数据类型，尝试猜测域类型，使用规则如下：
+  > Elasticsearch 中可以不需要事先定义映射（Mapping），文档写入 Elasticsearch 时，会根据文档字段自动识别类型，这种机制称之为动态映射
 
-| **JSON type**                  | **域 type** |
-| ------------------------------ | ----------- |
-| 布尔型: `true` 或者 `false`    | `boolean`   |
-| 整数: `123`                    | `long`      |
-| 浮点数: `123.45`               | `double`    |
-| 字符串，有效日期: `2014-09-15` | `date`      |
-| 字符串: `foo bar`              | `string`    |
+- 静态映射
+
+  > 在 Elasticsearch 也可以事先定义好映射，包含文档及其类型等，这种方式称之为静态映射
+
+## 字段类型
+
+每个字段都有一个数据类型，类型如下：
+
+- 简单类型，如：[`text`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/text.html), [`keyword`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/keyword.html), [`date`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/date.html), [`long`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/number.html), [`double`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/number.html), [`boolean`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/boolean.html) or [`ip`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/ip.html)
+- 支持子 JSON 数据对象类型，如：[`object`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/object.html) or [`nested`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/nested.html)
+- 特殊类型，如： [`geo_point`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/geo-point.html), [`geo_shape`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/geo-shape.html), or [`completion`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/search-suggesters-completion.html)
 
 ## 查看映射
 
