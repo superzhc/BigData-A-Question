@@ -62,12 +62,14 @@ public class ObjectLayout
 
 **返回结果**
 
+注：`//` 后都是标注的内容，非返回内容
+
 ```
 com.epoint.superz.thread.ObjectLayout$ObjectDemo object internals:
  OFFSET  SIZE               TYPE DESCRIPTION                               VALUE
       0    12                    (object header)                           N/A
-     12     4                int ObjectDemo.i                              N/A
-     16     8             double ObjectDemo.d                              N/A
+     12     4                int ObjectDemo.i                              N/A //因对象头占用的空间是12 bytes，需要填充到 16 bytes，添加 padding 会浪费资源，直接使用 4 bytes 类型来优先添加
+     16     8             double ObjectDemo.d                              N/A // 默认尽可能优先分配大的类型，这里优先分配了 int 看上面的原因
      24     8               long ObjectDemo.l                              N/A
      32     4              float ObjectDemo.f                              N/A
      36     2               char ObjectDemo.c                              N/A
@@ -79,3 +81,5 @@ com.epoint.superz.thread.ObjectLayout$ObjectDemo object internals:
 Instance size: 48 bytes
 Space losses: 2 bytes internal + 0 bytes external = 2 bytes total
 ```
+
+> 由上面的结果就可以看出存在重排序的现象，因为跟我定义的顺序存在不同
