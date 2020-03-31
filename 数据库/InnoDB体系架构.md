@@ -1,6 +1,6 @@
 # InnoDB 体系架构
 
-![image-20200331002758397](D:\superz\BigData-A-Question\数据库\images\image-20200331002758397.png)
+![image-20200331002758397](https://i.loli.net/2020/03/31/pQeqIumTo9bVkfD.png)
 
 上图显示了 InnoDB 的存储引擎的体系架构，从图可见，InnoDB 存储引擎有多个内存块，可以认为这些内存组成了一个大的内存池，负责如下工作：
 - 维护所有进程/线程需要访问的多个内部数据结构
@@ -44,7 +44,7 @@ InnoDB 存储引擎是基于磁盘存储的，并将其中的记录按照页的�
 
 具体来看，缓冲池中缓存的数据页类型有：索引页、数据页、undo 页、插入缓冲（insert buffer）、自适应哈希索引（adaptive hash index）、InnoDB 存储的锁信息（lock info）、数据字典信息（data dictionary）等。不能简单地认为，缓冲池只是存储索引页和数据页，它们只是占缓冲池很大地一部分而已。下图显示了 InnoDB 存储引擎中内存地结构情况：
 
-![image-20200331013239672](D:\superz\BigData-A-Question\数据库\images\image-20200331013239672.png)
+![image-20200331013239672](https://i.loli.net/2020/03/31/lXcMxN6jSW8BoI1.png)
 
 从 InnoDB 1.0.x 版本开始，允许有多个缓冲池实例。每个页根据哈希值平均分配到不同缓冲池中。这样做地好处是减少数据库内部的资源竞争，增加数据库的并发处理能力。可以通过参数 `innodb_buffer_pool_instances` 来进行配置，该值默认为 1。
 
