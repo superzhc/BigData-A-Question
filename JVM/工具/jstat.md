@@ -1,0 +1,108 @@
+# jstat
+
+jstat 是一个可以用于观察 Java 应用程序运行时信息的工具。它的功能非常强大，可以通过它，查看堆信息的详细情况。它的基本使用语法为：
+
+```sh
+jstat -<option> [-t] [-h<lines>] <vmid> [<interval> [<count>]]
+```
+
+**选项 option 可以由以下值构成**
+
+```sh
+-class：显示 ClassLoader 的相关信息
+-compiler：显示 JIT 编译的相关信息
+-gc：显示与 GC 相关的堆信息
+-gccapacity：显示各个代的容量及使用情况
+-gccause：显示垃圾收集相关信息（同 -gcutil），同时显示最后一次或当前正在发生的垃圾收集的诱发原因
+-gcnew：显示新生代信息
+-gcnewcapacity：显示新生代大小与使用情况
+-gcold：显示老年代和永久代的信息
+-gcoldcapacity：显示老年代的大小
+-gcmetacapacity：显示元数据的大小
+-gcutil：显示垃圾收集信息
+-printcompilation：输出 JIT 编译的方法信息
+```
+
+`-t` 参数可以在输出信息前加上一个 Timestamp 列，显示程序的运行时间
+
+`-h` 参数可以在周期性数据输出时，输出多少行数据后，跟着输出一个表头信息
+
+`interval` 参数用于指定输出统计数据的周期，单位为毫秒
+
+`count` 用于指定一共输出多少次数据
+
+### 示例 1：查看 ClassLoader 的相关情况
+
+![image-20200407153651549](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407153651549.png)
+
+### 示例 2：查看 JIT 编译的信息
+
+![image-20200407155513912](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407155513912.png)
+
+### 示例 3：显示与 GC 相关的堆信息的输出
+
+![image-20200407162436865](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407162436865.png)
+
+```txt
+- S0C：s0 的大小
+- S1C：s1 的大小
+- S0U：s0 已使用的空间
+- S1U：s1 已使用的空间
+- EC：eden 区的大小
+- EU：eden 区的使用空间
+- OC：老年代大小
+- OU：老年代已使用的空间
+- MC：元数据区的大小
+- MU：元数据区已使用的空间
+- CCSC：
+- CCSU：
+- YGC：新生代 GC 的次数
+- YGCT：新生代 GC 耗时
+- FGC：Full GC 的次数
+- FGCT：Full GC 耗时
+- GCT：GC 总耗时
+```
+
+### 示例 4：显示各代的信息，与上例相比，还包含了各个代的最大值和最小值
+
+`jstat -gccapacity 28941`
+
+![image-20200407160616030](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407160616030.png)
+
+### 示例 5：显示最近一次 GC 的原因以及当前 GC 的原因
+
+![image-20200407160907893](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407160907893.png)
+
+### 示例 6：查看新生代的一些详细的信息
+
+![image-20200407161320865](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161320865.png)
+
+### 示例 7：输出新生代各个区的大小信息
+
+![image-20200407161530610](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161530610.png)
+
+### 示例 8：老年代的 GC 情况
+
+![image-20200407161639202](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161639202.png)
+
+### 示例 9：老年代的容量信息
+
+![image-20200407161810865](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161810865.png)
+
+### ~~示例 10：展示永久代的使用情况~~
+
+jvm 在 jdk1.8 后不存在永久代的信息了，不可用
+
+### 示例 11：展示 GC 的回收信息
+
+![image-20200407161936195](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161936195.png)
+
+- S0：s0区使用的百分比
+- S1：s1区使用的百分比
+- E：eden区使用的百分比
+- O：old区使用的百分比
+- M：元数据区使用的百分比
+
+### 示例 12：展示元数据区的使用情况
+
+![image-20200407163444053](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407163444053.png)
