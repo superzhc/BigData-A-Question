@@ -1,8 +1,8 @@
 # 映射
 
-> Elasticsearch 中的映射（Mapping）用来定义一个文档，可以定义所包含的字段以及字段的类型、分词器及属性等。
+> Elasticsearch 中的映射（Mapping）用来定义一个文档，可以定义所包含的字段以及字段的存储类型、分词方式及属性等。
 
-映射可以分为**动态映射**和**静态映射**：
+映射可以分为**动态映射（Dynamic mapping）**和**静态映射（Explicit mapping）**：
 
 - 动态映射
 
@@ -14,60 +14,26 @@
 
 ## 字段类型
 
-每个字段都有一个数据类型，类型如下：
+数据类型主要有以下几类：
 
-- 简单类型，如：[`text`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/text.html), [`keyword`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/keyword.html), [`date`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/date.html), [`long`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/number.html), [`double`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/number.html), [`boolean`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/boolean.html) or [`ip`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/ip.html)
-- 支持子 JSON 数据对象类型，如：[`object`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/object.html) or [`nested`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/nested.html)
-- 特殊类型，如： [`geo_point`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/geo-point.html), [`geo_shape`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/geo-shape.html), or [`completion`](https://www.elastic.co/guide/en/elasticsearch/reference/6.3/search-suggesters-completion.html)
+|   类别   |                           数据类型                           |
+| :------: | :----------------------------------------------------------: |
+| 核心类型 | text, keywords, long, integer, short, double, data, boolean等等 |
+| 复杂类型 |                        Object, Nested                        |
+| 地理类型 |                     geo_point, geo_shape                     |
+| 特殊类型 |            ip, completion, token_count, join等等             |
+| .......  |                             ...                              |
 
 ### 字符串类型
 
-有`text` 和 `keyword`2种 。其中 `text` 支持分词，用于全文搜索；`keyword` 不支持分词，用于聚合和排序。~~在旧的ES里这两个类型由`string`表示~~。
+有 `text` 和 `keyword` 2 种：
 
-如果安装了 IK 分词插件，可以为 `text` 类型指定 IK 分词。一般来说，对于字符串类型，如果：
+- `text` 用于索引全文值的字段。这些字段是被分词的，它们通过分词器传递，以在被索引之前将字符串转换为单个术语的列表。分析过程允许 Elasticsearch 搜索单个单词中每个完整的文本字段。文本字段不用于排序，很少用于聚合。
+- `keyword` 用于索引结构化内容的字段。它们通常用于过滤，排序，和聚合。`keyword` 字段只能按其确切值进行搜索。
 
-1. **模糊搜索+精确匹配**，一般是name或者title字段：
+> ~~在旧的ES里这两个类型由`string`表示~~。
 
-```
-"name": {
-        "type": "text",
-        "analyzer": "ik_smart",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
-      }
-```
-
-2. **模糊搜索**，一般是内容详情字段：
-
-```
-"content": {
-        "type": "text",
-        "analyzer": "ik_smart"
-      }
-```
-
-3. **精确匹配**：
-
-```
-"name": {
-        "type": "keyword"
-      }
-```
-
-4. **不需要索引**：
-
-```
-"url": {
-        "type": "keyword",
-        "index": false
-      }
-```
-
-#### 数字类型
+### 数字类型
 
 支持 long，integer，short，byte，double，float，half_float，scaled_float。具体说明如下：
 
@@ -84,11 +50,11 @@
 
 对于浮点类型（float、half_float和scaled_float），`-0.0`和`+0.0`是不同的值，使用`term`查询查找`-0.0`不会匹配`+0.0`，同样`range`查询中上边界是`-0.0`不会匹配`+0.0`，下边界是`+0.0`不会匹配`-0.0`。
 
-其中`scaled_float`，比如价格只需要精确到分，`price`为`57.34`的字段缩放因子为`100`，存起来就是`5734`。优先考虑使用带缩放因子的`scaled_float`浮点类型。
+其中 `scaled_float`，比如价格只需要精确到分，`price`为`57.34`的字段缩放因子为`100`，存起来就是`5734`。优先考虑使用带缩放因子的`scaled_float`浮点类型。
 
-#### 日期类型
+### 日期类型
 
-类型为 `date`。
+类型为 `date`
 
 JSON 本身是没有日期类型的，因此 Elasticsearch 中的日期可以是：
 
@@ -100,11 +66,11 @@ JSON 本身是没有日期类型的，因此 Elasticsearch 中的日期可以是
 
 日期类型可以使用使用`format`自定义，默认缺省值：`"strict_date_optional_time||epoch_millis"`：
 
-```
+```json
 "postdate": {
-      "type": "date",
-      "format": "strict_date_optional_time||epoch_millis"
-    }
+    "type": "date",
+    "format": "strict_date_optional_time||epoch_millis"
+}
 ```
 
 `format` 有很多内置类型，这里列举部分说明：
@@ -115,16 +81,16 @@ JSON 本身是没有日期类型的，因此 Elasticsearch 中的日期可以是
 
 当然也可以自定义日期格式，例如：
 
-```
+```json
 "postdate":{
-      "type":"date",
-      "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd"
-    }
+    "type":"date",
+    "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd"
+}
 ```
 
 注意：如果新文档的字段的值与format里设置的类型不兼容，ES会返回失败。
 
-#### 复杂类型
+### 复杂类型
 
 - 数组数据类型
   在 ElasticSearch 中，没有专门的数组（Array）数据类型，但是，在默认情况下，任意一个字段都可以包含0或多个值，这意味着每个字段默认都是数组类型，只不过，数组类型的各个元素值的数据类型必须相同。在ElasticSearch 中，数组是开箱即用的（out of box），不需要进行任何配置，就可以直接使用。，例如：
@@ -135,12 +101,12 @@ JSON 本身是没有日期类型的，因此 Elasticsearch 中的日期可以是
 - 对象数据类型 object 对于单个JSON对象。JSON天生具有层级关系，文档可以包含嵌套的对象。
 - 嵌套数据类型 nested 对于JSON对象的数组
 
-#### Geo数据类型
+### Geo数据类型
 
 - 地理点数据类型 geo_point 对于纬度/经度点
 - Geo-Shape数据类型 geo_shape 对于像多边形这样的复杂形状
 
-#### 专用数据类型
+### 专用数据类型
 
 - IP数据类型 ip 用于IPv4和IPv6地址
 - 完成数据类型 completion 提供自动完成的建议
