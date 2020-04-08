@@ -1,3 +1,5 @@
+# Heap Dump
+
 > Heap Dump 文件是一个二进制文件，它保存了某一时刻 JVM 堆中对象的使用情况，是指定时刻的 Java 堆栈的快照，是一种镜像文件。
 
 ## 生成 Head Dump 文件
@@ -34,3 +36,7 @@ jhat <heap-dump-file>
 
 Eclipse Memory Analyzer(MAT) 是 Eclipse 提供的一款用于 Heap Dump 分析的工具，用来辅助发现内存泄漏减少内存占用，从数以百万计的对象中快速计算出对象的 Retained Size，查看并自动生成一个 Leak Suspect（内存泄露可疑点）报表。
 
+### IBM Heap Analyzer
+
+[IBM Heap Analyzer](https://www.ibm.com/developerworks/community/alphaworks/tech/heapanalyzer) 是IBM公司推出的一款用于分析Heap Dump信息的工具，下载之后是一个jar文件，执行结果如下：
+![img](D:\superz\BigData-A-Question\JVM\HeadDump\images\9ab49abb09fb99a66bf2612989e630c2.png)
