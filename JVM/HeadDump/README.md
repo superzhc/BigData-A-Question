@@ -36,6 +36,8 @@ jhat <heap-dump-file>
 
 Eclipse Memory Analyzer(MAT) 是 Eclipse 提供的一款用于 Heap Dump 分析的工具，用来辅助发现内存泄漏减少内存占用，从数以百万计的对象中快速计算出对象的 Retained Size，查看并自动生成一个 Leak Suspect（内存泄露可疑点）报表。
 
+[Eclipse Memory Analyzer(MAT)工具使用](Eclipse Memory Analyzer(MAT).md) 
+
 ### IBM Heap Analyzer
 
 [IBM Heap Analyzer](https://www.ibm.com/developerworks/community/alphaworks/tech/heapanalyzer) 是IBM公司推出的一款用于分析Heap Dump信息的工具，下载之后是一个jar文件，执行结果如下：

@@ -1,6 +1,6 @@
-# jinfo
+# jinfo：Java 配置信息工具
 
-jinfo 可以用来查看正在运行的 Java 应用程序的扩展参数，甚至支持在运行时修改部分参数。它的基本语法为：
+jinfo(Configuration Info for Java)的作用是实时地查看和调整虚拟机各项参数。它的基本语法为：
 
 ```sh
 jinfo <option> <pid>
