@@ -1,12 +1,7 @@
 # GC 日志
 
-> 让 JVM 打印出详细的 GC 日志，通过下面的启动参数：
+> JVM 提供了 `-XX:+PrintGCDetails` 这个收集器日志参数，告诉虚拟机在发生垃圾收集行为时打印内存回收日志，并且在进程退出的时候输出当前的内存各区域分配情况。
 >
-> ```
-> -XX:PrintGCDetails
-> -XX:PrintGCDateStamps
-> -XX:PrintGCTimeStamps
-> ```
 
 每一种收集器的日志形式都是由它们自身的实现所决定的，换而言之，每个收集器的日志格式都可以不一样。但虚拟机设计者为了方便用户阅读，将各个收集器的日志都维持一定的共性。
 
@@ -26,9 +21,9 @@ GC 日志开头的 `[GC` 和 `[Full GC` 说明了这次垃圾收集的停顿类�
 > - Serial 收集器 ->`DefNew`
 > - ParNew 收集器 ->`ParNew`
 > - Parallel Scavenge  收集器 ->`PSYoungGen`
-> - Serial Old 收集器 ->``
+> - Serial Old 收集器 ->`Tenured`
 > - Parallel Old 收集器 ->`ParOldGen`
-> - CMS 收集器 ->``
+> - CMS 收集器 ->`CMS`、`CMS...`
 > - G1 收集器 ->``
 
 后面方括号内部的 `4465K->792K(33280K)` 含义是 `GC前该内存区域已使用容量->GC后该内存区域已使用容量(该内存区域的总容量)`，而在方括号之外的 `4465K->792K(33280K)` 表示 `GC前Java堆已使用的容量->GC后Java堆已使用容量(Java堆总容量)`。

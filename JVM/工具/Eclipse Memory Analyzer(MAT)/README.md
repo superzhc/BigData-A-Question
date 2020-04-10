@@ -6,7 +6,7 @@ Eclipse Memory Analyzer（简称MAT）是一个功能丰富且操作简单的JVM
 ### 下载与安装
 
 Eclipse Memory Analyzer（MAT）支持两种安装方式，一是Eclipse插件的方式，另外一个就是独立运行的方式，建议使用独立运行的方式。
-在 http://www.eclipse.org/mat/downloads.php 下载安装MAT，启动之后打开 File - Open Heap Dump... 菜单，然后选择生成的Heap DUmp文件，选择 "Leak Suspects Report"，然后点击 "Finish" 按钮。
+在 http://www.eclipse.org/mat/downloads.php 下载安装MAT，启动之后打开 `File - Open Heap Dump...` 菜单，然后选择生成的 Heap DUmp 文件，选择 "Leak Suspects Report"，然后点击 "Finish" 按钮。
 ![img](D:\superz\BigData-A-Question\JVM\HeadDump\images\7ac5ffafea8488aa36df72fd0a8a2df6.png)
 
 ### 主界面

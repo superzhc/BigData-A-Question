@@ -1,6 +1,6 @@
-# jps(JVM Process Status)
+# jps：虚拟机进程状况工具
 
-> 命令 jps 类似于 Linux 下的 ps，可以列出正在运行的虚拟机进程，并显示虚拟机执行主类（`main()` 函数所在的类）名称以及这些进程的本地虚拟机唯一ID。
+> 命令 jps(JVM Process Status) 类似于 Linux 下的 ps，可以列出正在运行的虚拟机进程，并显示虚拟机执行主类（`main()` 函数所在的类）名称以及这些进程的本地虚拟机唯一ID。
 >
 > jps 的命令格式：
 >
