@@ -104,8 +104,7 @@ GET /website/_doc/_mget
 > `bulk` API 允许在单个步骤中进行多次 `create`、`index`、`update` 或 `delete` 请求。
 >
 > `bulk` 的请求体格式如下所示：
->
-> ```json
+>· ```json
 > { action: { metadata }}\n
 > { request body        }\n
 > { action: { metadata }}\n
@@ -135,12 +134,12 @@ GET /website/_doc/_mget
 
 ```http
 POST /_bulk
-{ "delete": { "_index": "website", "_type": "blog", "_id": "123" }} 
-{ "create": { "_index": "website", "_type": "blog", "_id": "123" }}
+{ "delete": { "_index": "website", "_type": "_doc", "_id": "123" }} 
+{ "create": { "_index": "website", "_type": "_doc", "_id": "123" }}
 { "title":    "My first blog post" }
-{ "index":  { "_index": "website", "_type": "blog" }}
+{ "index":  { "_index": "website", "_type": "_doc" }}
 { "title":    "My second blog post" }
-{ "update": { "_index": "website", "_type": "blog", "_id": "123", "_retry_on_conflict" : 3} }
+{ "update": { "_index": "website", "_type": "_doc", "_id": "123", "_retry_on_conflict" : 3} }
 { "doc" : {"title" : "My updated blog post"} }
 ```
 
