@@ -103,7 +103,6 @@ Elasticsearch 提供的通过 JSON 进行查询的 DSL 被称作 **Query DSL**�
 该模块使用查询 DSL 和过滤器 DSL 来配置，如下所示：
 
 - [match_all](Elasticsearch搜索-match_all.md)
-
 - [term/terms](Elasticsearch搜索-term-terms.md)
 - [match](Elasticsearch搜索-match.md)
 - [multi_match](Elasticsearch搜索-multi_match.md)
@@ -111,7 +110,8 @@ Elasticsearch 提供的通过 JSON 进行查询的 DSL 被称作 **Query DSL**�
   - [wildcard](Elasticsearch搜索-wildcard.md)
   - [regexp](Elasticsearch搜索-regexp.md)
   - [fuzzy](Elasticsearch搜索-fuzzy.md)
-- Elasticsearch搜索-.md
+- [range](Elasticsearch搜索-range.md)
+- [bool](Elasticsearch搜索-bool.md)
 
 #### size
 

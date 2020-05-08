@@ -55,7 +55,7 @@
       - [x] Regexp 查询
       - [x] Fuzzy 查询
   - [ ] 全文检索
-    - [ ] Query String/Simple Query String Query
+    - [x] Query String/Simple Query String Query
     - [x] Match Query
     - [x] Match Phrase Query
     - [x] Match Phrase Prefix
