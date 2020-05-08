@@ -7,7 +7,7 @@ GET http://localhost:9200/superz/_search
 {
     "query":{
         "regexp":{
-            "k1":"zh.*san"
+            "k1":"zh.*san[1-9]*?"
         }
     }
 }

@@ -12,3 +12,7 @@ GET http://localhost:9200/superz/_search
  }
 }
 ```
+
+> 注意：
+>
+> - 对于搜索的是词组，如 "superz xxx"，匹配查询默认的使用 or 操作，即只要包含 superz 或 xxx 都会被检索到，可以指定匹配查询为 and 操作。

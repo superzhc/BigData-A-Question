@@ -83,7 +83,9 @@ Elasticsearch 提供的通过 JSON 进行查询的 DSL 被称作 **Query DSL**�
 ```json
 {
     "query":{
-        "match_all":{}
+        "match":{
+            "_all":"test"
+        }
     },
     "from":0,
     "size":10,
@@ -92,7 +94,12 @@ Elasticsearch 提供的通过 JSON 进行查询的 DSL 被称作 **Query DSL**�
         {"created_on":"asc"},
         {"name":"desc"},
         "_score"
-    ]
+    ],
+    "highlight":{
+        "fields":{
+            "高亮的字段名1":{}
+        }
+    }
 }
 ```
 
@@ -123,13 +130,17 @@ Elasticsearch 提供的通过 JSON 进行查询的 DSL 被称作 **Query DSL**�
 
 #### \_source
 
-指定 _source 字段如何返回。默认完整返回的 _source 字段，通过配置 _source，将过滤返回的字段。如果索引的文档很大，而且无须结果中的全部内容，就使用这个功能。
+指定 `_source` 字段如何返回。默认完整返回的 `_source` 字段，通过配置 `_source`，将过滤返回的字段。如果索引的文档很大，而且无须结果中的全部内容，就使用这个功能。
 
 该配置是对于每个匹配文档而言，ElasticSearch 所应该返回的字段列表。
 
 #### sort
 
-默认的排序是基于文档的得分。
+默认的排序是基于文档的得分。可以指定字段进行升序、降序排序。
+
+#### highlight
+
+根据查询的关键字来进行高亮，高亮的结果会显示在返回结果中，关键字会被加上 `<em>` 标签。
 
 #### 响应结果
 
