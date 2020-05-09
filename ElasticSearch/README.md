@@ -113,6 +113,8 @@ Elasticsearch 提供的通过 JSON 进行查询的 DSL 被称作 **Query DSL**�
 - [term/terms](Elasticsearch搜索-term-terms.md)
 - [match](Elasticsearch搜索-match.md)
 - [multi_match](Elasticsearch搜索-multi_match.md)
+- [query_string](Elasticsearch搜索-query_string.md)
+- [simple_query_string](Elasticsearch搜索-simple_query_string.md)
 - 模糊查询
   - [wildcard](Elasticsearch搜索-wildcard.md)
   - [regexp](Elasticsearch搜索-regexp.md)
