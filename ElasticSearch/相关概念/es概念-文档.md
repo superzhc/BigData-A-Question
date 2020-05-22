@@ -104,31 +104,32 @@ GET /website/_doc/_mget
 > `bulk` API 允许在单个步骤中进行多次 `create`、`index`、`update` 或 `delete` 请求。
 >
 > `bulk` 的请求体格式如下所示：
->· ```json
+> · ```json
 > { action: { metadata }}\n
 > { request body        }\n
 > { action: { metadata }}\n
 > { request body        }\n
 > ...
 > ```
->
+> 
 > 这种格式类似一个有效的单行 JSON 文档 *流* ，它通过换行符(`\n`)连接到一起。注意两个要点：
->
+> 
 > - 每行一定要以换行符(`\n`)结尾， 包括最后一行 。这些换行符被用作一个标记，可以有效分隔行
 > - 这些行不能包含未转义的换行符，因为它们将会对解析造成干扰。这意味着这个 JSON 不能使用 pretty 参数打印
->
+> 
 > `action/metadata` 行指定哪一个文档做什么操作。
->
+> 
 > `action` 必须是以下选项之一：
->
+> 
 > - `create`：如果文档不存在，那么就创建它
 > - `index`：创建一个新文档或者替换一个现有的文档
 > - `update`：部分更新一个文档
 > - `delete`：删除一个文档
->
+> 
 > `metadata` 应该指定被索引、创建、更新或者删除的文档的 `_index`、`_type` 和 `_id`
->
+> 
 > `request body` 行由文档的 `_source` 本身组成，它是 `index`、`create` 和 `update` 操作所必须的，`delete` 操作是不需要的
+> ```
 
 示例：
 
