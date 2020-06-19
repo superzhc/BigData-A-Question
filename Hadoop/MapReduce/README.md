@@ -1,6 +1,6 @@
 # MapReduce
 
-MapReduce是一个可用于数据处理的编程模型。
+> MapReduce 是一个**分布式计算框架**，采用分而治之的思想，将用户编写的业务逻辑代码和自带默认组件整合成一个完整的分布式运算程序，并发运行在一个 Hadoop 集群上。
 
 MapReduce 任务过程分为两个处理阶段：**map 阶段**和 **reduce 阶段**。每阶段都以 **键-值对** 作为输入和输出，其类型由程序员来选择。程序员还需要写两个函数：map 函数和 reduce 函数。
 
@@ -29,3 +29,8 @@ reduce 任务的数量并非由输入数据的大小决定，相反是独立指�
 ## combiner
 
 TODO
+
+## 参考
+
+[Google MapReduce 中文版](./Google MapReduce中文版.md)
+
