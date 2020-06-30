@@ -1,0 +1,40 @@
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "oraclereader",
+                    "parameter": {
+                        "column": [],
+                        "connection": [
+                            {
+                                "jdbcUrl": [],
+                                "table": []
+                            }
+                        ],
+                        "password": "",
+                        "username": ""
+                    }
+                },
+                "writer": {
+                    "name": "hdfswriter",
+                    "parameter": {
+                        "column": [],
+                        "compress": "",
+                        "defaultFS": "",
+                        "fieldDelimiter": "",
+                        "fileName": "",
+                        "fileType": "",
+                        "path": "",
+                        "writeMode": ""
+                    }
+                }
+            }
+        ],
+        "setting": {
+            "speed": {
+                "channel": ""
+            }
+        }
+    }
+}

@@ -1,0 +1,64 @@
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "oraclereader",
+                    "parameter": {
+                        "column": ["*"],
+                        "connection": [
+                            {
+                                "jdbcUrl": ["jdbc:oracle:thin:@192.168.186.36:1521:ORCL"],
+                                "table": ["SUPERZ_SQOOP"]
+                            }
+                        ],
+                        "password": "11111",
+                        "username": "epoint_zjg_pbd"
+                    }
+                },
+                "writer": {
+                    "name": "hdfswriter",
+                    "parameter": {
+                        "column": [
+                            {
+                                "name":"id",
+                                "type":"long"
+                            },
+                            {
+                                "name":"username",
+                                "type":"string"
+                            },
+                            {
+                                "name":"age",
+                                "type":"long"
+                            },
+                            {
+                                "name":"is_enabled",
+                                "type":"int"
+                            },
+                            {
+                                "name":"updatetime",
+                                "type":"string"
+                            },
+                            {
+                                "name":"updatetime2",
+                                "type":"string"
+                            }
+                        ],
+                        "defaultFS": "hdfs://192.168.186.48:9000",
+                        "fieldDelimiter": "\t",
+                        "fileName": "superz_sqoop_datax",
+                        "fileType": "text",
+                        "path": "/user/root/target/superz_test",
+                        "writeMode": "append"
+                    }
+                }
+            }
+        ],
+        "setting": {
+            "speed": {
+                "channel": 1
+            }
+        }
+    }
+}

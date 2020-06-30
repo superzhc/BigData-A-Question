@@ -1,0 +1,241 @@
+# 内部类
+
+>可以将一个类的定义放在另一个类的定义内部，这就是内部类。
+
+内部类可以是静态static的，也可用public，default，protected和private修饰。（而外部顶级类即类名和文件名相同的只能使用public和default）。
+
+为什么要使用内部类？使用内部类最吸引人的原因是：每个内部类都能独立地继承一个（接口的）实现，所以无论外围类是否已经继承了某个（接口的）实现，对于内部类都没有影响。
+
+使用内部类最大的优点就在于它能够非常好的解决多重继承的问题，但是如果不需要解决多重继承问题，那么自然可以使用其他的编码方式，但是使用内部类还能够为我们带来如下特性（摘自《Think in java》）：
+
+1. 内部类可以用多个实例，每个实例都有自己的状态信息，并且与其他外围对象的信息相互独立。
+2. 在单个外围类中，可以让多个内部类以不同的方式实现同一个接口，或者继承同一个类。
+3. 创建内部类对象的时刻并不依赖于外围类对象的创建。
+4. 内部类并没有令人迷惑的“is-a”关系，它就是一个独立的实体。
+5. 内部类提供了更好的封装，除了该类的外围类，其他类都不能访问。
+
+**注：** 内部类是一个编译时的概念，一旦编译成功，就会成为完全不同的两类。对于一个名为outer的外部类和其内部定义的名为inner的内部类。编译完成后出现outer.class和outer$inner.class两类。所以内部类的成员变量/方法名可以和外部类的相同。
+
+## 基础
+
+当创建一个内部类的时候，它无形中就与外围类有了一种联系，依赖于这种联系，它可以无限制地访问外围类的元素。
+
+在创建某个外围类的内部类对象时，此时内部类对象必定会捕获一个指向那个外围类对象的引用，在访问外围类的成员时，就会用这个引用来调用外围类的成员。
+
+使用方式，引用内部类我们需要指明这个对象的类型：OuterClasName.InnerClassName。同时如果我们需要创建某个内部类对象，必须要利用外部类的对象通过.new来创建内部类： OuterClass.InnerClass innerClass = outerClass.new InnerClass();[outerClass是OuterClass的实例]
+
+生成对外部类的引用，可以使用OuterClassName.this，这样就能够产生一个正确引用外部类的引用了。
+
+```java
+
+
+public class OuterClass {
+    public void display(){
+        System.out.println("OuterClass...");
+    }
+
+    public class InnerClass{
+        public OuterClass getOuterClass(){
+            return OuterClass.this;
+        }
+    }
+
+    public static void main(String[] args) {
+        OuterClass outerClass = new OuterClass();
+        OuterClass.InnerClass innerClass = outerClass.new InnerClass();
+        innerClass.getOuterClass().display();
+    }
+}
+//-------------
+//Output:
+//OuterClass...
+```
+
+## 种类
+
+在Java中内部类主要分为成员内部类、局部内部类、匿名内部类、静态内部类。
+
+### 成员内部类
+
+成员内部类也是最普通的内部类，它是外部类的一个成员，所以它是可以无限制的访问外部类的所有成员属性和方法【包括private】，但是外部类要访问内部类的成员属性和方法则需要通过内部类实例来访问。
+
+在成员内部类中要注意两点：
+
+1. 成员内部类中不能存在任何static的变量和方法，因为成员内部类需要先创建了外部类，才能创建它自己的。
+2. 成员内部类是依附于外围类的，所以只有先创建了外围类才能够创建内部类。
+
+>推荐使用getxxx()来获取成员内部类，尤其是该内部类的构造函数无参数时 。
+
+### 局部内部类
+
+有这样一种内部类，它是嵌套在方法或作用域内的，对于这个类的使用主要是应用与解决比较复杂的问题，想创建一个类来辅助我们的解决方案， 但又不希望这个类是公共可用的，所以就产生了局部内部类，局部内部类和成员内部类一样被编译，只是它的作用域发生了改变，它只能在该方法和属性中被使用，出了该方法和属性就会失效。
+
+定义在方法内：
+
+```java
+public class Parcel5 {
+    public Destionation destionation(String str){
+
+        class PDestionation implements Destionation{
+            private String label;
+            private PDestionation(String whereTo){
+                label = whereTo;
+            }
+            public String readLabel(){
+                return label;
+            }
+        }
+
+        return new PDestionation(str);
+    }
+
+    public static void main(String[] args) {
+        Parcel5 parcel5 = new Parcel5();
+        Destionation d = parcel5.destionation("chenssy");
+    }
+}
+```
+
+定义在作用域内：
+
+```java
+public class Parcel6 {
+
+    private void internalTracking(boolean b){
+        if(b){
+            class TrackingSlip{
+                private String id;
+                TrackingSlip(String s) {
+                    id = s;
+                }
+                String getSlip(){
+                    return id;
+                }
+            }
+            TrackingSlip ts = new TrackingSlip("test");
+            String string = ts.getSlip();
+        }
+    }
+
+    public void track(){
+        internalTracking(true);
+    }
+
+    public static void main(String[] args) {
+        Parcel6 parcel6 = new Parcel6();
+        parcel6.track();
+    }
+}
+
+```
+
+### 匿名内部类
+
+创建格式如下：
+
+```java
+new 父类构造器（参数列表）|实现接口()
+    {
+     //匿名内部类的类体部分
+    }
+```
+
+使用匿名内部类必须要继承一个父类或者实现一个接口，当然也仅能只继承一个父类或者实现一个接口。同时它也是没有class关键字，这是因为匿名内部类是直接使用new来生成一个对象的引用。当然这个引用是隐式的。
+
+由于匿名内部类不能是抽象类，所以它必须要实现它的抽象父类或者接口里面所有的抽象方法。
+
+```java
+public class OuterClass {
+    public InnerClass getInnerClass(final int num,String str2){
+        return new InnerClass(){
+            int number = num + 3;
+            public int getNumber(){
+                return number;
+            }
+        };        /* 注意：分号不能省 */
+    }
+
+    public static void main(String[] args) {
+        OuterClass out = new OuterClass();
+        InnerClass inner = out.getInnerClass(2, "chenssy");
+        System.out.println(inner.getNumber());
+    }
+}
+
+interface InnerClass {
+    int getNumber();
+}
+// ----------------
+// Output:
+// 5
+```
+
+1. 匿名内部类是没有访问修饰符的。
+2. new 匿名内部类，这个类首先是要存在的。如果将InnerClass接口注释掉，就会出现编译出错。
+3. 注意getInnerClass()方法的形参，第一个形参是用final修饰的，而第二个却没有。同时我们也发现第二个形参在匿名内部类中没有使用过，所以当所在方法的形参需要被匿名内部类使用，那么这个形参就必须为final。
+4. 匿名内部类是没有构造方法的。因为它连名字都没有何来构造方法。
+
+对于匿名内部类的使用，它仅能被使用一次，创建匿名内部类时它会立即创建一个该类的实例，该类的定义会立即消失，所以匿名内部类是不能够被重复使用。
+
+注意事项，在使用匿名内部类的过程中，需要注意如下几点：
+
+1. 使用匿名内部类时，必须是继承一个类或者实现一个接口，但是两者不可兼得，同时也只能继承一个类或者实现一个接口。
+2. 匿名内部类中是不能定义构造函数的。
+3. 匿名内部类中不能存在任何的静态成员变量和静态方法。
+4. 匿名内部类为局部内部类，所以局部内部类的所有限制同样对匿名内部类生效。
+5. 匿名内部类不能是抽象的，它必须要实现继承的类或者实现的接口的所有抽象方法。
+
+>给匿名内部类传递参数的时候，若该形参在内部类中需要被使用，那么该形参必须要为final。也就是说：当所在的方法的形参需要被内部类里面使用时，该形参必须为final。
+
+匿名内部类使用的形参为什么是final?
+
+拷贝引用，为了避免引用值发生改变，例如被外部类的方法修改等，而导致内部类得到的值不一致，于是用final来让该引用不可改变。故如果定义了一个匿名内部类，并且希望它使用一个其外部定义的参数，那么编译器会要求该参数引用是final的。
+
+匿名内部类初始化
+
+我们一般都是利用构造器来完成某个实例的初始化工作的，但是匿名内部类是没有构造器的！那怎么来初始化匿名内部类呢？使用构造代码块！利用构造代码块能够达到为匿名内部类创建一个构造器的效果。
+
+```java
+public class OutClass {
+    public InnerClass getInnerClass(final int age,final String name){
+        return new InnerClass() {
+            int age_ ;
+            String name_;
+            //构造代码块完成初始化工作
+            {
+                if(0 < age && age < 200){
+                    age_ = age;
+                    name_ = name;
+                }
+            }
+            public String getName() {
+                return name_;
+            }
+
+            public int getAge() {
+                return age_;
+            }
+        };
+    }
+
+    public static void main(String[] args) {
+        OutClass out = new OutClass();
+
+        InnerClass inner_1 = out.getInnerClass(201, "test");
+        System.out.println(inner_1.getName());
+
+        InnerClass inner_2 = out.getInnerClass(23, "test2");
+        System.out.println(inner_2.getName());
+    }
+}
+```
+
+### 静态内部类
+
+使用static修饰的内部类我们称之为静态内部类[嵌套内部类]。声明为static的内部类，不需要内部类对象和外部类对象之间的联系，就是说我们可以直接引用outer.inner，即不需要创建外部类，也不需要创建内部类。
+
+静态内部类与非静态内部类之间存在一个最大的区别，非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外部类，但是静态内部类却没有。没有这个引用就意味着：
+
+1. 它的创建是不需要依赖于外围类的。
+2. 它不能使用任何外部类的非static成员变量和方法。
+3. 不能声明为private，一般声明为public，方便调用。

@@ -1,0 +1,3 @@
+Container是YARN中的资源抽象，它封装了某个节点上的多维度资源，如内存、CPU、磁盘、网络等，当AM向RM申请资源时，RM为AM返回的资源的便是用Container表示的。YARN会为每个任务分配一个Container，且该任务只能使用该Container中描述的资源。
+
+> YARN目前仅支持CPU和内存两种资源，且使用了轻量级资源隔离机制Cgroups进行资源隔离

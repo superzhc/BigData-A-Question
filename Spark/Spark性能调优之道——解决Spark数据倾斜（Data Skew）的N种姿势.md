@@ -88,8 +88,6 @@ spark-submit --queue ambari --num-executors 4 --executor-cores 12 --executor-mem
 
 GroupBy Stage 的 Task 状态如下图所示，Task 8 处理的记录数为 4500 万，远大于（9 倍于）其它 11 个 Task 处理的 500 万记录。而 Task 8 所耗费的时间为 38 秒，远高于其它 11 个 Task 的平均时间（16 秒）。整个 Stage 的时间也为 38 秒，该时间主要由最慢的 Task 8 决定。
 
-(点击放大图像)
-
 [![img](https://static001.infoq.cn/resource/image/57/3d/57c86fbe069a87e69eaa1e751938993d.png)](https://www.infoq.cn/mag4media/repositories/fs/articles//zh/resources/1.png)
 
 在这种情况下，可以通过调整 Shuffle 并行度，使得原来被分配到同一个 Task（即该例中的 Task 8）的不同 Key 分配到不同 Task，从而降低 Task 8 所需处理的数据量，缓解数据倾斜。
