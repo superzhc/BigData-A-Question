@@ -432,4 +432,4 @@ Kettle 自带的组件包括以下：
 
 2. 在入口函数中添加插件的 **Meta 类**（全限定名）,如 `com.epoint.etl.trans.step.transstatuslog.TransStatusLogMeta` 
 
-   ![1567057780689](../images/1567057780689.png)
+   ![1567057780689](images/1567057780689.png)
