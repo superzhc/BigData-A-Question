@@ -36,7 +36,7 @@ sqlContex.udf.register("Time2Time", Time2Time _)
 // 获取colName
 val linkedColNames = getLinkedColNames(tempDataFrame.schema.fieldNames)
 
-val addDf = sqlContex.sqlContext.sql(s"select $linkedColNames,Time2Time(update_time) AS update_time,Time2Time(create_time) AS create_time,from temp where $conditon")
+val addDf = sqlContext.sql(s"select $linkedColNames,Time2Time(update_time) AS update_time,Time2Time(create_time) AS create_time,from temp where $conditon")
 //addDf.saveToEs("ods_wj_scenes_detail/docs")
 addDf.select("update_time").show(50)
 ```

@@ -8,7 +8,7 @@ artifactId = spark-core_2.10
 version = 1.2.0 #根据实际需要指定版本
 ```
 
-另外，如果需要访问 HDFS 集群，需要根据 HDFS 版本添加 `hadoop-client` 的依赖。一些公共的 HDFS 版本 tags 在[第三方发行页面](https://spark.apache.org/docs/latest/hadoop-third-party-distributions.html)中被列出。
+另外，如果需要访问 HDFS 集群，需要根据 HDFS 版本添加 `hadoop-client` 的依赖。一些公共的 HDFS 版本 tags 在第三方发行页面中被列出。
 
 ```
 groupId = org.apache.hadoop

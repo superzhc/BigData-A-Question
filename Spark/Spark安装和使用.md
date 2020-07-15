@@ -1,14 +1,10 @@
 Spark 可以独立安装使用，也可以和 Hadoop 一起安装使用。
 
-## 1、 安装 Hadoop
+## 安装 Spark
 
-[TODO]
+访问[Spark官方下载地址](http://spark.apache.org/downloads.html)，按照如下图下载
 
-## 2、安装 Spark
-
-访问[Spark官方下载地址](http://spark.apache.org/downloads.html)，按照如下图下载。
-
-![1](../images/1.png)
+![1](images/1.png)
 
 `Choose a package type`的选项：
 
@@ -62,7 +58,7 @@ bin/run-example SparkPi
 
 运行 Spark 根目录下 sbin 文件夹中的 `start-all.sh`，如下图所示：
 
-![1570503638021](../images/1570503638021.png)
+![1570503638021](images/1570503638021.png)
 
 在浏览器中运行 `http://localhost:xxxx` 即可查看 Web UI（不同端口的 Web UI 作用不一样）
 

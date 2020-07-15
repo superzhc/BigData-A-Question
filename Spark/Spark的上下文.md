@@ -1,3 +1,13 @@
+# Spark 上下文
+
+## SparkContext
+
+SparkContext 是 Spark 编程的主入口点，SparkContext 负责与 Spark 集群的连接，可以被用于在集群上创建 RDDs、累加器（accumulators）和广播变量（broadcast variables）。
+
+在 `spark-shell` 中，SparkContext 已经被系统默认创建以供用户使用，变量为 sc。
+
+## SparkSession
+
 Spark SQL模块的编程主入口是**SparkSession**，SparkSession对象不仅为用户提供了创建DataFrame对象、读取外部数据源并转化为DataFrame对象以及执行sql查询的API，还负责记录着用户希望Spark应用如何在Spark集群运行的控制、调优参数，是Spark SQL的上下文环境，是运行的基础。
 
 可以通过`SparkSession.builder()`创建一个基本SparkSession对象，示例代码如下：
@@ -17,7 +27,7 @@ import sparkSession.implicits._
 
 sparkSession的一些重要的变量和方法：
 
-![sparkSession的变量和方法](https://gitee.com/superzchao/GraphBed/raw/master/1576825462_20191220150412570_4950.png)
+![sparkSession的变量和方法](images/1576825462_20191220150412570_4950.png)
 
 Spark SQL内部使用DataFrame和DataSet来表示一个数据集合，然后就可以再这个数据集合上应用各种统计函数和算子。DataFrame和Dataset的关系是，**DataFrame就是一种类型为Row的Dataset**，即:
 

@@ -294,7 +294,6 @@ rdd.map(x => {
   println("创建数据库连接...")
   println("写入数据库...")
   println("关闭数据库连接...")
-  println()
 }).count()
 
 结果：
@@ -464,9 +463,6 @@ partition:1 content:[partition:2 content:Tom10]
 partition:1 content:[partition:2 content:Tom12]
 ```
 
-下图说明了三种coalesce的情况：
-[![img](http://chant00.com/media/15050414638959.jpg)](http://chant00.com/media/15050414638959.jpg)
-
 ### `repartition`：改变RDD分区数
 
 `repartition(int n) = coalesce(int n, true)`
@@ -546,11 +542,6 @@ rdd.randomSplit(Array(0.1,0.2,0.3,0.4)).foreach(x => {println(x.count)})
 4
 实际结果不一定准确
 ```
-
-### `zip`
-
-与zip有关的3个算子如下图所示：
-[![img](http://chant00.com/media/15051361379636.jpg)](http://chant00.com/media/15051361379636.jpg)
 
 ## Actions
 

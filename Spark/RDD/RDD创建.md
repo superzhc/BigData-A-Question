@@ -7,7 +7,7 @@ Spark 提供了两种常见的创建 RDD 的方式：
 
 把程序中一个已有的集合传给 SparkContext 的 `parallelize()` 方法，对集合并行化，从而创建 RDD。
 
-通过调用 SparkContext 的 parallelize 方法将驱动程序已经存在的数据集转化为**并行化集合（Parallelize Collections）**。集合的元素被复制以形成可并行操作的分布式数据集。
+通过调用 SparkContext 的 parallelize 方法将驱动程序已经存在的数据集转化为 **并行化集合（Parallelize Collections）**。集合的元素被复制以形成可并行操作的分布式数据集。
 
 例如，下面创建一个包含数字 1~5 的并行集合：
 
@@ -18,7 +18,7 @@ val distData = sc.parallelize(data)
 
 一旦创建，分布式数据集（distData）就可以进行并行操作。例如，可以调用 `distData.reduce((a,b)=>a+b)`将数组的元素相加。
 
-并行集合的一个重要参数是将数据集切割到的分区数（partitions）。Spark 将为集群的每个 RDD 分区进行一个计算任务，即 RDD 每一个分区是计算任务的基本分配单位，而非整个 RDD。通常，Spark 会根据集群实际情况自动设置分区数。但是，也可以通过将其作为第二个参数传递给 parallelize 来手动设置，如下实例将 data 数据集切分为 10 个分区：
+并行集合一个很重要的参数是 **切片数**(*slices*)，表示一个数据集切分的份数。Spark 为集群的每个 RDD 分区进行一个计算任务，即 RDD 每一个分区是计算任务的基本分配单位，而非整个 RDD。通常，Spark 会根据集群实际情况自动设置分区数。但是，也可以通过将其作为第二个参数传递给 parallelize 来手动设置，如下实例将 data 数据集切分为 10 个分区：
 
 ```scala
 sc.parallelize(data,10)
@@ -26,7 +26,7 @@ sc.parallelize(data,10)
 
 ### 外部数据源
 
-Spark 支持多种数据源，比如 HDFS、Cassandra、HBase、Amazon S3或者其他支持Hadoop的数据源。Spark支持多种文件格式，比如普通文本文件、SequenceFiles、Parquet、CSV、JSON、对象文件、Hadoop的输入输出文件等。
+Spark 支持多种数据源，比如 HDFS、Cassandra、HBase、Amazon S3 或者其他支持 Hadoop 的数据源。Spark 支持多种文件格式，比如普通文本文件、SequenceFiles、Parquet、CSV、JSON、对象文件、Hadoop 的输入输出文件等。
 
 文本文件可以使用 SparkContext 的 `textFile(path:String,minPartitions:Int=defaultMinPartitions)` 方法创建 RDD。此方法需要一个文件的 URI（本地路径的机器上，或一个 `hdfs://`、`s3n://`等 URI），另外可以通过第二个参数 minPartitions 设置 RDD 分区数，返回值为由 String 对象组成的 `RDD[String]`。
 
@@ -49,7 +49,7 @@ val distFile = sc.textFile("file:///usr/local/data.txt",10)
 
 - 如果需要从本地文件系统读取文件作为外部数据源，则文件必须确保集群上的所有工作节点可访问。可以将文件复制到所有工作节点或使用集群上的共享文件系统
 - Spark 所有的基于文件的读取方法，包括 textFile 支持读取某个目录下多个指定文件，支持部分的压缩文件和通配符
-- textFile 方法还采用可选的第二个参数来控制文件的分区数。默认情况下，Spark 为文件的每个块创建一个分区，但也可以通过传递更大的值来请求更高数量的分区。注意，不能有比块少的分区。
+- textFile 方法还采用可选的第二个参数来控制文件的分区数。默认情况下，Spark 为文件的每个块创建一个分区，但也可以通过传递更大的值来请求更高数量的分区。注意，***不能设置一个小于文件块数目的切片值***。
 
 #### **Spark 的 Scala API 还支持其他几种数据格式**
 

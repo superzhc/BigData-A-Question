@@ -6,12 +6,12 @@ DataFrame可以从许多结构化数据源加载并构造得到，如：结构�
 
 > 官方文档中，在Java和Scala中，DataFrame其实就是`DataSet[Row]`，即表示每一行内容的Row对象组成的DataSet对象，因此DataSet的API是适用于DataFrame的。
 
-### 将RDDs转化为DataFrame
+### 将 RDD 转化为 DataFrame
 
 
 > 注意：并不是由任意类型对象组成的RDD都可以转化为DataFrame对象，只有当组成`RDD[T]`的每一个T对象内部具有公有且鲜明的字段结构时，才能隐式或显式地总结出创建DataFrame对象所必要的结构信息（Schema）进行转化。
 
-Spark SQL支持将现有RDDs转换为DataFrame的两种不同方法，其实也就是**隐式推断**或者**显式指定DataFrame对象的Schema**。
+Spark SQL支持将现有RDD转换为DataFrame的两种不同方法，其实也就是**隐式推断**或者**显式指定DataFrame对象的Schema**。
 
 1. 使用反射机制（Reflection）推理出Schema（结构信息）
     采用这种方式转化为DataFrame对象，要求被转化的RDD[T]的类型T具有典型一维表的字段结构对象。

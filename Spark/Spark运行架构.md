@@ -10,17 +10,7 @@
 
 ## 架构设计
 
-![Spark运行架构](../images/图9-5-Spark运行架构.jpg)
-
-如上图所示，Spark 运行架构包括**集群资源管理器（Cluster Manager）**、运行作业任务的**工作节点（Worker Node）**、每个应用的**任务控制节点（Driver Program，或简称为Driver）**和每个工作节点上负责具体任务的**执行进程（Executor）**。其中，集群资源管理器可以是 Spark 自带的资源管理器，也可以是 YARN 和 Mesos 等资源管理框架。可以看出，就系统框架而言，Spark 采用“主从架构”，包含一个 Master（即 Driver）和若干个 Worker
-
 与 Hadoop MapReduce 计算框架相比，Spark 所采用的 Executor 有两个优点：一是利用多线程来执行具体的任务（Hadoop MapReduce 采用的是进程模型），减少任务的启动开销；二是 Executor 中有一个 BlockManager 存储模块，会将内存和磁盘共同作为存储设备，当需要多轮迭代计算时，可以将中间结果存储到这个存储模块里，下次需要时，就可以直接读该存储模块里的数据，而不需要读写到 HDFS 等文件系统里，因而有效的减少了 IO 开销；或者在交互式查询场景下，预先将表缓存到该存储模块上，从而可以提高读写 IO 性能。
-
-总体而言，在Spark中（见下图），一个应用（Application）由一个任务控制节点（Driver）和若干个作业（Job）构成，一个作业由多个阶段（Stage）构成，一个阶段由多个任务（Task）组成。当执行一个应用时，任务控制节点会向集群管理器（Cluster Manager）申请资源，启动 Executor，并向 Executor 发送应用程序代码和文件，然后在 Executor 上执行任务，运行结束后，执行结果会返回给任务控制节点，或者写到 HDFS 或者其他数据库中。
-
-![Spark中各种概念之间的相互关系](../images/图9-6-Spark中各种概念之间的相互关系.jpg)
-
-
 
 ## Spark 运行基本流程
 
