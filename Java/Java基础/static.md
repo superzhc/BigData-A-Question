@@ -1,4 +1,3 @@
-
 # static 关键字
 
 ## static 关键字主要有以下四种使用场景
@@ -14,14 +13,12 @@
 
 方法区与 Java 堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 Non-Heap（非堆），目的应该是与 Java 堆区分开来。
 
- HotSpot 虚拟机中方法区也常被称为 “永久代”，本质上两者并不等价。仅仅是因为 HotSpot 虚拟机设计团队用永久代来实现方法区而已，这样 HotSpot 虚拟机的垃圾收集器就可以像管理 Java 堆一样管理这部分内存了。但是这并不是一个好主意，因为这样更容易遇到内存溢出问题。
+HotSpot 虚拟机中方法区也常被称为 “永久代”，本质上两者并不等价。仅仅是因为 HotSpot 虚拟机设计团队用永久代来实现方法区而已，这样 HotSpot 虚拟机的垃圾收集器就可以像管理 Java 堆一样管理这部分内存了。但是这并不是一个好主意，因为这样更容易遇到内存溢出问题。
 
+**调用格式**：
 
-
-调用格式：
-
-- 类名.静态变量名
-- 类名.静态方法名()
+- `类名.静态变量`
+- `类名.静态方法名()`
 
 如果变量或者方法被 private 则代表该属性或者该方法只能在类的内部被访问而不能在类的外部被方法。
 
@@ -31,39 +28,38 @@
 public class StaticBean {
 
     String name;
-    静态变量
+    // 静态变量
     static int age;
 
     public StaticBean(String name) {
         this.name = name;
     }
-    静态方法
+    //静态方法
     static void SayHello() {
         System.out.println(Hello i am java);
     }
+    
     @Override
     public String toString() {
-        return StaticBean{ +
-                name=' + name + ''' + age + age +
-                '}';
+        return "StaticBean{" +
+                "name='"+ name +"',age=" + age +
+                "}";
     }
 }
 ```
 
 ```java
 public class StaticDemo {
-
     public static void main(String[] args) {
         StaticBean staticBean = new StaticBean(1);
         StaticBean staticBean2 = new StaticBean(2);
         StaticBean staticBean3 = new StaticBean(3);
         StaticBean staticBean4 = new StaticBean(4);
         StaticBean.age = 33;
-        StaticBean{name='1'age33} StaticBean{name='2'age33} StaticBean{name='3'age33} StaticBean{name='4'age33}
-        System.out.println(staticBean+ +staticBean2+ +staticBean3+ +staticBean4);
-        StaticBean.SayHello();Hello i am java
+        // StaticBean{name='1',age=33} StaticBean{name='2',age=33} StaticBean{name='3',age=33} StaticBean{name='4',age=33}
+        System.out.println(staticBean+" "+staticBean2+" "+staticBean3+" "+staticBean4);
+        StaticBean.SayHello(); // Hello i am java
     }
-
 }
 ```
 
@@ -74,9 +70,9 @@ public class StaticDemo {
 
 静态代码块的格式是 
 
-```
+```java
 static {    
-语句体;   
+	//语句体;   
 }
 ```
 
@@ -101,11 +97,11 @@ Example（静态内部类实现单例模式）
 ```java
 public class Singleton {
     
-    声明为 private 避免调用默认构造方法创建对象
+    //声明为 private 避免调用默认构造方法创建对象
     private Singleton() {
     }
     
-    声明为 private 表明静态内部该类只能在该 Singleton 类中被访问
+    //声明为 private 表明静态内部该类只能在该 Singleton 类中被访问
     private static class SingletonHolder {
         private static final Singleton INSTANCE = new Singleton();
     }
@@ -122,28 +118,25 @@ public class Singleton {
 
 ### 静态导包
 
-格式为：import static 
+格式为：`import static` 
 
 这两个关键字连用可以指定导入某个类中的指定静态资源，并且不需要使用类名调用类中静态成员，可以直接使用类中静态成员变量和成员方法
 
 ```java
+/**
+ *Math.* --- 将Math中的所有静态资源导入，这时候可以直接使用里面的静态方法，而不用通过类名进行调用
+ *如果只想导入单一某个静态方法，只需要将换成对应的方法名即可
+**/
+import static java.lang.Math.*;
 
-
-  Math. --- 将Math中的所有静态资源导入，这时候可以直接使用里面的静态方法，而不用通过类名进行调用
-  如果只想导入单一某个静态方法，只需要将换成对应的方法名即可
- 
-import static java.lang.Math.;
-
-  换成import static java.lang.Math.max;具有一样的效果
+// 换成import static java.lang.Math.max;具有一样的效果
  
 public class Demo {
 	public static void main(String[] args) {
- 
 		int max = max(1,2);
 		System.out.println(max);
 	}
 }
-
 ```
 
 
@@ -152,8 +145,6 @@ public class Demo {
 ### 静态方法与非静态方法
 
 静态方法属于类本身，非静态方法属于从该类生成的每个对象。 如果您的方法执行的操作不依赖于其类的各个变量和方法，请将其设置为静态（这将使程序的占用空间更小）。 否则，它应该是非静态的。
-
-Example
 
 ```java
 class Foo {
@@ -180,7 +171,7 @@ class Foo {
 - 在外部调用静态方法时，可以使用”类名.方法名”的方式，也可以使用”对象名.方法名”的方式。而实例方法只有后面这种方式。也就是说，调用静态方法可以无需创建对象。 
 - 静态方法在访问本类的成员时，只允许访问静态成员（即静态成员变量和静态方法），而不允许访问实例成员变量和实例方法；实例方法则无此限制 
 
-### static{}静态代码块与{}非静态代码块（构造代码块）
+### `static{}` 静态代码块与 `{}` 非静态代码块（构造代码块）
 
 相同点： 都是在JVM加载类时且在构造方法执行之前执行，在类中都可以定义多个，定义多个时按定义的顺序执行，一般在代码块中对一些static变量进行赋值。 
 
@@ -193,29 +184,29 @@ Example
 ```java
 public class Test {
     public Test() {
-        System.out.print(默认构造方法！--);
+        System.out.print("默认构造方法！--");
     }
 
-     非静态代码块
+    // 非静态代码块
     {
-        System.out.print(非静态代码块！--);
+        System.out.print("非静态代码块！--");
     }
-     静态代码块
+    // 静态代码块
     static {
-        System.out.print(静态代码块！--);
+        System.out.print("静态代码块！--");
     }
 
     public static void test() {
-        System.out.print(静态方法中的内容! --);
+        System.out.print("静态方法中的内容! --");
         {
-            System.out.print(静态方法中的代码块！--);
+            System.out.print("静态方法中的代码块！--");
         }
 
     }
     public static void main(String[] args) {
 
         Test test = new Test();   
-        Test.test();静态代码块！--静态方法中的内容! --静态方法中的代码块！--
+        Test.test();//静态代码块！--静态方法中的内容! --静态方法中的代码块！--
     }
 ```
 
@@ -236,6 +227,6 @@ public class Test {
 
 ### 参考
 
-- httpsblog.csdn.netchen13579867831articledetails78995480
-- httpwww.cnblogs.comchenssyp3388487.html
-- httpwww.cnblogs.comQian123p5713440.html
+- <https://blog.csdn.netchen13579867831articledetails78995480>
+- <http://www.cnblogs.comchenssyp3388487.html>
+- <http://www.cnblogs.comQian123p5713440.html>

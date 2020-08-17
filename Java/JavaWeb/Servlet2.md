@@ -1,10 +1,8 @@
 ---
-title: JavaWeb
+title: Servlet
 date: 2017-12-20
 tags: java
 ---
-# Java Web
-
 ## Servlet
 
 Servlet 是一些遵从Java Servlet API的Java类，这些Java类可以响应请求。尽管Servlet可以响应任意类型的请求，但是它们使用最广泛的是响应web方面的请求。 Servlet必须部署在Java servlet容器才能使用。虽然很多开发者都使用Java Server Pages（JSP）和Java Server Faces（JSF）等Servlet框架，但是这些技术都要在幕后通过Servlet容器把页面编译为Java Servlet。

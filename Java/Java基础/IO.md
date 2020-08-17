@@ -14,7 +14,7 @@ Java 的 IO 包主要关注的是从原始数据源的读取以及输出原始�
 
 下面这张图描绘了一个程序从数据源读取数据，然后将数据输出到其他媒介的原理：
 
-![数据源与目标媒介](./images/IO1.png)
+![数据源与目标媒介](images/IO1.png)
 
 ### 流
 
@@ -46,7 +46,7 @@ Java IO 中包含了许多 InputStream、OutputStream、Reader、Writer 的子�
 
 ### Java IO类概述表
 
-![Java IO类概述表](./images/IO3.png)
+![Java IO类概述表](images/IO3.png)
 
 ## 流的分类
 
@@ -170,7 +170,7 @@ Writer         | 字符输出流
 
 一个程序需要 InputStream 或者 Reader 从数据源读取数据，需要 OutputStream 或者 Writer 将数据写入到目标媒介中。以下的图说明了这一点：
 
-![InputStream、Reader、OutputStream、Writer](./images/IO2.png)
+![InputStream、Reader、OutputStream、Writer](images/IO2.png)
 
 InputStream 和 Reader 与数据源关联，OutputStream 和 Writer 与目标媒介相关联。
 

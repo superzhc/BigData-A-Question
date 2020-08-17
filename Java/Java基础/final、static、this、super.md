@@ -42,8 +42,6 @@ class Manager {
 
 此关键字是可选的，这意味着如果上面的示例在不使用此关键字的情况下表现相同。 但是，使用此关键字可能会使代码更易读或易懂。
 
-
-
 ## super 关键字
 
 super关键字用于从子类访问父类的变量和方法。 例如：
@@ -76,9 +74,7 @@ public class Sub extends Super {
 
 被 static 修饰的成员属于类，不属于单个这个类的某个对象，被类中所有对象共享。而 this 代表对本类对象的引用，指向本类对象；而 super 代表对父类对象的引用，指向父类对象；所以， **this和super是属于对象范畴的东西，而静态方法是属于类范畴的东西**。
 
-
-
 ## 参考
 
-- https://www.codejava.net/java-core/the-java-language/java-keywords
-- https://blog.csdn.net/u013393958/article/details/79881037
+- <https://www.codejava.net/java-core/the-java-language/java-keywords>
+- <https://blog.csdn.net/u013393958/article/details/79881037>
