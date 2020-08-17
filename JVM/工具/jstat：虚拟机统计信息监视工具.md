@@ -35,15 +35,15 @@
 
 ### 示例 1：查看 ClassLoader 的相关情况
 
-![image-20200407153651549](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407153651549.png)
+![image-20200407153651549](images/image-20200407153651549.png)
 
 ### 示例 2：查看 JIT 编译的信息
 
-![image-20200407155513912](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407155513912.png)
+![image-20200407155513912](images/image-20200407155513912.png)
 
 ### 示例 3：显示与 GC 相关的堆信息的输出
 
-![image-20200407162436865](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407162436865.png)
+![image-20200407162436865](images/image-20200407162436865.png)
 
 ```txt
 - S0C：s0 的大小
@@ -69,27 +69,27 @@
 
 `jstat -gccapacity 28941`
 
-![image-20200407160616030](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407160616030.png)
+![image-20200407160616030](images/image-20200407160616030.png)
 
 ### 示例 5：显示最近一次 GC 的原因以及当前 GC 的原因
 
-![image-20200407160907893](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407160907893.png)
+![image-20200407160907893](images/image-20200407160907893.png)
 
 ### 示例 6：查看新生代的一些详细的信息
 
-![image-20200407161320865](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161320865.png)
+![image-20200407161320865](images/image-20200407161320865.png)
 
 ### 示例 7：输出新生代各个区的大小信息
 
-![image-20200407161530610](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161530610.png)
+![image-20200407161530610](images/image-20200407161530610.png)
 
 ### 示例 8：老年代的 GC 情况
 
-![image-20200407161639202](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161639202.png)
+![image-20200407161639202](images/image-20200407161639202.png)
 
 ### 示例 9：老年代的容量信息
 
-![image-20200407161810865](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161810865.png)
+![image-20200407161810865](images/image-20200407161810865.png)
 
 ### ~~示例 10：展示永久代的使用情况~~
 
@@ -97,7 +97,7 @@ jvm 在 jdk1.8 后不存在永久代的信息了，不可用
 
 ### 示例 11：展示 GC 的回收信息
 
-![image-20200407161936195](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407161936195.png)
+![image-20200407161936195](images/image-20200407161936195.png)
 
 - S0：s0区使用的百分比
 - S1：s1区使用的百分比
@@ -107,4 +107,4 @@ jvm 在 jdk1.8 后不存在永久代的信息了，不可用
 
 ### 示例 12：展示元数据区的使用情况
 
-![image-20200407163444053](D:\superz\BigData-A-Question\JVM\工具\images\image-20200407163444053.png)
+![image-20200407163444053](images/image-20200407163444053.png)

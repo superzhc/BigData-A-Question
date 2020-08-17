@@ -2,13 +2,13 @@
 
 HBase 是基于 Apache Hadoop 的面向列的 NoSQL 数据库，是 Google 的 BigTable 的开源实现。HBase 是一个针对半结构化数据的开源的、多版本的、可伸缩的、高可靠的、高性能的、分布式的和面向列的动态模式数据库。
 
-HBase 和传统关系数据库不同，它采用了 BigTable 的数据模型增强的**稀疏排序映射表（Key/Value）**，其中，键由行关键字、列关键字和时间戳构成。
+HBase 和传统关系数据库不同，它采用了 BigTable 的数据模型增强的 **稀疏排序映射表（Key/Value）**，其中，键由*行关键字*、*列关键字* 和 *时间戳* 构成。
 
 HBase 提供了对大规模数据的随机、实时读写访问。HBase 的目标是存储并处理大型的数据，也就是仅用普通的硬件配置，就能够处理上千亿的行和几百万的列所组成的超大型数据库。
 
-Hadoop 是一个高容错、高延时的分布式文件系统和高并发的批处理系统，不适用于提供实时计算，而 HBase 是可以提供实时计算的分布式数据库，数据被保存在 HDFS (分布式文件系统）上，由 HDFS 保证其高容错性。
+Hadoop 是一个高容错、高延时的分布式文件系统和高并发的批处理系统，不适用于提供实时计算，而 HBase 是可以提供实时计算的分布式数据库，数据被保存在 HDFS 上，**由 HDFS 保证其高容错性**。
 
-HBase 上的数据是以二进制流的形式存储在 HDFS 上的数据块中的，但是，HBase 上的存储数据对于 HDFS 是透明的。
+*HBase 上的数据是以 StoreFile(HFile) 二进制流的形式存储在 HDFS 上的数据块中的，但是，HBase 的存储数据对于 HDFS 文件系统是透明的*。
 
 HBase 可以直接使用本地文件系统，也可以使用 Hadoop 的 HDFS。HBase 中保存的数据可以使用 MapReduce 来处理，它将数据存储和并行计算有机地结合在一起。
 
@@ -20,33 +20,34 @@ HBase 在充分利用列式存储优势的同时，通过列簇减少列连接�
 
 ![HBase架构](D:\superz\BigData-A-Question\HBase\images\52297ef305db9.jpg)
 
-### Client
+通过上图可以得到 HBase 中的每张表都按照一定的范围被分割成多个子表（HRegion），默认一个 HRegion 超过 256M 就要被分割成两个，由 HRegionServer 管理，管理哪些 HRegion 由 HMaster 分配。
 
-- 包含访问 HBase 的接口，并维护 cache 来加快对 HBase 的访问
-- 通过 RPC 机制和 Master，RegionServer 通信
+- **Client**：包含访问HBase的接口，并维护cache来加快对HBase的访问；通过 RPC 机制和 Master，RegionServer 通信
+- **Zookeeper**：HBase 依赖 Zookeeper，默认情况下 HBase 管理 Zookeeper 实例（启动或关闭 Zookeeper），Master 与 RegionServers 启动时会向 Zookeeper 注册。Zookeeper 的作用如下：
+  - 保证任何时候，集群中只有一个 Master
+  - 存储所有 Region 的寻址入口
+  - 实时监控 RegionServer 的上线和下线信息。并实时通知给 Master
+  - 存储 HBase 元数据信息
+  - HBase 中可以启动多个 HMaster，通过 Zookeeper 的 Master Election 机制保证总有一个 Master 运行
 
-#### Zookeeper
+- **Master**
 
-- 保证任何时候，集群中只有一个 Master
-- 存储所有 Region 的寻址入口
-- 实时监控 RegionServer 的上线和下线信息。并实时通知给 Master
-- 存储 HBase 元数据信息
-- HBase 中可以启动多个 HMaster，通过 Zookeeper 的 Master Election 机制保证总有一个 Master 运行
+  - 为 RegionServer 分配 region
+  - 负责 RegionServer 的负载均衡
+  - 发现挂掉的 RegionServer 并重新分配其上的 region
+  - 负责表的创建、删除等操作
 
-### Master
+  > 由于 Master 只维护表和 region 的元数据，而不参与表数据 I/O 的过程，Master 下线仅导致所有的元数据的修改被冻结（无法创建删除表，无法修改表的 schema，无法进行 region 的负载均衡，无法处理 region 上下线，无法进行 region 的合并，唯一例外的是 region 的 split 可以正常进行，因为只有 region server 参与），表的数据读写还可以正常进行。因此 Master 下线短时间内对整个 HBase 集群没有影响
 
-- 为 RegionServer 分配 region
-- 负责 RegionServer 的负载均衡
-- 发现挂掉的 RegionServer 并重新分配其上的 region
-- 负责表的创建、删除等操作
+- **HRegionServer**：用来维护 Master 分配给它的 Region，处理对这些 Region 的 I/O 请求；负责切分正在运行过程中变的过大的 Region。
 
-由于 Master 只维护表和 region 的元数据，而不参与表数据 I/O 的过程，Master 下线仅导致所有的元数据的修改被冻结（无法创建删除表，无法修改表的 schema，无法进行 region 的负载均衡，无法处理 region 上下线，无法进行 region 的合并，唯一例外的是 region 的 split 可以正常进行，因为只有 region server 参与），表的数据读写还可以正常进行。因此 Master 下线短时间内对整个 HBase 集群没有影响
+- **HRegion**：HBase 表在行的方向上分隔为多个 Region。Region 是 HBase 中分布式存储和负载均衡的最小单元，即不同的 Region 可以分别在不同的 RegionServer上，但同一个 Region 是不会拆分到多个 server 上。Region 按大小分隔，每个表一般是只有一个 Region，当 Region 的某个列簇达到一个阈值（默认256M）时就会分成两个新的 Region。
 
-### RegionServer
+- **Store**：每一个 Region 由一个或多个 Store 组成，至少是一个 Store，HBase 会把一起访问的数据放在一个 Store 里面，即为每个列簇建一个 Store，如果有几个列簇，也就有几个 Store。一个 Store 由一个 memStore 和 0 或者多个 StoreFile 组成。Store 的大小被 HBase 用来判断是否需要切分 Region。
 
-- RegionServer 维护 region，处理这些 region 的 I/O 请求
-- RegionServer 负责切分在运行过程中变得过大的 region
-- RegionServer 提供了行锁
+- **StoreFile**：memStore 内存中的数据写到文件后就是 StoreFile，StoreFile 底层是以 HFile 的格式保存。
+- **HLog**：HLog 记录数据的所有变更，可以用来恢复文件，一旦 RegionServer 宕机，就可以从 HLog 中进行恢复。
+- **LogFlusher**：一个 LogFlusher 的类是用来调用 `HLog.optionalSync()` 的。
 
 ## 数据模型
 
@@ -56,7 +57,7 @@ HBase 是一个稀疏、多维度、有序的映射表。
 
 表的每一行由一个或多个列簇组成，一个列簇中可以包含任意多个列。在同一个表模式下，每行所包含的列簇是相同的，也就是说，列簇的个数与名称都是相同的，但是每一行中的每个列簇中列的个数可以不同，如下图所示：
 
-![数据模型](D:\superz\BigData-A-Question\HBase\images\5-1Z5091305564M.gif)
+![数据模型](./images/5-1Z5091305564M.gif)
 
 HBase 中的同一个列簇里面的数据存储在一起，列簇支持动态扩展，可以随时添加新的列，无须提前定义列的数量。所以，尽管表中的每一行会拥有相同的列簇，但是可能具有截然不同的列。正因为如此，对于整个映射表的每行数据而言，有些列的值就是空的，所以 HBase 的表是稀疏的。
 

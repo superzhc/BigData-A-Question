@@ -11,7 +11,7 @@ Elasticsearch 提供了 `.zip` 和 `.tar.gz` 软件包下载，这些软件包�
 
 ### 下载和安装 `.zip` 包
 
-```sh
+```bash
 # 下载软件包
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.2.zip
 # 比较 SHA
@@ -24,7 +24,7 @@ cd elasticsearch-6.3.2/
 
 ### 下载和安装 `.tar.gz` 包
 
-```sh
+```bash
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.2.tar.gz
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.2.tar.gz.sha512
 shasum -a 512 -c elasticsearch-6.3.2.tar.gz.sha512 
@@ -36,7 +36,7 @@ cd elasticsearch-6.3.2/
 
 Elasticsearch 运行直接通过如下命令进行启动：
 
-```sh
+```bash
 ./bin/elasticsearch
 ```
 
@@ -44,7 +44,7 @@ Elasticsearch 运行直接通过如下命令进行启动：
 
 也可以作为守护进程来启动，如下所示：
 
-```sh
+```bash
 ./bin/elasticsearch -d
 ```
 

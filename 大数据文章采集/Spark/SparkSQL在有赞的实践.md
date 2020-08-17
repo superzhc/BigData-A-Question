@@ -97,5 +97,3 @@ SparkSQL 需要收集 STS 上执行的 SQL 的审计信息，包括提交者执�
 # 未来展望
 
 我们计划 Hadoop 集群资源进一步向 SparkSQL 方向转移，达到80%，作业数达70%，把最高优先级也开放到选择引擎，引入 Intel 开源的[ Adaptive Execution ](https://github.com/Intel-bigdata/spark-adaptive)功能，优化执行过程中的 shuffle 数目，执行过程中基于代价的 broadcast join 优化，替换 sort merge join，同时更彻底解决小文件问题。
-
-最后打个小广告，有赞大数据团队基础设施团队，主要负责有赞的数据平台(DP), 实时计算(Storm, Spark Streaming, Flink)，离线计算(HDFS, YARN, HIVE, SPARK SQL)，在线存储（HBase），实时 OLAP(Druid) 等数个技术产品，欢迎感兴趣的小伙伴联系 zouchenjun@youzan.com
