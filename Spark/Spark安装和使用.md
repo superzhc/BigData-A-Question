@@ -23,7 +23,7 @@ Spark 部署模式主要有四种：
 
 #### 单机模式的安装
 
-```sh
+```bash
 sudo tar -zxf ~/下载/spark-1.6.2-bin-without-hadoop.tgz -C /usr/local/
 cd /usr/local
 sudo mv ./spark-1.6.2-bin-without-hadoop/ ./spark
@@ -32,14 +32,14 @@ sudo chown -R hadoop:hadoop ./spark          # 此处的 hadoop 为你的用户�
 
 安装后，修改 Spark 的配置文件 `spark-env.sh`
 
-```sh
+```bash
 cd /usr/local/spark
 cp ./conf/spark-env.sh.template ./conf/spark-env.sh
 ```
 
 编辑 `spark-env.sh` 文件(`vim ./conf/spark-env.sh`)，在第一行添加以下配置信息:
 
-```sh
+```bash
 export SPARK_DIST_CLASSPATH=$(/usr/local/hadoop/bin/hadoop classpath)
 ```
 
@@ -49,7 +49,7 @@ export SPARK_DIST_CLASSPATH=$(/usr/local/hadoop/bin/hadoop classpath)
 
 通过运行Spark自带的示例，验证Spark是否安装成功。
 
-```sh	
+```bash
 cd /usr/local/spark
 bin/run-example SparkPi
 ```
@@ -64,4 +64,4 @@ bin/run-example SparkPi
 
 ### 使用 Spark Shell 编写代码
 
-  [Spark-Shell.md](./Spark工具/Spark-Shell.md) 
+  [Spark-Shell.md](Spark/Spark工具/Spark-Shell.md) 

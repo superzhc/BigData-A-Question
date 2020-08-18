@@ -4,7 +4,7 @@ Spark 最初由美国加州大学伯克利分校（UC Berkeley）的 AMP 实验�
 
 Spark 具有如下几个主要特点：
 
-- **运行速度快**：Spark 使用先进的 **有向无环图（Directed Acyclic Graph，DAG）** 执行引擎，以支持循环数据流与内存计算，基于内存计算的执行速度比 MapReduce 快上百倍，基于磁盘的执行速度也能快上十倍【备注:[Spark比MapReduce快的原因](Spark比MapReduce快的原因.md)】
+- **运行速度快**：Spark 使用先进的 **有向无环图（Directed Acyclic Graph，DAG）** 执行引擎，以支持循环数据流与内存计算，基于内存计算的执行速度比 MapReduce 快上百倍，基于磁盘的执行速度也能快上十倍【备注:[Spark比MapReduce快的原因](Spark/Spark比MapReduce快的原因.md)】
 
 - **容易使用**：Spark 支持使用 Scala、Java、Python 和 R 语言进行编程，简洁的 API 设计有助于用户轻松构建并行程序，并且可以通过 Spark Shell 进行交互式编程
 
@@ -71,22 +71,19 @@ RDD 支持两种类型的操作：
 
 Spark 运行架构指的也就是 Spark Core 的运行架构。
 
-- [Spark运行架构](Spark运行架构.md) 
-- [RDD的设计与运行原理](Spark-RDD的设计与运行原理.md) 
+- [Spark运行架构](Spark/Spark运行架构.md) 
 
 ## Spark 安装部署
 
- [Spark安装和使用](Spark安装和使用.md) 
+ [Spark安装和使用](Spark/Spark安装和使用.md) 
 
- [Spark的部署模式](Spark的部署模式.md) 
+ [Spark的部署模式](Spark/Spark的部署模式.md) 
 
- [Spark和Hadoop的统一部署](Spark和Hadoop的统一部署.md) 
+ [Spark和Hadoop的统一部署](Spark/Spark和Hadoop的统一部署.md) 
 
 ## Spark 开发
 
 > 应用开发者可以用标准的 API 接口创建基于 Spark 的应用，目前 Spark 提供了 [Scala](https://link.juejin.im/?target=http%3A%2F%2Fspark.apache.org%2Fdocs%2Flatest%2Fapi%2Fscala%2Findex.html%23org.apache.spark.package)，[Java](https://link.juejin.im/?target=http%3A%2F%2Fspark.apache.org%2Fdocs%2Flatest%2Fapi%2Fjava%2Findex.html"Java") 和 [Python](https://link.juejin.im/?target=http%3A%2F%2Fspark.apache.org%2Fdocs%2Flatest%2Fapi%2Fpython%2Findex.html"Python") 三种程序设计语言的 API。
 
- [Spark引入](Spark引入.md) 
-
- [Spark独立应用程序](Spark独立应用程序.md) 
+ [Spark引入](Spark/Spark引入.md) 
 
