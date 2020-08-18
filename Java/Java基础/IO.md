@@ -159,14 +159,14 @@ System.setOut(printOut);
 
 Java 流操作有关的类和接口
 
-类              | 说明
-:--------------|:------------------
-File           | 文件类
-RandomAccessFile | 随机存取文件类
-InputStream    | 字节输入流
-OutputStream   | 字节输出流
-Reader         | 字符输入流
-Writer         | 字符输出流
+| 类               | 说明           |
+| :--------------- | :------------- |
+| File             | 文件类         |
+| RandomAccessFile | 随机存取文件类 |
+| InputStream      | 字节输入流     |
+| OutputStream     | 字节输出流     |
+| Reader           | 字符输入流     |
+| Writer           | 字符输出流     |
 
 一个程序需要 InputStream 或者 Reader 从数据源读取数据，需要 OutputStream 或者 Writer 将数据写入到目标媒介中。以下的图说明了这一点：
 
@@ -316,7 +316,9 @@ RandomAccessFile 允许来回读写文件，也可以替换文件中的某些部
 
 在使用RandomAccessFile之前，必须初始化它。这是例子：
 
-`RandomAccessFile file = new RandomAccessFile("c:\\data\\file.txt", "rw");`
+```java
+RandomAccessFile file = new RandomAccessFile("c:\\data\\file.txt", "rw");
+```
 
 请注意构造函数的第二个参数：“rw”，表明以读写方式打开文件。
 
@@ -444,7 +446,9 @@ InputStream input = new BufferedInputStream(new FileInputStream("c:\\data\\input
 
 可以给 BufferedInputStream 的构造函数传递一个值，设置内部使用的缓冲区设置大小(注：默认缓冲区大小8 * 1024B)，就像这样：
 
-`InputStream input = new BufferedInputStream(new FileInputStream("c:\\data\\input-file.txt"), 8 * 1024);`
+```java
+InputStream input = new BufferedInputStream(new FileInputStream("c:\\data\\input-file.txt"), 8 * 1024);
+```
 
 这个例子设置了8KB的缓冲区。最好把缓冲区大小设置成1024字节的整数倍，这样能更高效地利用内置缓冲区的磁盘。
 
@@ -454,11 +458,15 @@ InputStream input = new BufferedInputStream(new FileInputStream("c:\\data\\input
 
 与BufferedInputStream类似，BufferedOutputStream可以为输出流提供缓冲区。可以构造一个使用默认大小缓冲区的BufferedOutputStream(注：默认缓冲区大小8 * 1024B)，代码如下：
 
-`OutputStream output = new BufferedOutputStream(new FileOutputStream("c:\\data\\output-file.txt"));`
+```java
+OutputStream output = new BufferedOutputStream(new FileOutputStream("c:\\data\\output-file.txt"));
+```
 
 也可以手动设置缓冲区大小，代码如下：
 
-`OutputStream output = new BufferedOutputStream(new FileOutputStream("c:\\data\\output-file.txt"), 8 * 1024);`
+```java
+OutputStream output = new BufferedOutputStream(new FileOutputStream("c:\\data\\output-file.txt"), 8 * 1024);
+```
 
 为了更好地使用内置缓冲区的磁盘，同样建议把缓冲区大小设置成1024的整数倍。
 
@@ -589,11 +597,15 @@ reader.close();
 
 read()方法返回一个包含了读取到的字符内容的int类型变量(译者注：0~65535)。代码如下：
 
-`int data = reader.read();`
+```java
+int data = reader.read();
+```
 
 可以把返回的int值转换成char变量，就像这样：
 
-`char aChar = (char) data; //注：这里不会造成数据丢失，因为返回的int类型变量data只有低16位有数据，高16位没有数据`
+```java
+char aChar = (char) data; //注：这里不会造成数据丢失，因为返回的int类型变量data只有低16位有数据，高16位没有数据
+```
 
 如果方法返回-1，表明Reader中已经没有剩余可读取字符，此时可以关闭Reader。-1是一个int类型，不是byte或者char类型，这是不一样的。
 
@@ -701,3 +713,4 @@ File file = new File("c:\\data");
 String[] fileNames = file.list();
 File[] files = file.listFiles();
 ```
+

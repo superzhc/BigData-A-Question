@@ -355,3 +355,4 @@ Log4J的时序图，如下：
 时序图流程图：获取Logger实例->判断Logger实例对应的日志记录级别是否要比请求的级别低->若是调用forceLog记录日志->创建LoggingEvent实例->将LoggingEvent实例传递给Appender->Appender调用Layout实例格式化日志消息->Appender将格式化后的日志信息写入该Appender对应的日志输出中。
 
 ![log4j 详细时序图](images/log4j%E8%AF%A6%E7%BB%86%E6%97%B6%E5%BA%8F%E5%9B%BE.jpg)
+

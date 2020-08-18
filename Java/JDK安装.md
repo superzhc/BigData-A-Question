@@ -39,14 +39,14 @@
 
 **1、解压**
 
-```sh
+```bash
 mkdir -p /usr/lib/jvm
 tar -zxvf jdk-8u131-linux-x64.tar.gz -C /usr/lib/jvm
 ```
 
 **2、设置环境变量**
 
-```sh
+```bash
 vim /etc/profile
 
 export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_131  

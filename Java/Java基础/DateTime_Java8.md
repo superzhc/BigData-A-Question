@@ -352,6 +352,6 @@ public class DateAPILegacySupport {
         GregorianCalendar gc = GregorianCalendar.from(gregorianCalendarDateTime);
         System.out.println(gc);
     }
-
 }
 ```
+

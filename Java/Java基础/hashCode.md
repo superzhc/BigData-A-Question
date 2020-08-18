@@ -14,25 +14,26 @@
 
 对于equal遵循如下规则：
 
-- 对称性：如果x.equals(y)返回是“true”，那么y.equals(x)也应该返回是“true”
-- 反射性：x.equals(x)必须返回是“true”
-- 类推性：如果x.equals(y)返回是“true”，而且y.equals(z)返回是“true”，那么z.equals(x)也应该返回是“true”
-- 一致性：如果x.equals(y)返回是“true”，只要x和y内容一直不变，不管你重复x.equals(y)多少次，返回都是“true”
+- 对称性：如果 `x.equals(y)` 返回是“true”，那么 `y.equals(x)` 也应该返回是“true”
+- 反射性：`x.equals(x)` 必须返回是“true”
+- 类推性：如果 `x.equals(y)` 返回是“true”，而且 `y.equals(z)` 返回是“true”，那么 `z.equals(x)` 也应该返回是“true”
+- 一致性：如果 `x.equals(y)` 返回是“true”，只要x和y内容一直不变，不管你重复 `x.equals(y)` 多少次，返回都是“true”
 
-**注：** 任何情况下，x.equals(null)，永远返回是“false”；x.equals(和x不同类型的对象)永远返回是“false”
+**注：** 任何情况下，`x.equals(null)`，永远返回是“false”；`x.equals(和x不同类型的对象)` 永远返回是“false”
 
 对于hashCode遵循如下规则：
 
 - 在一个应用程序执行期间，如果一个对象的equals方法做比较所用到的信息没有被修改的话，则对该对象调用hashCode方法多次，它必须始终如一地返回同一个整数
-- 如果两个对象根据equals(Object o)方法是相等的，则调用这两个对象中任一对象的hashCode方法必须产生相同的整数结果
-- 如果两个对象根据equals(Object o)方法是不相等的，则调用这两个对象中任一个对象的hashCode方法，不要求产生不同的整数结果。但如果能不同，则可能提高散列表的性能
+- 如果两个对象根据 `equals(Object o)` 方法是相等的，则调用这两个对象中任一对象的hashCode方法必须产生相同的整数结果
+- 如果两个对象根据 `equals(Object o)` 方法是不相等的，则调用这两个对象中任一个对象的hashCode方法，不要求产生不同的整数结果。但如果能不同，则可能提高散列表的性能
 
 综上，两者的关联如下：【部分】
 
-- 如果x.equals(y)返回“true”，那么x和y的hashCode()必须相等
-- 如果x.equals(y)返回“false”，那么x和y的hashCode()有可能相等，也有可能不等
+- 如果 `x.equals(y)` 返回“true”，那么x和y的 `hashCode()` 必须相等
+- 如果 `x.equals(y)` 返回“false”，那么x和y的 `hashCode()` 有可能相等，也有可能不等
 
 两者配合工作的流程：
 
 - 判断两个对象的hashcode是否相等，若不等，则认为两个对象不等，完毕，若相等，则比较equals
 - 若两个对象的equals不等，则可以认为两个对象不等，否则认为它们相等
+

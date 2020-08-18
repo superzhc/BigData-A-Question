@@ -83,12 +83,12 @@ URL用于标识数据库位置，程序员通过URL地址告诉JDBC程序连接�
 
 常用的 JDBC 驱动程序名和数据库URL
 
-RDBMS  | JDBC 驱动程序名称                |URL 格式
-:-----:|:--------------------------------|:-----------------------------------
-MySQL  | com.mysql.jdbc.Driver           | jdbc:mysql://hostname/ databaseName
-ORACLE | oracle.jdbc.driver.OracleDriver | jdbc:oracle:thin:@hostname:port Number:databaseName
-DB2    | COM.ibm.db2.jdbc.net.DB2Driver  | jdbc:db2:hostname:port Number/databaseName
-Sybase | com.sybase.jdbc.SybDriver       | jdbc:sybase:Tds:hostname: port Number/databaseName
+| RDBMS  | JDBC 驱动程序名称               | URL 格式                                            |
+| :----: | :------------------------------ | :-------------------------------------------------- |
+| MySQL  | com.mysql.jdbc.Driver           | jdbc:mysql://hostname/ databaseName                 |
+| ORACLE | oracle.jdbc.driver.OracleDriver | jdbc:oracle:thin:@hostname:port Number:databaseName |
+|  DB2   | COM.ibm.db2.jdbc.net.DB2Driver  | jdbc:db2:hostname:port Number/databaseName          |
+| Sybase | com.sybase.jdbc.SybDriver       | jdbc:sybase:Tds:hostname: port Number/databaseName  |
 
 ### Connection
 
@@ -103,11 +103,11 @@ JDBC程序中的Connection，它用于代表数据库的连接，Connection是�
 
 ### Statement
 
-接口              | 推荐使用
-:---------------:|:-------------------------------------------------------------------------------
-Statement         | 可以正常访问数据库，适用于运行静态 SQL 语句。 Statement 接口不接受参数。
-PreparedStatement | 计划多次使用 SQL 语句， PreparedStatement 接口运行时接受输入的参数。
-CallableStatement | 适用于当你要访问数据库存储过程的时候， CallableStatement 接口运行时也接受输入的参数。
+|       接口        | 推荐使用                                                                              |
+| :---------------: | :------------------------------------------------------------------------------------ |
+|     Statement     | 可以正常访问数据库，适用于运行静态 SQL 语句。 Statement 接口不接受参数。              |
+| PreparedStatement | 计划多次使用 SQL 语句， PreparedStatement 接口运行时接受输入的参数。                  |
+| CallableStatement | 适用于当你要访问数据库存储过程的时候， CallableStatement 接口运行时也接受输入的参数。 |
 
 #### Statement 接口
 
@@ -168,18 +168,18 @@ Statement createStatement(int resultSetType, int resultSetConcurrency)  throws S
 
 结果集类型：
 
-值|作用
-:--:|:--
-ResultSet.TYPE_FORWARD_ONLY       | 该常量指示光标只能向前移动的 ResultSet 对象的类型。
-ResultSet.TYPE_SCROLL_INSENSITIVE | 该常量指示可滚动但通常不受 ResultSet 底层数据更改影响的 ResultSet 对象的类型。
-ResultSet.TYPE_SCROLL_SENSITIVE   | 该常量指示可滚动并且通常受 ResultSet 底层数据更改影响的 ResultSet 对象的类型。
+|                值                 | 作用                                                                           |
+| :-------------------------------: | :----------------------------------------------------------------------------- |
+|    ResultSet.TYPE_FORWARD_ONLY    | 该常量指示光标只能向前移动的 ResultSet 对象的类型。                            |
+| ResultSet.TYPE_SCROLL_INSENSITIVE | 该常量指示可滚动但通常不受 ResultSet 底层数据更改影响的 ResultSet 对象的类型。 |
+|  ResultSet.TYPE_SCROLL_SENSITIVE  | 该常量指示可滚动并且通常受 ResultSet 底层数据更改影响的 ResultSet 对象的类型。 |
 
 并发类型：
 
-值|作用
-:--:|:--
-ResultSet.CONCUR_READ_ONLY | 该常量指示不可以更新的 ResultSet 对象的并发模式。
-ResultSet.CONCUR_UPDATABLE | 该常量指示可以更新的 ResultSet 对象的并发模式。
+|             值             | 作用                                              |
+| :------------------------: | :------------------------------------------------ |
+| ResultSet.CONCUR_READ_ONLY | 该常量指示不可以更新的 ResultSet 对象的并发模式。 |
+| ResultSet.CONCUR_UPDATABLE | 该常量指示可以更新的 ResultSet 对象的并发模式。   |
 
 以上五个值，可以有三种搭配方式:
 
@@ -233,3 +233,4 @@ DAO模式结构 ：
 - 问题描述：现在连接池多种多样，可能存在变化，有可能采用DBCP的连接池，也有可能采用容器本身的JNDI数据库连接池。
 
 > 可以通过DataSource进行隔离解耦，统一从DataSource里面获取数据库连接，DataSource具体由DBCP实现还是由容器的JNDI实现都可以，所以我们将DataSource的具体实现通过让用户配置来应对变化。
+

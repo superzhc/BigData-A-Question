@@ -24,14 +24,14 @@ Quartz定时任务要实现Job接口，Job只有一个`execute(JobExecutionConte
 
 `JobDetailImpl类`实现了`JobDetail接口`，用来描述一个Job，定义了Job所有属性及其get/set方法。
 
-| 属性名        | 说明                                                         |
-| :------------ | :----------------------------------------------------------- |
-| class         | 必须是Job实现类，用来绑定一个具体Job                         |
-| name          | Job名称，如果未指定，会自动分配一个唯一名称。所有Job都必须拥有一个唯一name，如果两个Job的name重复，则只有最前面的Job能被调度 |
-| group         | Job所属的组名                                                |
-| description   | Job描述                                                      |
-| durability    | 是否持久化。如果Job设置为非持久化，当没有活跃的trigger与之关联的时候，Job会自动从scheduler中删除，也就是说，非持久Job的生命周期是由trigger的存在与否决定的 |
-| shouldRecover | 是否可恢复。如果Job设置为可恢复，一旦Job执行时scheduler重启后，该job会被重新执行 |
+| 属性名        | 说明                                                                                                                                                                |
+| :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| class         | 必须是Job实现类，用来绑定一个具体Job                                                                                                                                |
+| name          | Job名称，如果未指定，会自动分配一个唯一名称。所有Job都必须拥有一个唯一name，如果两个Job的name重复，则只有最前面的Job能被调度                                        |
+| group         | Job所属的组名                                                                                                                                                       |
+| description   | Job描述                                                                                                                                                             |
+| durability    | 是否持久化。如果Job设置为非持久化，当没有活跃的trigger与之关联的时候，Job会自动从scheduler中删除，也就是说，非持久Job的生命周期是由trigger的存在与否决定的          |
+| shouldRecover | 是否可恢复。如果Job设置为可恢复，一旦Job执行时scheduler重启后，该job会被重新执行                                                                                    |
 | jobDataMap    | 用户可以把任意k/v数据存入jobDataMap，实现Job属性的无限扩展，执行Job时可以使用这些属性数据。此属性的类型是JobDataMap，实现了Serializable接口，可做跨平台的序列化传输 |
 
 ### JobBuilder类
@@ -53,22 +53,22 @@ JobBuilder类的作用：接收Job实现类，生成JobDetail实例，默认生�
 
 trigger所有属性：
 
-| 属性名             | 属性类型      | 说明                                                         |
-| :----------------- | :------------ | :----------------------------------------------------------- |
-| name               | ALL           | trigger名称                                                  |
-| group              | ALL           | trigger所属的组名                                            |
-| description        | ALL           | trigger描述                                                  |
-| calendarName       | ALL           | 日历名称，指定使用哪个Calendar类，经常用来从trigger的调度计划中排除某些时间段 |
-| misfireInstruction | ALL           | 错过Job（未在指定时间执行的Job）的处理侧率，默认为`MISFIRE_INSTRUCTION_SMART_POLICY` |
-| priority           | ALL           | 优先级，默认为`5`。当多个trigger同时触发Job时，线程池可能不够用，此时根据优先级来决定谁先触发 |
+| 属性名             | 属性类型      | 说明                                                                                                                       |
+| :----------------- | :------------ | :------------------------------------------------------------------------------------------------------------------------- |
+| name               | ALL           | trigger名称                                                                                                                |
+| group              | ALL           | trigger所属的组名                                                                                                          |
+| description        | ALL           | trigger描述                                                                                                                |
+| calendarName       | ALL           | 日历名称，指定使用哪个Calendar类，经常用来从trigger的调度计划中排除某些时间段                                              |
+| misfireInstruction | ALL           | 错过Job（未在指定时间执行的Job）的处理侧率，默认为`MISFIRE_INSTRUCTION_SMART_POLICY`                                       |
+| priority           | ALL           | 优先级，默认为`5`。当多个trigger同时触发Job时，线程池可能不够用，此时根据优先级来决定谁先触发                              |
 | jobDataMap         | ALL           | 同Job的jobMapData，加入Job和Trigger的jobDataMap有同名的key，通过`getMergedJobDataMap()`获取的jobDataMap，将以trigger的为准 |
-| startTime          | ALL           | 触发开始时间，默认为当前时间。决定什么时间开始触发Job        |
-| endTime            | ALL           | 触发结束时间。决定什么时间停止触发Job                        |
-| nextFireTime       | SimpleTrigger | 下一次触发Job的时间                                          |
-| previousFireTime   | SimpleTrigger | 上一次触发job的时间                                          |
-| repeatCount        | SimpleTrigger | 需触发的总次数                                               |
-| timesTriggered     | SimpleTrigger | 已经触发过的次数                                             |
-| repeatInterval     | SimpleTrigger | 触发间隔时间                                                 |
+| startTime          | ALL           | 触发开始时间，默认为当前时间。决定什么时间开始触发Job                                                                      |
+| endTime            | ALL           | 触发结束时间。决定什么时间停止触发Job                                                                                      |
+| nextFireTime       | SimpleTrigger | 下一次触发Job的时间                                                                                                        |
+| previousFireTime   | SimpleTrigger | 上一次触发job的时间                                                                                                        |
+| repeatCount        | SimpleTrigger | 需触发的总次数                                                                                                             |
+| timesTriggered     | SimpleTrigger | 已经触发过的次数                                                                                                           |
+| repeatInterval     | SimpleTrigger | 触发间隔时间                                                                                                               |
 
 ### TriggerBuilder类
 
@@ -178,20 +178,20 @@ scheduler.start();
   }
   ```
 
-- ```
-  QuartzScheduler.start()
-  ```
+```java
+QuartzScheduler.start()
+```
 
   源码
 
-  ```java
-  public void start() throws SchedulerException {
-      // ......
-      // 这句最关键，作用是使调度器线程跳出一个无限循环，开始轮询所有trigger触发job
-      schedThread.togglePause(false);
-      ......
-  }
-  ```
+```java
+public void start() throws SchedulerException {
+    // ......
+    // 这句最关键，作用是使调度器线程跳出一个无限循环，开始轮询所有trigger触发job
+    schedThread.togglePause(false);
+    ......
+}
+```
 
 ## F&Q
 
@@ -199,90 +199,91 @@ scheduler.start();
 
 - QuartzSchedulerThread
 
-  ```java
-  // 调度器线程一旦启动，将一直运行此方法
-  public void run() {
-      // while()无限循环，每次循环取出时间将到的trigger，触发对应的job，直到调度器线程被关闭
-      // halted是一个AtomicBoolean类变量，有个volatile int变量value，其get()方法仅仅简单的一句return value != 0，get()返回结果表示调度器线程是否开关
-      // volatile修饰的变量，存取必须走内存，不能通过cpu缓存，这样一来get总能获得set的最新真实值，因此volatile变量适合用来存放简单的状态信息
-      while (!halted.get()) {
-          try {
-              // check if we're supposed to pause...
-              // sigLock是个Object对象，被用于加锁同步
-              // 需要用到wait()，必须加到synchronized块内
-              synchronized (sigLock) {
-                  while (paused && !halted.get()) {
-                      try {
-                          // wait until togglePause(false) is called...
-                          // 这里会不断循环等待，直到QuartzScheduler.start()调用了togglePause(false)
-                          // 调用wait()，调度器线程进入休眠状态，同时sigLock锁被释放
-                          // togglePause(false)获得sigLock锁，将paused置为false，使调度器线程能够退出此循环，同时执行sigLock.notifyAll()唤醒调度器线程
-                          sigLock.wait(1000L);
-                      } catch (InterruptedException ignore) {}
-                  }
-                  ......
-              }
-              ......
-              // 如果线程池中的工作线程个数 > 0
-              if(availThreadCount > 0) {
-                  ......
-                  // 获取马上到时间的trigger
-                  // 允许取出的trigger个数不能超过一个阀值，这个阀值是线程池个数与org.quartz.scheduler.batchTriggerAcquisitionMaxCount配置值间的最小者
-                  triggers = qsRsrcs.getJobStore().acquireNextTriggers(
-                      now + idleWaitTime, Math.min(availThreadCount, qsRsrcs.getMaxBatchSize()), qsRsrcs.getBatchTimeWindow());
-                  ......
-                  // 执行与trigger绑定的job
-                  // shell是JobRunShell对象，实现了Runnable接口
-                  // SimpleThreadPool.runInThread(Runnable)从线程池空闲列表中取出一个工作线程
-                  // 工作线程执行WorkerThread.run(Runnable)，详见下方WorkerThread的讲解
-                  if (qsRsrcs.getThreadPool().runInThread(shell) == false) { ...... }
-              } else {......}
-              ......
-          } catch(RuntimeException re) {......}
-      } // while (!halted)
-      ......
-  }
-  ```
+```java
+// 调度器线程一旦启动，将一直运行此方法
+public void run() {
+    // while()无限循环，每次循环取出时间将到的trigger，触发对应的job，直到调度器线程被关闭
+    // halted是一个AtomicBoolean类变量，有个volatile int变量value，其get()方法仅仅简单的一句return value != 0，get()返回结果表示调度器线程是否开关
+    // volatile修饰的变量，存取必须走内存，不能通过cpu缓存，这样一来get总能获得set的最新真实值，因此volatile变量适合用来存放简单的状态信息
+    while (!halted.get()) {
+        try {
+            // check if we're supposed to pause...
+            // sigLock是个Object对象，被用于加锁同步
+            // 需要用到wait()，必须加到synchronized块内
+            synchronized (sigLock) {
+                while (paused && !halted.get()) {
+                    try {
+                        // wait until togglePause(false) is called...
+                        // 这里会不断循环等待，直到QuartzScheduler.start()调用了togglePause(false)
+                        // 调用wait()，调度器线程进入休眠状态，同时sigLock锁被释放
+                        // togglePause(false)获得sigLock锁，将paused置为false，使调度器线程能够退出此循环，同时执行sigLock.notifyAll()唤醒调度器线程
+                        sigLock.wait(1000L);
+                    } catch (InterruptedException ignore) {}
+                }
+                ......
+            }
+            ......
+            // 如果线程池中的工作线程个数 > 0
+            if(availThreadCount > 0) {
+                ......
+                // 获取马上到时间的trigger
+                // 允许取出的trigger个数不能超过一个阀值，这个阀值是线程池个数与org.quartz.scheduler.batchTriggerAcquisitionMaxCount配置值间的最小者
+                triggers = qsRsrcs.getJobStore().acquireNextTriggers(
+                    now + idleWaitTime, Math.min(availThreadCount, qsRsrcs.getMaxBatchSize()), qsRsrcs.getBatchTimeWindow());
+                ......
+                // 执行与trigger绑定的job
+                // shell是JobRunShell对象，实现了Runnable接口
+                // SimpleThreadPool.runInThread(Runnable)从线程池空闲列表中取出一个工作线程
+                // 工作线程执行WorkerThread.run(Runnable)，详见下方WorkerThread的讲解
+                if (qsRsrcs.getThreadPool().runInThread(shell) == false) { ...... }
+            } else {......}
+            ......
+        } catch(RuntimeException re) {......}
+    } // while (!halted)
+    ......
+}
+```
 
 - WorkerThread
 
-  ```java
-  public void run(Runnable newRunnable) {
-      synchronized(lock) {
-          if(runnable != null) {
-              throw new IllegalStateException("Already running a Runnable!");
-          }
-  
-          runnable = newRunnable;
-          lock.notifyAll();
-      }
-  }
-  
-  // 工作线程一旦启动，将一直运行此方法
-  @Override
-  public void run() {
-      boolean ran = false;
-  
-      // 工作线程一直循环等待job，直到线程被关闭，原理同QuartzSchedulerThread.run()中的halted.get()
-      while (run.get()) {
-          try {
-             // 原理同QuartzSchedulerThread.run()中的synchronized (sigLock)
-             // 锁住lock，不断循环等待job，当job要被执行时，WorkerThread.run(Runnable)被调用，job运行环境被赋值给runnable
-              synchronized(lock) {
-                  while (runnable == null && run.get()) {
-                      lock.wait(500);
-                  }
-                  // 开始执行job
-                  if (runnable != null) {
-                      ran = true;
-                      // runnable.run()将触发运行job实现类（比如JobImpl.execute()）
-                      runnable.run();
-                  }
-              }
-          } catch (InterruptedException unblock) {
-           //......
-          }
-      }
-      //......
-  }
-  ```
+```java
+public void run(Runnable newRunnable) {
+    synchronized(lock) {
+        if(runnable != null) {
+            throw new IllegalStateException("Already running a Runnable!");
+        }
+
+        runnable = newRunnable;
+        lock.notifyAll();
+    }
+}
+
+// 工作线程一旦启动，将一直运行此方法
+@Override
+public void run() {
+    boolean ran = false;
+
+    // 工作线程一直循环等待job，直到线程被关闭，原理同QuartzSchedulerThread.run()中的halted.get()
+    while (run.get()) {
+        try {
+            // 原理同QuartzSchedulerThread.run()中的synchronized (sigLock)
+            // 锁住lock，不断循环等待job，当job要被执行时，WorkerThread.run(Runnable)被调用，job运行环境被赋值给runnable
+            synchronized(lock) {
+                while (runnable == null && run.get()) {
+                    lock.wait(500);
+                }
+                // 开始执行job
+                if (runnable != null) {
+                    ran = true;
+                    // runnable.run()将触发运行job实现类（比如JobImpl.execute()）
+                    runnable.run();
+                }
+            }
+        } catch (InterruptedException unblock) {
+        //......
+        }
+    }
+    //......
+}
+```
+
