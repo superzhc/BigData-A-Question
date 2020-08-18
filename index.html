@@ -13,9 +13,6 @@
 </head>
 
 <body>
-    <nav>
-        <a href="#/">首页</a>
-    </nav>
     <div id="app"></div>
 
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
@@ -32,6 +29,9 @@
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-sql.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-http.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-properties.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-scala.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-markdown.min.js"></script>
     <!--在Github上编辑-->
     <script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify-katex@latest/dist/docsify-katex.js"></script>
@@ -40,12 +40,13 @@
         window.$docsify = {
             name: 'Superz',
             auto2top: true,
+            loadNavbar: true,
             loadSidebar: true,
             // subMaxLevel: 3,
             noEmoji: true,
-            // alias: {
-            //     '/.*/summary.md': '/summary.md'
-            // },
+            alias: {
+                '/.*/_navbar.md': '/_navbar.md'
+            },
             repo: 'https://github.com/superzhc/BigData-A-Question.git',
             count: {
                 position: 'top',
