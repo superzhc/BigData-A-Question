@@ -19,15 +19,15 @@ HDFS 的设计目标是把超大数据集存储到分布在网络中的多台普
 
 HDFS主要由3个组件构成，分别是`NameNode`、`SecondaryNameNode`和`DataNode`，HDFS是以 `master/slave` 模式运行的，其中NameNode、SecondaryNameNode 运行在master节点，DataNode运行slave节点。
 
- [HDFS之NameNode.md](HDFS之NameNode.md) 
+ [NameNode](Hadoop/HDFS/HDFS之NameNode.md) 
 
- [HDFS之DataNode.md](HDFS之DataNode.md) 
+ [DataNode](Hadoop/HDFS/HDFS之DataNode.md) 
 
- [HDFS之SecondaryNameNode.md](HDFS之SecondaryNameNode.md) 
+ [SecondaryNameNode](Hadoop/HDFS/HDFS之SecondaryNameNode.md) 
 
 NameNode 和 DataNode 架构图
 
-<img src="../images/20150918165001520" alt="img" style="zoom:80%;" />
+![img](../images/20150918165001520)
 
 ### HDFS中的沟通协议
 

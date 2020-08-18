@@ -1,4 +1,5 @@
-参考原文：<https://www.cnblogs.com/zhangyinhua/p/7681059.html>
+> 参考原文：<https://www.cnblogs.com/zhangyinhua/p/7681059.html>
+>
 
 HDFS 的存储原理，无非就是读操作和写操作。
 
@@ -7,11 +8,10 @@ HDFS 的存储原理，无非就是读操作和写操作。
 ![img](../images/999804-20171017105649615-77202035.png)
 
 1. 客户端通过调用 FileSystem 对象的 `open()` 来读取希望打开的文件。对于 HDFS 来说，这个对象是分布式文件系统的一个实例
-
 2. DistributedFileSystem 通过 RPC 来调用 Namenode，以确定文件的开头部分的块位置。对于每一个块，Namenode 返回具有该块副本的 Datanode 的地址
 
-   - 这些 Datanode 的地址是根据它们与 Client 的距离来排序（根据网络集群的拓扑）。如果该 Client 本身就是一个 Datanode ，便从本地 Datanode 中读取
-   - DistributedFileSystem 返回一个 FSDataInputStream 对象给 Client 读取数据，FSDataInputStream 转而包装了一个 DFSInputStream 对象
+- 这些 Datanode 的地址是根据它们与 Client 的距离来排序（根据网络集群的拓扑）。如果该 Client 本身就是一个 Datanode ，便从本地 Datanode 中读取
+- DistributedFileSystem 返回一个 FSDataInputStream 对象给 Client 读取数据，FSDataInputStream 转而包装了一个 DFSInputStream 对象
 
 3. 接着 Client 对这个输入流调用 `read()` 。存储着文件开头部分的块的 Datanode 的地址 DFSInputStream 随即与这些块最近的 Datanode 相连接
 
@@ -92,14 +92,21 @@ HDFS 的存储原理，无非就是读操作和写操作。
 
 ### 读取操作
 
-　　![img](../images/999804-20171017124508115-406617425.png)
+![img](../images/999804-20171017124508115-406617425.png)
 
-　　读操作就简单一些了，如图所示，client要从datanode上，读取FileA。而FileA由block1和block2组成。 
+读操作就简单一些了，如图所示，client要从datanode上，读取FileA。而FileA由block1和block2组成。 
 
-　　那么，读操作流程为：
-　　　　1）client向namenode发送读请求。
-　　　　2）namenode查看Metadata信息，返回fileA的block的位置。
-　　　　　　block1:host2,host1,host3
-　　　　　　block2:host7,host8,host4
-　　　　3）block的位置是有先后顺序的，先读block1，再读block2。而且block1去host2上读取；然后block2，去host7上读取；
-　　上面例子中，client位于机架外，那么如果client位于机架内某个DataNode上，例如,client是host6。那么读取的时候，遵循的规律是：优选读取本机架上的数据。
+那么，读操作流程为：
+
+1. client向namenode发送读请求
+
+2. namenode查看Metadata信息，返回fileA的block的位置
+
+   ```txt
+block1:host2,host1,host3
+   block2:host7,host8,host4
+   ```
+   
+3. block的位置是有先后顺序的，先读block1，再读block2。而且block1去host2上读取；然后block2，去host7上读取；
+
+上面例子中，client位于机架外，那么如果client位于机架内某个DataNode上，例如,client是host6。那么读取的时候，遵循的规律是：优选读取本机架上的数据。

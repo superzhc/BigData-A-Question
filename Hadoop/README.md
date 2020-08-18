@@ -16,4 +16,6 @@ Hadoop 是一个由 Apache 基金会所开发的分布式系统基础框架。
 - **高容错性**：能够自动将失败的任务重新分配
 
 > Hadoop1.x和Hadoop2.x区别?
-> > Hadoop1.x 中 MapReduce 同时处理业务逻辑运算和资源的调度，耦合性较大；在 Hadoop2.x 时代，增加了 Yarn 组件，单独负责资源调度，MapReduce 也只负责运算
+>
+> Hadoop1.x 中 MapReduce 同时处理业务逻辑运算和资源的调度，耦合性较大；在 Hadoop2.x 时代，增加了 Yarn 组件，单独负责资源调度，MapReduce 也只负责运算
+
