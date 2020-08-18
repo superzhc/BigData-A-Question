@@ -44,6 +44,8 @@
 
 [注解](Java/Java基础/注解.md)
 
+[枚举](Java/Java基础/枚举.md)
+
 ### 高级使用
 
 [正则表达式](Java/Java基础/正则.md)
@@ -52,8 +54,24 @@
 
 [Stream](Java/Java基础/Stream.md)
 
+[JDBC](Java/Java基础/JDBC.md)
+
 ## Java Web
 
 [Servlet](Java/JavaWeb/Servlet2.md)
 
 [Filter、Listener、Interceptor](Java/JavaWeb/Filter、Listener、Interceptor.md)
+
+## 测试框架
+
+[junit](Java/测试框架/junit.md)
+
+[TestNG](Java/测试框架/TestNG.md)
+
+## 第三方包
+
+[log4j](Java/第三方包/log4j.md)
+
+[Lombok](Java/第三方包/Lombok.md)
+
+[Quartz](Java/第三方包/Quartz.md)

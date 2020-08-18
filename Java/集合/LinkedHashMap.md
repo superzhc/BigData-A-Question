@@ -1,0 +1,3 @@
+# LinkedHashMap
+
+HashMap和LinkedList的结合，所有元素的插入顺序存储在LinkedList中。这就是为什么迭代LinkedHashMap的条目（entry）、键和值的时候总是遵循插入的顺序。在JDK中，这是每元素消耗内存最大的集合。
