@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <div id="app"></div>
+    <div id="app">正在努力加载中...</div>
 
     <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
     <!--代码高亮-->
@@ -49,26 +49,80 @@
                 language: 'chinese',
                 isExpected: true
             },
-            plugins: [
-                EditOnGithubPlugin.create('https://github.com/superzhc/BigData-A-Question/blob/master/', null, 'Edit on Github'),
-                function (hook, vm) {
-                    // load livere
-                    hook.beforeEach(function (content) {
-                        var comment = "<div id='lv-container' data-id='city' data-uid='MTAyMC81MTMzNS8yNzgxNg=='></div>"
-                        return content + comment;
-                    });
-
-                    hook.doneEach(function () {
-                        (function (d, s) {
-                            var j, e = d.getElementsByTagName(s)[0];
-                            if (typeof LivereTower === 'function') { return; }
-                            j = d.createElement(s);
-                            j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-                            j.async = true;
-                            e.parentNode.insertBefore(j, e);
-                        })(document, 'script');
-                    });
+            footer: {
+                copy: '<span>Superz\'s Blog &copy; 2020</span>',
+                auth: 'by Superz',
+                pre: '<hr/>',
+                style: 'text-align: right;'
+            },
+            markdown: {
+                code: function (code, lang) {
+                    var renderer_func = function (code, lang, base = null) {
+                        var pdf_renderer = function (code, lang, verify) {
+                            function unique_id_generator() {
+                                function rand_gen() {
+                                    return Math.floor((Math.random() + 1) * 65536).toString(16).substring(1);
+                                }
+                                return rand_gen() + rand_gen() + '-' + rand_gen() + '-' + rand_gen() + '-' + rand_gen() + '-' + rand_gen() + rand_gen() + rand_gen();
+                            }
+                            if (lang && !lang.localeCompare('pdf', 'en', { sensitivity: 'base' })) {
+                                if (verify) {
+                                    return true;
+                                } else {
+                                    var divId = "markdown_code_pdf_container_" + unique_id_generator().toString();
+                                    var container_list = new Array();
+                                    if (localStorage.getItem('pdf_container_list')) {
+                                        container_list = JSON.parse(localStorage.getItem('pdf_container_list'));
+                                    }
+                                    container_list.push({ "pdf_location": code, "div_id": divId });
+                                    localStorage.setItem('pdf_container_list', JSON.stringify(container_list));
+                                    return (
+                                        '<div style="margin-top:' + PDF_MARGIN_TOP + '; margin-bottom:' + PDF_MARGIN_BOTTOM + ';" id="' + divId + '">'
+                                        + '<a href="' + code + '"> Link </a> to ' + code +
+                                        '</div>'
+                                    );
+                                }
+                            }
+                            return false;
+                        }
+                        if (pdf_renderer(code, lang, true)) {
+                            return pdf_renderer(code, lang, false);
+                        }
+                        /* SECTION START: Put other custom code rendering functions here
+                            i.e. If the language of the code block is LaTex, 
+                            put the code below to replace original code block with the text: 
+                            'Using LaTex is much better than handwriting!' inside a div container.
+                    
+                            if (lang == "latex") {
+                                return ('<div class="container">Using LaTex is much better than handwriting!</div>');
+                            }
+                    
+                        SECTION END */
+                        return (base ? base : this.origin.code.apply(this, arguments));
+                    }
                 }
+            },
+            plugins: [
+                EditOnGithubPlugin.create('https://github.com/superzhc/BigData-A-Question/blob/master/', null, 'Edit on Github')
+                // 来必立
+                // ,function (hook, vm) {
+                //     // load livere
+                //     hook.beforeEach(function (content) {
+                //         var comment = "<div id='lv-container' data-id='city' data-uid='MTAyMC81MTMzNS8yNzgxNg=='></div>"
+                //         return content + comment;
+                //     });
+
+                //     hook.doneEach(function () {
+                //         (function (d, s) {
+                //             var j, e = d.getElementsByTagName(s)[0];
+                //             if (typeof LivereTower === 'function') { return; }
+                //             j = d.createElement(s);
+                //             j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                //             j.async = true;
+                //             e.parentNode.insertBefore(j, e);
+                //         })(document, 'script');
+                //     });
+                // }
             ]
         }
     </script>
@@ -78,8 +132,14 @@
     <!-- <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script> -->
     <!--字数统计-->
     <script src="https://cdn.jsdelivr.net/npm/docsify-count@latest/dist/countable.min.js"></script>
+    <!--Latex-->
     <script src="//cdn.jsdelivr.net/npm/docsify-katex@latest/dist/docsify-katex.js"></script>
     <script src="//cdn.jsdelivr.net/npm/docsify-pangu/lib/pangu.min.js"></script>
+    <!--嵌入PDF文档-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js"></script>
+    <script src="//unpkg.com/docsify-pdf-embed-plugin/src/docsify-pdf-embed.js"></script>
+    <!--底部标签-->
+    <script src="//unpkg.com/docsify-footer-enh/dist/docsify-footer-enh.min.js"></script>
 </body>
 
 </html>
