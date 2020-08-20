@@ -7,6 +7,6 @@
 
 上面两种 Dump 文件都具有实时性，因此需要在服务器出现问题的时候生成，并且多生成几个文件，方便进行对比分析。
 
-[Heap Dump 使用](HeadDump\README.md) 
+[Heap Dump 使用](JVM/HeadDump/README.md)
 
-[Thread Dump 使用](ThreadDump\README.md) 
+[Thread Dump 使用](JVM/ThreadDump/README.md)

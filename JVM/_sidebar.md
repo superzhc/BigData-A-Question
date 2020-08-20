@@ -1,0 +1,18 @@
+- [首页](JVM/README.md)
+- [运行时数据区域](JVM/运行时数据区域.md)
+- [Hotspot虚拟机中的对象](JVM/Hotspot虚拟机中的对象.md)
+- [垃圾收集（GC）](JVM/垃圾收集/README.md)
+  - [判定对象是否存活](JVM/垃圾收集/判定对象是否存活.md)
+  - [垃圾收集算法](JVM/垃圾收集/垃圾收集算法.md)
+  - [垃圾收集器的类型](JVM/垃圾收集/垃圾收集器的类型.md)
+  - [垃圾收集器](JVM/垃圾收集/垃圾收集器.md)
+  - [分代收集原理](JVM/垃圾收集/分代收集原理.md)
+  - [Minor_GC和Full_GC的区别](JVM/垃圾收集/Minor_GC和Full_GC的区别.md)
+  - [GC日志](JVM/垃圾收集/GC日志.md)
+- [JVM内存分配与回收策略](JVM/JVM内存分配与回收策略.md)
+- 工具
+  - [jinfo：Java配置信息工具](JVM/工具/jinfo：Java配置信息工具.md)
+  - [jps：虚拟机进程状况工具](JVM/工具/jps：虚拟机进程状况工具.md)
+  - [jmap：Java内存映像工具](JVM/工具/jmap：Java内存映像工具.md)
+  - [jstat：虚拟机统计信息监视工具](JVM/工具/jstat：虚拟机统计信息监视工具.md)
+
