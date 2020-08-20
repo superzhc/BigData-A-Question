@@ -38,7 +38,7 @@
             loadSidebar: true,
             // subMaxLevel: 3,
             noEmoji: true,
-            disqus: 'superzblog',
+            // disqus: 'superzblog',
             alias: {
                 '/.*/_navbar.md': '/_navbar.md'
             },
@@ -141,8 +141,24 @@
     <!--嵌入PDF文档-->
     <script src="//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js"></script>
     <script src="//unpkg.com/docsify-pdf-embed-plugin/src/docsify-pdf-embed.js"></script>
+    <!--配置 gittalk 评论-->
+    <script src="//unpkg.com/docsify/lib/plugins/gitalk.min.js"></script>
+    <script src="//unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+        var gitalk = new Gitalk({
+            clientID: '90fcc15fa4f9a12bd278',
+            clientSecret: '4932ac50f86b044cb1b12391809ca397824d21b9',
+            repo: 'BigData-A-Question',
+            owner: 'superzhc',
+            admin: ['superzhc'],
+            title: '[GitTalk]' + (decodeURIComponent(location.hash.substring(2).replace('/', '-')) == '' ? '首页' : decodeURIComponent(location.hash.substring(2).replace('/', '-'))),
+            body: location.href,
+            id: location.pathname,      // Ensure uniqueness and length less than 50
+            distractionFreeMode: false  // Facebook-like distraction free mode
+        })
+    </script>
     <!--disqus评论-->
-    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/disqus.min.js"></script>
+    <!-- <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/disqus.min.js"></script> -->
     <!--底部标签-->
     <!-- <script src="//unpkg.com/docsify-footer-enh/dist/docsify-footer-enh.min.js"></script> -->
 </body>
