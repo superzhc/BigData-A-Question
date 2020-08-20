@@ -4,8 +4,6 @@
 
 JDK 要求 1.8 版本以上 
 
- [JDK安装.md](..\Other\JDK安装.md) 
-
 ### 2、安装 Zookeeper
 
 [Zookeeper的安装和部署](../Zookeeper/Zookeeper安装和部署.md)

@@ -95,7 +95,7 @@ producer.send(record, new Callback()
 
 ### 生产者的配置
 
- [Producer配置.md](Kafka配置\Producer配置.md) 
+ [Producer配置.md](Kafka/Kafka配置/Producer配置.md) 
 
 生产者有很多可配置的参数，在 Kafka 文档里都有说明，它们大部分都有合理的默认值，所以一般不需要修改它们。不过有几个参数在内存使用、性能和可靠性方面对生产者影响比较大，如下所示：
 

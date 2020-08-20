@@ -1,7 +1,5 @@
 kafka安装目录下的bin目录包含了很多运维可操作的shell脚本，列举如下：
 
-
-
 | 脚本名称                            | 用途描述                                      |
 | ----------------------------------- | --------------------------------------------- |
 | connect-distributed.sh              | 连接kafka集群模式                             |
@@ -38,23 +36,23 @@ kafka安装目录下的bin目录包含了很多运维可操作的shell脚本，�
 
 ### `kafka-server-start.sh`
 
- [Kafka工具kafka-server-start.md](./Kafka工具/Kafka工具kafka-server-start.md) 
+ [kafka-server-start](Kafka/Kafka工具/Kafka工具kafka-server-start.md) 
 
 ### `kafka-topics.sh`
 
- [Kafka工具kafka-topics.md](./Kafka工具/Kafka工具kafka-topics.md) 
+ [kafka-topics](Kafka/Kafka工具/Kafka工具kafka-topics.md) 
 
 ### `kafka-console-producer.sh`
 
- [Kafka工具kafka-console-producer.md](./Kafka工具/Kafka工具kafka-console-producer.md) 
+ [kafka-console-producer](Kafka/Kafka工具/Kafka工具kafka-console-producer.md) 
 
 ### `kafka-console-consumer.sh`
 
- [Kafka工具kafka-console-consumer.md](./Kafka工具/Kafka工具kafka-console-consumer.md) 
+ [kafka-console-consumer](Kafka/Kafka工具/Kafka工具kafka-console-consumer.md) 
 
 ### `kafka-configs.sh`
 
- [Kafka工具kafka-configs.md](./Kafka工具/Kafka工具kafka-configs.md) 
+ [kafka-configs](Kafka/Kafka工具/Kafka工具kafka-configs.md) 
 
 ### `kafka-consumer-groups.sh`
 

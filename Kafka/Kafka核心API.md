@@ -6,26 +6,26 @@ Apache Kafka 引入一个新的 Java 客户端（在 `org.apache.kafka.clients` 
 
 作用：允许应用程序发送数据流到 Kafka 集群中的 topic
 
- [API-Producer.md](Kafka-API-Java\API-Producer.md) 
+ [Producer](Kafka/Kafka-API-Java/API-Producer.md) 
 
 #### Consumer API
 
 作用：允许应用程序从 Kafka 集群的 topic 中读取数据流
 
- [API-Consumer.md](Kafka-API-Java\API-Consumer.md) 
+ [Consumer](Kafka/Kafka-API-Java/API-Consumer.md) 
 
 #### Streams API
 
 作用：允许从输入 topic 转换数据流到输出 topic
 
- [API-Streams.md](Kafka-API-Java\API-Streams.md) 
+ [Streams](Kafka/Kafka-API-Java/API-Streams.md) 
 
 #### Connect API
 
 作用：通过实现连接器（connecter），不断地从一些源系统或应用程序中拉取数据到 Kafka，或从 Kafka 提交数据到宿系统（sink system）或应用程序。
 
- [API-Connect.md](Kafka-API-Java\API-Connect.md) 
+ [Connect](Kafka/Kafka-API-Java/API-Connect.md) 
 
 #### AdminClient
 
- [API-AdminClient.md](Kafka-API-Java\API-AdminClient.md) 
+ [AdminClient](Kafka/Kafka-API-Java/API-AdminClient.md) 
