@@ -70,7 +70,7 @@ Elasticsearch 在速度和可扩展性方面都表现出色，而且还能够索
 
 ## 配置参数
 
-[Elasticsearch配置参数](./Elasticsearch配置参数.md)
+[Elasticsearch配置参数](ElasticSearch/Elasticsearch配置参数.md)
 
 ## 搜索
 
@@ -109,18 +109,18 @@ Elasticsearch 提供的通过 JSON 进行查询的 DSL 被称作 **Query DSL**�
 
 该模块使用查询 DSL 和过滤器 DSL 来配置，如下所示：
 
-- [match_all](./Elasticsearch搜索-match_all.md)
-- [term/terms](./Elasticsearch搜索-term-terms.md)
-- [match](./Elasticsearch搜索-match.md)
-- [multi_match](./Elasticsearch搜索-multi_match.md)
-- [query_string](./Elasticsearch搜索-query_string.md)
-- [simple_query_string](./Elasticsearch搜索-simple_query_string.md)
+- [match_all](ElasticSearch/Elasticsearch搜索-match_all.md)
+- [term/terms](ElasticSearch/Elasticsearch搜索-term-terms.md)
+- [match](ElasticSearch/Elasticsearch搜索-match.md)
+- [multi_match](ElasticSearch/Elasticsearch搜索-multi_match.md)
+- [query_string](ElasticSearch/Elasticsearch搜索-query_string.md)
+- [simple_query_string](ElasticSearch/Elasticsearch搜索-simple_query_string.md)
 - 模糊查询
-  - [wildcard](./Elasticsearch搜索-wildcard.md)
-  - [regexp](./Elasticsearch搜索-regexp.md)
-  - [fuzzy](./Elasticsearch搜索-fuzzy.md)
-- [range](./Elasticsearch搜索-range.md)
-- [bool](./Elasticsearch搜索-bool.md)
+  - [wildcard](ElasticSearch/Elasticsearch搜索-wildcard.md)
+  - [regexp](ElasticSearch/Elasticsearch搜索-regexp.md)
+  - [fuzzy](ElasticSearch/Elasticsearch搜索-fuzzy.md)
+- [range](ElasticSearch/Elasticsearch搜索-range.md)
+- [bool](ElasticSearch/Elasticsearch搜索-bool.md)
 
 #### size
 
@@ -146,4 +146,4 @@ Elasticsearch 提供的通过 JSON 进行查询的 DSL 被称作 **Query DSL**�
 
 #### 响应结果
 
-[响应结果说明](./Elasticsearch搜索-响应结果.md) 
+[响应结果说明](ElasticSearch/Elasticsearch搜索-响应结果.md) 
