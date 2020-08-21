@@ -1,2 +1,7 @@
 - [首页](/)
+- 速查手册
+  - [HiveQL](Hive/HiveQL.md)
+  - [Hive内置函数](Hive/Hive内置函数.md)
+  -  [HBase Shell](HBase/HBase_Shell命令.md)
+  -  [Spark SQL 内置函数](Spark/SparkSQL/函数.md)
 - [问题](https://github.com/superzhc/BigData-A-Question/issues/new)
