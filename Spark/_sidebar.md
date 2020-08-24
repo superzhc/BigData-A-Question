@@ -18,6 +18,7 @@
   - [DataSet](Spark/SparkSQL/DataSet.md)
   - [DataFrame](Spark/SparkSQL/DataFrame.md)
   - [DataFrame操作](Spark/SparkSQL/DataFrame操作.md)
+  -  [内置函数](Spark/SparkSQL/函数.md)
   -  [RDD、DataFrame、DataSet相互转换](Spark/SparkSQL/RDD、DataFrame、DataSet相互转换.md)
   -  [多种数据源](Spark/SparkSQL/spark-sql支持的多种数据源.md)
 - [Spark Streaming](Spark/SparkStreaming/README.md)

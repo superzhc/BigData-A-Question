@@ -50,3 +50,4 @@ peopleDF.createOrReplaceTempView("people")
 val result=sparkSession.sql("select name,age from people")
 result.show()
 ```
+
