@@ -10,6 +10,8 @@
   - [Minor_GC和Full_GC的区别](JVM/垃圾收集/Minor_GC和Full_GC的区别.md)
   - [GC日志](JVM/垃圾收集/GC日志.md)
 - [JVM内存分配与回收策略](JVM/JVM内存分配与回收策略.md)
+- [虚拟机类加载机制](JVM/虚拟机类加载机制.md)
+- [类加载器](JVM/类加载器.md)
 - 工具
   - [jinfo：Java配置信息工具](JVM/工具/jinfo：Java配置信息工具.md)
   - [jps：虚拟机进程状况工具](JVM/工具/jps：虚拟机进程状况工具.md)
