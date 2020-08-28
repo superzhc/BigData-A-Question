@@ -4,8 +4,6 @@
 - [多线程](Java/多线程/README.md)
 - [JVM](JVM/README.md)
 - [MySQL](数据库/README.md)
-- [数据结构](数据结构与算法/README.md)
-- [大数据理论](大数据/README.md)
 - [Hadoop](Hadoop/README.md)
 - [YARN](Hadoop/YARN/README.md)
 - [Hive](Hive/README.md)
