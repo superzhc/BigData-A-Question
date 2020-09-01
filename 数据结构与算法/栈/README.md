@@ -8,11 +8,11 @@
 
 栈的插入操作，叫做进栈，也称压栈、入栈。
 
-![image-20200329233803181](D:\superz\BigData-A-Question\数据结构与算法\栈\images\image-20200329233803181.png)
+![image-20200329233803181](images/image-20200329233803181.png)
 
 栈的删除操作，叫做出栈，也有叫做弹栈。
 
-![image-20200329233918243](D:\superz\BigData-A-Question\数据结构与算法\栈\images\image-20200329233918243.png)
+![image-20200329233918243](images/image-20200329233918243.png)
 
 **栈的应用**
 
