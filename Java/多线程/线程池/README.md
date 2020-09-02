@@ -47,7 +47,7 @@ ThreadPoolExecutor继承了AbstractExecutorService类，并提供了四个构造
     - SynchronousQueue
 - threadFactory：线程工厂，主要用来创建线程
 - headler：表示当拒绝处理任务时的策略，有以下四种取值：
-    - ThreadPoolExecutor.AbortPolicy:丢弃任务并抛出RejectedExecutionException异常。
+    - ThreadPoolExecutor.AbortPolicy：丢弃任务并抛出RejectedExecutionException异常。
     - ThreadPoolExecutor.DiscardPolicy：也是丢弃任务，但是不抛出异常。
     - ThreadPoolExecutor.DiscardOldestPolicy：丢弃队列最前面的任务，然后重新尝试执行任务（重复此过程）
     - ThreadPoolExecutor.CallerRunsPolicy：由调用线程处理该任务
@@ -95,7 +95,7 @@ runState表示当前线程池的状态，它是一个`volatile`变量用来保�
 
 当创建线程池后，初始时，线程池处于`RUNNING`状态；如果调用了`shutdown()`方法后，则线程池处于`SHUTDOWN`状态，此时线程池不能够接受新的任务，它会等待所有的任务执行完毕；如果调用了`shutdownNow()`方法，则线程处于`STOP`状态，此时线程池不能接受新的任务，并且会去尝试终止正在执行的任务；当线程处于`SHUTDOWN`或`STOP`状态，并且所有工作线程已经销毁，任务缓存队列已经清空或执行结束后，线程池被设置为`TERMINATED`状态
 
-### 任务的执行[TODO]
+### 任务的执行
 
 在ThreadPoolExecutor类中，最核心的任务提交方法是`execute()`方法，虽然通过submit也可以提交任务，但是实际上submit方法里面最终调用的还是`execute()`方法，`execute()`的实现原理如下：
 
@@ -120,8 +120,8 @@ public void execute(Runnable command) {
 
 在实际中如果需要线程池创建之后立即创建线程，可以通过以下两个方法办到：
 
-- prestartCoreThread()：初始化一个核心线程；
-- prestartAllCoreThreads()：初始化所有核心线程
+- `prestartCoreThread()`：初始化一个核心线程；
+- `prestartAllCoreThreads()`：初始化所有核心线程
 
 ### 任务缓存队列及排队策略
 
