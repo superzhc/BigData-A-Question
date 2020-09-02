@@ -43,7 +43,7 @@ public class KafkaProducerDemo
         Properties properties = new Properties();
 
         /*设置集群kafka的ip地址和端口号，可以只写集群中的任一一个broker，会自动寻找其他的broker*/
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.184.42:9092");
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         /*对key进行序列化*/
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.IntegerSerializer");
@@ -85,7 +85,7 @@ public class KafkaConsumerDemo
     public static void main(String[] args) {
         Properties props = new Properties();
         /*设置集群kafka的ip地址和端口号*/
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.186.142:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:9092");
         /*设置消费者的group.id*/
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "KafkaConsumerDemo1");
         /*消费信息以后自动提交*/
