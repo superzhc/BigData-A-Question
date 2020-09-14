@@ -96,7 +96,7 @@ try{
 
 ### 消费者的配置
 
- [Consumer配置.md](Kafka配置\Consumer配置.md) 
+[Consumer配置](Kafka/Kafka配置/Consumer配置.md) 
 
 Kafka 的文档列出了所有与消费者相关的配置说明，大部分参数都有合理的默认值，一般不需要修改它们，不过有些参数与消费者的性能和可用性有很大的关系，如下所示：
 

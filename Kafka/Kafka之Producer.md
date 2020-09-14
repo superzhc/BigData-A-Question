@@ -8,7 +8,7 @@
 
 Producer API 发送消息的主要步骤：
 
-<img src="../images/20180620144841633.dib" alt="img" style="zoom: 80%;" />
+![image-20200908145336493](images/image-20200908145336493.png)
 
 1. 首先创建一个 ProducerRecord 对象，ProducerRecord 对象需要包含目标主题和要发送的内容，还可以指定键和分区。在发送 ProducerRecord 对象时，生产者要先把键和值对象序列化成字节数组，这样才能够在网络上传输
 2. 接下来，数据被传给分区器。如果之前在 ProducerRecord 对象里指定了分区，那么分区器就不会再做任何事情，直接把指定的分区返回。如果没有指定分区，那么分区器会根据 ProducerRecord 对象的键来选择一个分区。选好分区后，生产者就知道该往哪个主题和分区发送这条记录了。紧接着，这条记录被添加到一个记录批次里，这个批次里的所有消息会被发送到相同的主题和分区上。有一个独立的线程负责把这些记录批次发送到相应的 broker 上
@@ -95,7 +95,7 @@ producer.send(record, new Callback()
 
 ### 生产者的配置
 
- [Producer配置.md](Kafka/Kafka配置/Producer配置.md) 
+[Producer配置](Kafka/Kafka配置/Producer配置.md) 
 
 生产者有很多可配置的参数，在 Kafka 文档里都有说明，它们大部分都有合理的默认值，所以一般不需要修改它们。不过有几个参数在内存使用、性能和可靠性方面对生产者影响比较大，如下所示：
 
