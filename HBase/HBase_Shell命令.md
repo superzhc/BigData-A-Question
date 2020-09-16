@@ -19,7 +19,7 @@ exit
 
 **（1）查看 hbase 中有哪些命令**
 
-![1560821399331](../images/1560821399331.png)
+![1560821399331](https://raw.githubusercontent.com/superzhc/GraphBed/master/publish/1560821399331.png)
 
 **（2）查看某一组命令下的所有命令的简介和简单示例**
 
