@@ -5,52 +5,52 @@ tags: [web,spring]
 ---
 # Spring MVC
 
-## 基础
+## 简介
 
-Spring Web MVC是一种基于Java的实现了Web MVC设计模式的请求驱动类型的轻量级Web框架，即使用了MVC架构模式的思想，将web层进行职责解耦，基于请求驱动指的就是使用请求-响应模型，框架的目的就是帮助我们简化开发，Spring Web MVC也是要简化我们日常Web开发的。
+Spring Web MVC 是一种基于 Java 的实现了 Web MVC 设计模式的请求驱动类型的轻量级 Web 框架，即使用了 MVC 架构模式的思想，将 Web 层进行职责解耦，基于请求驱动指的就是使用请求-响应模型，框架的目的就是帮助用户简化开发，Spring Web MVC 也是要简化用户日常 Web 开发的。
 
-Spring Web MVC也是服务到工作者模式的实现，但进行可优化。前端控制器是DispatcherServlet；应用控制器其实拆为处理器映射器(Handler Mapping)进行处理器管理和视图解析器(View Resolver)进行视图管理；页面控制器/动作/处理器为Controller接口（仅包含ModelAndView handleRequest(request, response) 方法）的实现（也可以是任何的POJO类）；支持本地化（Locale）解析、主题（Theme）解析及文件上传等；提供了非常灵活的数据验证、格式化和数据绑定机制；提供了强大的约定大于配置（惯例优先原则）的契约式编程支持。
+Spring Web MVC 也是服务到工作者模式的实现，但进行可优化。前端控制器是 DispatcherServlet；应用控制器其实拆为处理器映射器(Handler Mapping)进行处理器管理和视图解析器(View Resolver)进行视图管理；~~页面控制器/动作/处理器为 Controller 接口（仅包含 `ModelAndView handleRequest(request, response)` 方法）的实现（也可以是任何的POJO类）~~；支持本地化（Locale）解析、主题（Theme）解析及文件上传等；提供了非常灵活的数据验证、格式化和数据绑定机制；提供了强大的约定大于配置（惯例优先原则）的契约式编程支持。
 
-### Spring Web MVC核心架构图
+## Spring Web MVC核心架构图
 
 ![](../images/springmvc.jpg)
 
 核心架构的具体流程步骤如下：
 
-1. 首先用户发送请求——>DispatcherServlet，前端控制器收到请求后自己不进行处理，而是委托给其他的解析器进行处理，作为统一访问点，进行全局的流程控制；
-2. DispatcherServlet——>HandlerMapping， HandlerMapping将会把请求映射为HandlerExecutionChain对象（包含一个Handler处理器（页面控制器）对象、多个HandlerInterceptor拦截器）对象，通过这种策略模式，很容易添加新的映射策略；
-3. DispatcherServlet——>HandlerAdapter，HandlerAdapter将会把处理器包装为适配器，从而支持多种类型的处理器，即适配器设计模式的应用，从而很容易支持很多类型的处理器；
-4. HandlerAdapter——>处理器功能处理方法的调用，HandlerAdapter将会根据适配的结果调用真正的处理器的功能处理方法，完成功能处理；并返回一个ModelAndView对象（包含模型数据、逻辑视图名）；
-5. ModelAndView的逻辑视图名——> ViewResolver， ViewResolver将把逻辑视图名解析为具体的View，通过这种策略模式，很容易更换其他视图技术；
-6. View——>渲染，View会根据传进来的Model模型数据进行渲染，此处的Model实际是一个Map数据结构，因此很容易支持其他视图技术；
-7. 返回控制权给DispatcherServlet，由DispatcherServlet返回响应给用户，到此一个流程结束。
+1. 首先*用户发送请求 Request——>DispatcherServlet*，前端控制器收到请求后自己不进行处理，而是委托给其他的解析器进行处理，作为统一访问点，进行全局的流程控制；
+2. *DispatcherServlet——>HandlerMapping* ， HandlerMapping 将会把请求映射为 HandlerExecutionChain 对象（包含一个 Handler 处理器（页面控制器）对象、多个 HandlerInterceptor 拦截器）对象，通过这种策略模式，很容易添加新的映射策略；
+3. *DispatcherServlet——>HandlerAdapter* ， HandlerAdapter 将会把处理器包装为适配器，从而支持多种类型的处理器，即适配器设计模式的应用，从而很容易支持很多类型的处理器；
+4. *HandlerAdapter——>处理器功能处理方法的调用*， HandlerAdapter 将会根据适配的结果调用真正的处理器的功能处理方法，完成功能处理；并返回一个 ModelAndView 对象（包含模型数据、逻辑视图名）；
+5. *ModelAndView的逻辑视图名——> ViewResolver* ， ViewResolver 将把逻辑视图名解析为具体的 View，通过这种策略模式，很容易更换其他视图技术；
+6. *View——>渲染*， View 会根据传进来的 Model 模型数据进行渲染，此处的 Model 实际是一个 Map 数据结构，因此很容易支持其他视图技术；
+7. 返回控制权给 DispatcherServlet，由 DispatcherServlet 返回响应给用户，到此一个流程结束。
 
 具体的核心开发步骤：
 
-1. DispatcherServlet在web.xml中的部署描述，从而拦截请求到Spring Web MVC
-2. HandlerMapping的配置，从而将请求映射到处理器
-3. HandlerAdapter的配置，从而支持多种类型的处理器
-4. ViewResolver的配置，从而将逻辑视图名解析为具体视图技术
+1. DispatcherServlet 在 `web.xml` 中的部署描述，从而拦截请求到 Spring Web MVC
+2. HandlerMapping 的配置，从而将请求映射到处理器
+3. HandlerAdapter 的配置，从而支持多种类型的处理器
+4. ViewResolver 的配置，从而将逻辑视图名解析为具体视图技术
 5. 处理器（页面控制器）的配置，从而进行功能处理
 
-### Spring Web MVC优势
+## Spring Web MVC优势
 
-1. 清晰的角色划分：前端控制器（DispatcherServlet）、请求到处理器映射（HandlerMapping）、处理器适配器（HandlerAdapter）、视图解析器（ViewResolver）、处理器或页面控制器（Controller）、验证器（   Validator）、命令对象（Command  请求参数绑定到的对象就叫命令对象）、表单对象（Form Object 提供给表单展示和提交到的对象就叫表单对象）。
+1. 清晰的角色划分：前端控制器（DispatcherServlet）、请求到处理器映射（HandlerMapping）、处理器适配器（HandlerAdapter）、视图解析器（ViewResolver）、处理器或页面控制器（Controller）、验证器（Validator）、命令对象（Command  请求参数绑定到的对象就叫命令对象）、表单对象（Form Object 提供给表单展示和提交到的对象就叫表单对象）；
 2. 分工明确，而且扩展点相当灵活，可以很容易扩展，虽然几乎不需要；
-3. 由于命令对象就是一个POJO，无需继承框架特定API，可以使用命令对象直接作为业务对象；
-4. 和Spring 其他框架无缝集成，是其它Web框架所不具备的；
-5. 可适配，通过HandlerAdapter可以支持任意的类作为处理器；
-6. 可定制性，HandlerMapping、ViewResolver等能够非常简单的定制；
+3. 由于命令对象就是一个 POJO ，无需继承框架特定 API，可以使用命令对象直接作为业务对象；
+4. 和 Spring 其他框架无缝集成，是其它 Web 框架所不具备的；
+5. 可适配，通过 HandlerAdapter 可以支持任意的类作为处理器；
+6. 可定制性，HandlerMapping 、 ViewResolver 等能够非常简单的定制；
 7. 功能强大的数据验证、格式化、绑定机制；
-8. 利用Spring提供的Mock对象能够非常简单的进行Web层单元测试；
+8. 利用 Spring 提供的 Mock 对象能够非常简单的进行 Web 层单元测试；
 9. 本地化、主题的解析的支持，使我们更容易进行国际化和主题的切换。
-10. 强大的JSP标签库，使JSP编写更容易。
+10. 强大的 JSP 标签库，使 JSP 编写更容易。
 
-### 实际开发流程步骤
+## ~~实际开发流程步骤~~【老版本的使用方式，废弃】
 
-#### 前端控制器的配置
+### 前端控制器的配置
 
-在web.xml添加配置
+在 `web.xml` 添加配置
 
 ```xml
 <servlet>
@@ -64,11 +64,11 @@ Spring Web MVC也是服务到工作者模式的实现，但进行可优化。前
 </servlet-mapping>
 ```
 
-load-on-startup：表示启动容器时初始化该Servlet；
+load-on-startup：表示启动容器时初始化该 Servlet；
 
-url-pattern：表示哪些请求交给Spring Web MVC处理， “/” 是用来定义默认servlet映射的。也可以如“*.html”表示拦截所有以html为扩展名的请求。
+url-pattern：表示哪些请求交给 Spring Web MVC 处理， `/` 是用来定义默认 servlet 映射的，也可以如 `*.html` 表示拦截所有以 html 为扩展名的请求。
 
-#### 在Spring配置文件中配置HandlerMapping、HandlerAdapter
+### 在 Spring 配置文件中配置 HandlerMapping 、 HandlerAdapter
 
 ```xml
 <!-- HandlerMapping -->
@@ -78,11 +78,11 @@ url-pattern：表示哪些请求交给Spring Web MVC处理， “/” 是用来�
 <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/> 
 ```
 
-BeanNameUrlHandlerMapping：表示将请求的URL和Bean名字映射，如URL为 “上下文/hello”，则Spring配置文件必须有一个名字为“/hello”的Bean，上下文默认忽略。
+BeanNameUrlHandlerMapping：表示将请求的 URL 和 Bean 名字映射，如 URL 为 `上下文/hello`，则 Spring 配置文件必须有一个名字为 `/hello` 的Bean，上下文默认忽略。
 
-SimpleControllerHandlerAdapter：表示所有实现了org.springframework.web.servlet.mvc.Controller接口的Bean可以作为Spring Web MVC中的处理器。如果需要其他类型的处理器可以通过实现HadlerAdapter来解决。
+SimpleControllerHandlerAdapter：表示所有实现了 `org.springframework.web.servlet.mvc.Controller` 接口的 Bean 可以作为 Spring Web MVC 中的处理器。如果需要其他类型的处理器可以通过实现 HadlerAdapter 来解决。
 
-#### 在Spring配置文件中配置ViewResolver
+### 在 Spring 配置文件中配置 ViewResolver
 
 ```xml
 <!-- ViewResolver -->
@@ -93,17 +93,17 @@ SimpleControllerHandlerAdapter：表示所有实现了org.springframework.web.se
 </bean>
 ```
 
-- InternalResourceViewResolver：用于支持Servlet、JSP视图解析；
-- viewClass：JstlView表示JSP模板页面需要使用JSTL标签库，classpath中必须包含jstl的相关jar包；
-- prefix和suffix：查找视图页面的前缀和后缀（前缀[逻辑视图名]后缀），比如传进来的逻辑视图名为hello，则该该jsp视图页面应该存放在“WEB-INF/jsp/hello.jsp”。
+- InternalResourceViewResolver：用于支持 Servlet、JSP 视图解析；
+- viewClass：JstlView 表示 JSP 模板页面需要使用 JSTL 标签库，classpath 中必须包含 jstl 的相关 jar 包；
+- prefix 和 suffix：查找视图页面的前缀和后缀（前缀[逻辑视图名]后缀），比如传进来的逻辑视图名为 hello，则该该 jsp 视图页面应该存放在 `WEB-INF/jsp/hello.jsp`。
 
-#### 开发处理器/页面控制器
+### 开发处理器/页面控制器
 
-#### 开发视图页面
+### 开发视图页面
 
 ### POST中文乱码解决方案
 
-spring Web MVC框架提供了org.springframework.web.filter.CharacterEncodingFilter用于解决POST方式造成的中文乱码问题，具体配置如下：
+spring Web MVC 框架提供了 `org.springframework.web.filter.CharacterEncodingFilter` 用于解决 POST 方式造成的中文乱码问题，具体配置如下：
 
 ```xml
 <filter>
@@ -120,77 +120,77 @@ spring Web MVC框架提供了org.springframework.web.filter.CharacterEncodingFil
 </filter-mapping>
 ```
 
-### Spring3.1新特性
+## Spring3.1新特性【新版本使用的介绍，见如下来使用 SpringMVC】
 
-1. Spring2.5之前，我们都是通过实现Controller接口或其实现来定义我们的处理器类。
-2. Spring2.5引入注解式处理器支持，通过@Controller 和 @RequestMapping注解定义我们的处理器类。
-    需要通过处理器映射DefaultAnnotationHandlerMapping和处理器适配器AnnotationMethodHandlerAdapter来开启支持@Controller 和 @RequestMapping注解的处理器。
-    - @Controller：用于标识是处理器类；
-    - @RequestMapping：请求到处理器功能方法的映射规则；
-    - @RequestParam：请求参数到处理器功能处理方法的方法参数上的绑定；
-    - @ModelAttribute：请求参数到命令对象的绑定；
-    - @SessionAttributes：用于声明session级别存储的属性，放置在处理器类上，通常列出模型属性（如@ModelAttribute）对应的名称，则这些属性会透明的保存到session中；
-    - @InitBinder：自定义数据绑定注册支持，用于将请求参数转换到命令对象属性的对应类型；
-3. Spring3.0引入RESTful架构风格支持(通过@PathVariable注解和一些其他特性支持),且又引入了更多的注解支持：
-    - @CookieValue：cookie数据到处理器功能处理方法的方法参数上的绑定；
-    - @RequestHeader：请求头（header）数据到处理器功能处理方法的方法参数上的绑定；
-    - @RequestBody：请求的body体的绑定（通过HttpMessageConverter进行类型转换）；
-    - @ResponseBody：处理器功能处理方法的返回值作为响应体（通过HttpMessageConverter进行类型转换）；
-    - @ResponseStatus：定义处理器功能处理方法/异常处理器返回的状态码和原因；
-    - @ExceptionHandler：注解式声明异常处理器；
-    - @PathVariable：请求URI中的模板变量部分到处理器功能处理方法的方法参数上的绑定，从而支持RESTful架构风格的URI；
-4. JSR-303验证框架的无缝支持（通过@Valid注解定义验证元数据）；
-5. 使用Spring 3开始的ConversionService进行类型转换（PropertyEditor依然有效），支持使用@NumberFormat 和 @DateTimeFormat来进行数字和日期的格式化；HttpMessageConverter（Http输入/输出转换器，比如JSON、XML等的数据输出转换器）;ContentNegotiatingViewResolver，内容协商视图解析器，它还是视图解析器，只是它支持根据请求信息将同一模型数据以不同的视图方式展示（如json、xml、html等），RESTful架构风格中很重要的概念（同一资源，多种表现形式）；
+1. Spring2.5 之前是通过实现 Controller 接口或其实现来定义用户的处理器类。
+2. Spring2.5 引入注解式处理器支持，通过 `@Controller` 和 `@RequestMapping` 注解定义处理器类。
+    需要通过处理器映射 `DefaultAnnotationHandlerMapping` 和处理器适配器 `AnnotationMethodHandlerAdapter` 来开启支持 `@Controller` 和 `@RequestMapping` 注解的处理器。
+    - `@Controller`：用于标识是处理器类；
+    - `@RequestMapping`：请求到处理器功能方法的映射规则；
+    - `@RequestParam`：请求参数到处理器功能处理方法的方法参数上的绑定；
+    - `@ModelAttribute`：请求参数到命令对象的绑定；
+    - `@SessionAttributes`：用于声明 session 级别存储的属性，放置在处理器类上，通常列出模型属性（如 `@ModelAttribute`）对应的名称，则这些属性会透明的保存到 session 中；
+    - `@InitBinder`：自定义数据绑定注册支持，用于将请求参数转换到命令对象属性的对应类型；
+3. Spring3.0 引入 RESTful 架构风格支持(通过 `@PathVariable` 注解和一些其他特性支持),且又引入了更多的注解支持：
+    - `@CookieValue`：cookie 数据到处理器功能处理方法的方法参数上的绑定；
+    - `@RequestHeader`：请求头（header）数据到处理器功能处理方法的方法参数上的绑定；
+    - `@RequestBody`：请求的 body 体的绑定（通过 HttpMessageConverter 进行类型转换）；
+    - `@ResponseBody`：处理器功能处理方法的返回值作为响应体（通过 HttpMessageConverter 进行类型转换）；
+    - `@ResponseStatus`：定义处理器功能处理方法/异常处理器返回的状态码和原因；
+    - `@ExceptionHandler`：注解式声明异常处理器；
+    - `@PathVariable`：请求 URI 中的模板变量部分到处理器功能处理方法的方法参数上的绑定，从而支持 RESTful 架构风格的 URI；
+4. JSR-303 验证框架的无缝支持（通过 `@Valid` 注解定义验证元数据）；
+5. 使用 Spring 3 开始的 ConversionService 进行类型转换（PropertyEditor依然有效），支持使用 `@NumberFormat` 和 `@DateTimeFormat` 来进行数字和日期的格式化；HttpMessageConverter（Http输入/输出转换器，比如JSON、XML等的数据输出转换器）;ContentNegotiatingViewResolver，内容协商视图解析器，它还是视图解析器，只是它支持根据请求信息将同一模型数据以不同的视图方式展示（如json、xml、html等），RESTful架构风格中很重要的概念（同一资源，多种表现形式）；
 6. Spring 3 引入 一个  mvc XML的命名空间用于支持mvc配置，包括如：
     - `<mvc:annotation-driven>`：
-        - 自动注册基于注解风格的处理器需要的DefaultAnnotationHandlerMapping、AnnotationMethodHandlerAdapter
-        - 支持Spring3的ConversionService自动注册
-        - 支持JSR-303验证框架的自动探测并注册（只需把JSR-303实现放置到classpath）
-        - 自动注册相应的HttpMessageConverter（用于支持@RequestBody  和 @ResponseBody）（如XML输入输出转换器（只需将JAXP实现放置到classpath）、JSON输入输出转换器（只需将Jackson实现放置到classpath））等。
+        - 自动注册基于注解风格的处理器需要的 DefaultAnnotationHandlerMapping、AnnotationMethodHandlerAdapter
+        - 支持 Spring3 的 ConversionService 自动注册
+        - 支持 JSR-303 验证框架的自动探测并注册（只需把 JSR-303 实现放置到 classpath）
+        - 自动注册相应的 HttpMessageConverter（用于支持 `@RequestBody`  和 `@ResponseBody`）（如XML输入输出转换器（只需将 JAXP 实现放置到 classpath）、JSON 输入输出转换器（只需将 Jackson 实现放置到 classpath））等。
     - `<mvc:interceptors>`：注册自定义的处理器拦截器；
-    - `<mvc:view-controller>`：和ParameterizableViewController类似，收到相应请求后直接选择相应的视图；
+    - `<mvc:view-controller>`：和 ParameterizableViewController 类似，收到相应请求后直接选择相应的视图；
     - `<mvc:resources>`：逻辑静态资源路径到物理静态资源路径的支持；
-    - `<mvc:default-servlet-handler>`：当在web.xml 中DispatcherServlet使用<url-pattern>/</url-pattern> 映射时，能映射静态资源（当Spring Web MVC框架没有处理请求对应的控制器时（如一些静态资源），转交给默认的Servlet来响应静态文件，否则报404找不到资源错误）。
-7. Spring3.1新特性：对Servlet 3.0的全面支持。
-    - @EnableWebMvc：用于在基于Java类定义Bean配置中开启MVC支持，和XML中的<mvc:annotation-driven>功能一样；
-    - @RequestMapping的"consumes" 和 "produces" 条件支持：用于支持@RequestBody 和 @ResponseBody；consumes指定请求的内容是什么类型的内容，即本处理方法消费什么类型的数据，如consumes="application/json"表示JSON类型的内容，Spring会根据相应的HttpMessageConverter进行请求内容区数据到@RequestBody注解的命令对象的转换；produces指定生产什么类型的内容，如produces="application/json"表示JSON类型的内容，Spring的根据相应的HttpMessageConverter进行请求内容区数据到@RequestBody注解的命令对象的转换，Spring会根据相应的HttpMessageConverter进行模型数据（返回值）到JSON响应内容的转换。
-    - URI模板变量增强：URI模板变量可以直接绑定到@ModelAttribute指定的命令对象、@PathVariable方法参数在视图渲染之前被合并到模型数据中（除JSON序列化、XML混搭场景下）。
-    - @Validated：JSR-303的javax.validation.Valid一种变体（非JSR-303规范定义的，而是Spring自定义的），用于提供对Spring的验证器（org.springframework.validation.Validator）支持，需要Hibernate Validator 4.2及更高版本支持；
-    - @RequestPart：提供对“multipart/form-data”请求的全面支持，支持Servlet 3.0文件上传（javax.servlet.http.Part）、支持内容的HttpMessageConverter（即根据请求头的Content-Type，来判断内容区数据是什么类型，如JSON、XML，能自动转换为命令对象），比@RequestParam更强大（只能对请求参数数据绑定，key-alue格式），而@RequestPart支持如JSON、XML内容区数据的绑定；
-    - Flash 属性 和 RedirectAttribute：通过FlashMap存储一个请求的输出，当进入另一个请求时作为该请求的输入，典型场景如重定向（POST-REDIRECT-GET模式，1、POST时将下一次需要的数据放在FlashMap；2、重定向；3、通过GET访问重定向的地址，此时FlashMap会把1放到FlashMap的数据取出放到请求中，并从FlashMap中删除；从而支持在两次请求之间保存数据并防止了重复表单提交）。Spring Web MVC提供FlashMapManager用于管理FlashMap，默认使用SessionFlashMapManager，即数据默认存储在session中。
+    - `<mvc:default-servlet-handler>`：当在 `web.xml` 中 DispatcherServlet 使用 `<url-pattern>/</url-pattern>` 映射时，能映射静态资源（当 Spring Web MVC 框架没有处理请求对应的控制器时（如一些静态资源），转交给默认的Servlet来响应静态文件，否则报404找不到资源错误）。
+7. Spring3.1 新特性：对 Servlet 3.0 的全面支持。
+    - `@EnableWebMvc`：用于在基于 Java 类定义 Bean 配置中开启 MVC 支持，和XML中的 `<mvc:annotation-driven>` 功能一样；
+    - `@RequestMapping` 的 "consumes" 和 "produces" 条件支持：用于支持 `@RequestBody` 和 `@ResponseBody`；consumes 指定请求的内容是什么类型的内容，即本处理方法消费什么类型的数据，如 consumes="application/json" 表示 JSON 类型的内容，Spring 会根据相应的 HttpMessageConverter 进行请求内容区数据到 `@RequestBody` 注解的命令对象的转换；produces 指定生产什么类型的内容，如 produces="application/json" 表示 JSON 类型的内容，Spring 的根据相应的 HttpMessageConverter 进行请求内容区数据到 `@RequestBody` 注解的命令对象的转换，Spring 会根据相应的 HttpMessageConverter 进行模型数据（返回值）到 JSON 响应内容的转换。
+    - URI模板变量增强：URI模板变量可以直接绑定到 `@ModelAttribute` 指定的命令对象、`@PathVariable` 方法参数在视图渲染之前被合并到模型数据中（除JSON序列化、XML混搭场景下）。
+    - `@Validated`：JSR-303 的 `javax.validation.Valid` 一种变体（非 JSR-303 规范定义的，而是 Spring 自定义的），用于提供对 Spring 的验证器（`org.springframework.validation.Validator`）支持，需要 Hibernate Validator 4.2 及更高版本支持；
+    - `@RequestPart`：提供对 “multipart/form-data” 请求的全面支持，支持 Servlet 3.0 文件上传（`javax.servlet.http.Part）、支持内容的 HttpMessageConverter（即根据请求头的Content-Type，来判断内容区数据是什么类型，如 JSON、XML，能自动转换为命令对象），比 `@RequestParam` 更强大（只能对请求参数数据绑定，key-alue格式），而 `@RequestPart` 支持如JSON、XML内容区数据的绑定；
+    - Flash 属性 和 RedirectAttribute：通过 FlashMap 存储一个请求的输出，当进入另一个请求时作为该请求的输入，典型场景如重定向（POST-REDIRECT-GET模式，1、POST时将下一次需要的数据放在FlashMap；2、重定向；3、通过GET访问重定向的地址，此时 FlashMap 会把1放到 FlashMap 的数据取出放到请求中，并从 FlashMap 中删除；从而支持在两次请求之间保存数据并防止了重复表单提交）。Spring Web MVC 提供 FlashMapManager 用于管理 FlashMap，默认使用 SessionFlashMapManager，即数据默认存储在 session 中。
 
 ## 深入分析Spring与Spring MVC容器
 
-Spring Framework本身没有web功能，Spring MVC使用WebApplicationContext类扩展ApplicationContext，使得拥有web功能。
+Spring Framework 本身没有 web 功能，Spring MVC 使用 WebApplicationContext 类扩展 ApplicationContext，使得拥有 Web 功能。
 
-以Tomcat为例，在Web容器中使用Spring MVC，必须进行四项的配置：
+以 Tomcat 为例，在 Web 容器中使用 Spring MVC，必须进行四项的配置：
 
-1. 修改web.xml，添加servlet定义；
-2. 编写servletname-servlet.xml（servletname实在web.xml中配置DispactherServlet时使servlet-name的值）配置；
-3. contextConfigLocation初始化参数、配置ContextLoaderListerner；
+1. 修改 `web.xml`，添加 servlet 定义；
+2. 编写 `servletname-servlet.xml`（servletname 实在 `web.xml 中配置 `DispactherServlet` 时使 servlet-name 的值）配置；
+3. contextConfigLocation 初始化参数、配置 ContextLoaderListerner；
 
-在web.xml配置文件中，有两个主要的配置：ContextLoaderListerner和DispatcherServlet。同样的关于spring配置文件的相关配置也有两部分：context-param和DispatcherServlet中的init-param。那么，这两部分的配置有什么区别呢？它们都担任什么样的职责呢？
+在 `web.xml` 配置文件中，有两个主要的配置：ContextLoaderListerner 和 DispatcherServlet。同样的关于spring配置文件的相关配置也有两部分：context-param 和 DispatcherServlet 中的 init-param。
 
-在Spring MVC中，Spring Context是以父子的继承结构存在的。Web环境中存在一个ROOT Context，这个Context是整个应用的根上下文，是其他context的双亲Context。同时Spring MVC也对应的持有一个独立的Context，它是ROOT Context的子上下文。
+在Spring MVC中，Spring Context 是以父子的继承结构存在的。Web 环境中存在一个 ROOT Context，这个 Context 是整个应用的根上下文，是其他 context 的双亲 Context。同时 Spring MVC 也对应的持有一个独立的 Context，它是 ROOT Context 的子上下文。
 
-ROOT Context是在ContextLoaderListerner中配置的，ContextLoaderListerner读取context-param中的contextConfigLocation指定的配置文件，创建ROOT Context。
+ROOT Context 是在 ContextLoaderListerner 中配置的，ContextLoaderListerner 读取 context-param 中的 contextConfigLocation 指定的配置文件，创建 ROOT Context。
 
-Spring MVC启动过程大致分为两个过程：
+Spring MVC 启动过程大致分为两个过程：
 
-1. ContextLoaderListerner的初始化，实例化IoC容器，并将此容器实例注册到ServletContext中；
-2. DispatcherServlet初始化；
+1. ContextLoaderListerner 的初始化，实例化 IoC 容器，并将此容器实例注册到 ServletContext 中；
+2. DispatcherServlet 初始化；
 
-Web容器调用contextInitialized方法初始化ContextLoaderListerner，在此方法中，ContextLoaderListerner通过调用继承自ContextLoader的initWebApplicationContext方法实例化Spring IoC容器。
+Web 容器调用 contextInitialized 方法初始化 ContextLoaderListerner，在此方法中，ContextLoaderListerner 通过调用继承自 ContextLoader 的 initWebApplicationContext 方法实例化 Spring IoC 容器。
 
-Spring MVC中核心类是DispatcherServlet，在这个类中完成Spring Context的加载和创建，并且能够根据Spring Context的内容将请求分发给各个Controller类。DispatcherServlet继承自HttpServlet，关于Spring Context的配置文件加载和创建是在init()方法中进行的，主要的调用顺序是init-->initServletBean-->initWebApplicationContext。通过initWebApplicationContext方法的调用，创建了DispatcherServlet对应的context，并将其放置到ServletContext中，这样就完成了在web容器中构建Spring IoC容器的过程。
+Spring MVC 中核心类是 DispatcherServlet，在这个类中完成 Spring Context 的加载和创建，并且能够根据 Spring Context 的内容将请求分发给各个 Controller 类。DispatcherServlet 继承自 HttpServlet，关于 Spring Context 的配置文件加载和创建是在 `init()` 方法中进行的，主要的调用顺序是 `init-->initServletBean-->initWebApplicationContext`。通过 initWebApplicationContext 方法的调用，创建了 DispatcherServlet 对应的 context，并将其放置到 ServletContext中，这样就完成了在 web 容器中构建 Spring IoC 容器的过程。
 
-Spring的启动过程其实就是其IoC容器的启动过程，对于Web程序，IoC容器启动过程即是建立上下文的过程。
+Spring 的启动过程其实就是其 IoC 容器的启动过程，对于 Web 程序，IoC 容器启动过程即是建立上下文的过程。
 
 Spring的启动过程：（**重要**）
 
-1. 首先，对于一个web应用，其部署在web容器中，web容器提供其一个全局的上下文环境，这个上下文就是ServletContext，其为后面的spring IoC容器提供宿主环境；
-2. 其次，在web.xml中会提供有contextLoaderListerner。在web容器启动时，会触发容器初始化事件，此时contextLoaderListerner会监听到这个事件，其contextInitialized方法会被调用，在这个方法中，spring会初始化一个启动上下文，这个上下文被称为根上下文，即WebApplicationContext，这是一个接口类，确切的说，其实际的实现类是XmWebApplicationContext。这个就是spring的IoC容器，其对应的Bean定义的配置由web.xml中的context-param标签指定。在这个IoC容器初始化完毕后，spring以WebApplicationContext.ROOTWEBAPPLICATIONCONTEXTATTRIBUTE为属性key，将其存储到ServletContxt中，便于获取。
-3. 再次，contextLoaderListerner监听器初始化完毕后，开始初始化web.xml中配置的Servlet，这个servlet可以配置多个，以最常见的DispatcherServlet为例，这个servlet实际上一个标准的前端控制器，用以转发、匹配、处理每个servlet请求。DispatcherServlet上下文在初始化的时候会建立自己的IoC上下文，用以持有Spring MVC相关的Bean。在建立DispatcherServlet自己的IoC上下文时，会利用WebApplciationContext.ROOTWEBAPPLICTIONCONTEXTATTRIBUTE。先从ServletContext中获取之前的根上下文（即WebApplictionContext）作为自己的上下文的parent上下文。有了这个parent上下文之后，再初始化自己持有的上下文。这个DispatcherServlet初始化自己的上下文的工作在其initStrategies方法中可以看到，大概的工作就是初始化处理器映射、视图解析等。这个servlet自己持有的上下文默认实现类也是XmlWebApplicationContext。初始化完毕后，spring以与servlet的名字相关（此处不是简单的以servlet名为key，而是通过一些转换）的属性为属性key，也将其存到ServletContext中，以便后续使用。这样灭个servlet就持有自己的上下文，即拥有自己独立的Bean空间，同时各个servlet共享相同的Bean，即根上下文定义的那些Bean。
+1. 首先，对于一个 web应用，其部署在web 容器中，web 容器提供其一个全局的上下文环境，这个上下文就是 ServletContext，其为后面的 Spring IoC 容器提供宿主环境；
+2. 其次，在 `web.xml` 中会提供有 contextLoaderListerner。在web容器启动时，会触发容器初始化事件，此时 contextLoaderListerner 会监听到这个事件，其 contextInitialized 方法会被调用，在这个方法中，spring 会初始化一个启动上下文，这个上下文被称为根上下文，即 WebApplicationContext，这是一个接口类，确切的说，其实际的实现类是 XmWebApplicationContext。这个就是spring的IoC容器，其对应的Bean定义的配置由web.xml中的context-param标签指定。在这个IoC容器初始化完毕后，spring以WebApplicationContext.ROOTWEBAPPLICATIONCONTEXTATTRIBUTE为属性key，将其存储到ServletContxt中，便于获取。
+3. 再次，contextLoaderListerner 监听器初始化完毕后，开始初始化 `web.xml` 中配置的 Servlet，这个 servlet 可以配置多个，以最常见的 DispatcherServlet 为例，这个 servlet 实际上一个标准的前端控制器，用以转发、匹配、处理每个 servlet 请求。DispatcherServlet 上下文在初始化的时候会建立自己的 IoC 上下文，用以持有 Spring MVC 相关 的Bean。在建立DispatcherServlet自己的IoC上下文时，会利用WebApplciationContext.ROOTWEBAPPLICTIONCONTEXTATTRIBUTE。先从ServletContext中获取之前的根上下文（即WebApplictionContext）作为自己的上下文的parent上下文。有了这个parent上下文之后，再初始化自己持有的上下文。这个DispatcherServlet初始化自己的上下文的工作在其initStrategies方法中可以看到，大概的工作就是初始化处理器映射、视图解析等。这个servlet自己持有的上下文默认实现类也是XmlWebApplicationContext。初始化完毕后，spring以与servlet的名字相关（此处不是简单的以servlet名为key，而是通过一些转换）的属性为属性key，也将其存到ServletContext中，以便后续使用。这样灭个servlet就持有自己的上下文，即拥有自己独立的Bean空间，同时各个servlet共享相同的Bean，即根上下文定义的那些Bean。
 
 ## DispatcherServlet详解
 
@@ -232,11 +232,11 @@ url-pattern：表示哪些请求交给Spring Web MVC处理， “/” 是用来�
 
 DispatcherServlet也可以配置自己的初始化参数，覆盖默认配置：
 
-参数|描述
-:--:|:--
-contextClass|实现WebApplicationContext接口的类，当前的servlet用它来创建上下文。如果这个参数没有指定， 默认使用XmlWebApplicationContext
-contextConfigLocation|传给上下文实例（由contextClass指定）的字符串，用来指定上下文的位置。这个字符串可以被分成多个字符串（使用逗号作为分隔符） 来支持多个上下文（在多上下文的情况下，如果同一个bean被定义两次，后面一个优先）
-namespace|WebApplicationContext命名空间。默认值是[server-name]-servlet
+|         参数          | 描述                                                                                                                                                                                                    |
+| :-------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|     contextClass      | 实现WebApplicationContext接口的类，当前的servlet用它来创建上下文。如果这个参数没有指定， 默认使用XmlWebApplicationContext                                                                               |
+| contextConfigLocation | 传给上下文实例（由contextClass指定）的字符串，用来指定上下文的位置。这个字符串可以被分成多个字符串（使用逗号作为分隔符） 来支持多个上下文（在多上下文的情况下，如果同一个bean被定义两次，后面一个优先） |
+|       namespace       | WebApplicationContext命名空间。默认值是[server-name]-servlet                                                                                                                                            |
 
 通过初始化参数示例：
 
@@ -431,7 +431,7 @@ DispatcherServlet默认使用WebApplicationContext作为上下文，因此详解
 9. RequestToViewNameTranslator：当处理器没有返回逻辑视图名等相关信息时，自动将请求URL映射为逻辑视图名；
 10. FlashMapManager：用于管理FlashMap的策略接口，FlashMap用于存储一个请求的输出，当进入另一个请求时作为该请求的输入，通常用于重定向场景。
 
-## Controller接口控制器详解
+## ~~Controller接口控制器详解~~
 
 ### Controller简介
 
@@ -547,7 +547,7 @@ Spring默认提供了一些Controller接口的实现以方便我们使用，具�
 
 详细使用参考：<http://jinnianshilongnian.iteye.com/blog/1630585>
 
-### 数据类型转换和数据验证
+## 数据类型转换和数据验证
 
 ![](../images/springmvc_controller2.jpg)
 
@@ -561,29 +561,29 @@ Spring默认提供了一些Controller接口的实现以方便我们使用，具�
 6. 提供第三个扩展点，此处可以实现自定义的绑定/验证逻辑；
 7. 将errors传入功能处理方法进行处理，功能方法应该判断该错误对象是否有错误进行相应的处理。
 
-#### 数据类型转换
+### 数据类型转换
 
 请求参数（String）——>命令对象属性（可能是任意类型）的类型转换，即数据绑定时的类型转换，使用PropertyEditor实现绑定时的类型转换。
 
 Spring内建的PropertyEditor如下所示：
 
-类名|说明|默认是否注册
-:------------|:----------------|:----------:
-ByteArrayPropertyEditor|String<——>byte[]|是
-ClassEditor|String<——>Class，当类没有发现抛出IllegalArgumentException|是
-CustomBooleanEditor|String<——>Boolean，true/yes/on/1转换为true；false/no/off/0转换为false|是
-CustomCollectionEditor|数组/Collection——>Collection；普通值——>Collection（只包含一个对象），如String——>Collection，不允许Collection——>String（单方向转换）|是
-CustomNumberEditor|String<——>Number(Integer、Long、Double)|是
-FileEditor|String<——>File|是
-InputStreamEditor|String——>InputStream，单向的，不能InputStream——>String|是
-LocaleEditor|String<——>Locale，（String的形式为[语言]\_[国家]\_[变量]，这与Local对象的toString()方法得到的结果相同）|是
-PatternEditor|String<——>Pattern|是
-PropertiesEditor|String<——>java.lang.Properties|是
-URLEditor|String<——>URL|是
-StringTrimmerEditor|一个用于trim 的 String类型的属性编辑器，如默认删除两边的空格，charsToDelete属性：可以设置为其他字符，emptyAsNull属性：将一个空字符串转化为null值的选项。|否
-CustomDateEditor|String<——>java.util.Date|否
+| 类名                    | 说明                                                                                                                                                     | 默认是否注册 |
+| :---------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: |
+| ByteArrayPropertyEditor | String<——>byte[]                                                                                                                                         |      是      |
+| ClassEditor             | String<——>Class，当类没有发现抛出IllegalArgumentException                                                                                                |      是      |
+| CustomBooleanEditor     | String<——>Boolean，true/yes/on/1转换为true；false/no/off/0转换为false                                                                                    |      是      |
+| CustomCollectionEditor  | 数组/Collection——>Collection；普通值——>Collection（只包含一个对象），如String——>Collection，不允许Collection——>String（单方向转换）                      |      是      |
+| CustomNumberEditor      | String<——>Number(Integer、Long、Double)                                                                                                                  |      是      |
+| FileEditor              | String<——>File                                                                                                                                           |      是      |
+| InputStreamEditor       | String——>InputStream，单向的，不能InputStream——>String                                                                                                   |      是      |
+| LocaleEditor            | String<——>Locale，（String的形式为[语言]\_[国家]\_[变量]，这与Local对象的toString()方法得到的结果相同）                                                  |      是      |
+| PatternEditor           | String<——>Pattern                                                                                                                                        |      是      |
+| PropertiesEditor        | String<——>java.lang.Properties                                                                                                                           |      是      |
+| URLEditor               | String<——>URL                                                                                                                                            |      是      |
+| StringTrimmerEditor     | 一个用于trim 的 String类型的属性编辑器，如默认删除两边的空格，charsToDelete属性：可以设置为其他字符，emptyAsNull属性：将一个空字符串转化为null值的选项。 |      否      |
+| CustomDateEditor        | String<——>java.util.Date                                                                                                                                 |      否      |
 
-#### 数据验证
+### 数据验证
 
 1. 数据绑定失败：比如需要数字却输入了字母；
 2. 数据不合法：可以认为是业务错误，通过自定义验证器验证，如用户名长度必须在5-20之间，我们却输入了100个字符等；
@@ -629,7 +629,7 @@ public interface HandlerInterceptor {
 
 ### 注解式控制器简介
 
-1. Spring2.5之前，我们都是通过实现Controller接口或其实现来定义我们的处理器类。已经@Deprecated。
+1. Spring2.5之前是通过实现Controller接口或其实现来定义处理器类。已经被废弃。
 2. Spring2.5引入注解式处理器支持，通过@Controller 和 @RequestMapping注解定义我们的处理器类。
     并且提供了一组强大的注解：
     - @Controller：用于标识是处理器类；
@@ -676,27 +676,35 @@ http请求包含六部分信息：
 
 ##### 普通URL路径映射
 
+```
 @RequestMapping(value={"/test1", "/user/create"})：多个URL路径可以映射到同一个处理器的功能处理方法。
+```
 
 ##### URI模板模式映射
 
+```
 @RequestMapping(value="/users/{userId}")：{×××}占位符， 请求的URL可以是 “/users/123456”或“/users/abcd”,且可以通过@PathVariable可以提取URI模板模式中的{×××}中的×××变量。  
 @RequestMapping(value="/users/{userId}/create")：这样也是可以的，请求的URL可以是“/users/123/create”。  
 @RequestMapping(value="/users/{userId}/topics/{topicId}")：这样也是可以的，请求的URL可以是“/users/123/topics/123”。
+```
 
 ##### Ant风格的URL路径映射
 
+```
 @RequestMapping(value="/users/**")：可以匹配“/users/abc/abc”，但“/users/123”将会被【URI模板模式映射中的“/users/{userId}”模式优先映射到】  
 @RequestMapping(value="/product?")：可匹配“/product1”或“/producta”，但不匹配“/product”或“/productaa”;  
 @RequestMapping(value="/product*")：可匹配“/productabc”或“/product”，但不匹配“/productabc/abc”;  
 @RequestMapping(value="/product/*")：可匹配“/product/abc”，但不匹配“/productabc”;  
 @RequestMapping(value="/products/**/{productId}")：可匹配“/products/abc/abc/123”或“/products/123”，也就是Ant风格和URI模板变量风格可混用;
+```
 
 ##### 正则表达式风格的URL路径映射
 
 从Spring3.0开始支持正则表达式风格的URL路径映射，格式为{变量名:正则表达式}，可以通过@PathVariable提取模式中的{×××：正则表达式匹配的值}中的×××变量
 
+```
 @RequestMapping(value="/products/{categoryCode:\\d+}-{pageNumber:\\d+}")：可以匹配“/products/123-1”，但不能匹配“/products/abc-1”，这样可以设计更加严格的规则。
+```
 
 正则表达式风格的URL路径映射是一种特殊的URI模板模式映射：  
 URI模板模式映射是{userId}，不能指定模板变量的数据类型，如是数字还是字符串；  
@@ -704,7 +712,7 @@ URI模板模式映射是{userId}，不能指定模板变量的数据类型，如
 
 ##### 组合使用是“或”的关系
 
-如 @RequestMapping(value={"/test1", "/user/create"}) 组合使用是或的关系，即“/test1”或“/user/create”请求URL路径都可以映射到@RequestMapping指定的功能处理方法。
+如 `@RequestMapping(value={"/test1", "/user/create"})` 组合使用是或的关系，即“/test1”或“/user/create”请求URL路径都可以映射到@RequestMapping指定的功能处理方法。
 
 #### 请求方法映射
 
@@ -714,7 +722,9 @@ URI模板模式映射是{userId}，不能指定模板变量的数据类型，如
 
 ##### 组合使用是“或”的关系[请求方法]
 
+```
 @RequestMapping(value="/test", method = {RequestMethod.POST, RequestMethod.GET})：即请求方法可以是 GET 或 POST。
+```
 
 **注：** 除了GET、POST，还有HEAD、OPTIONS、PUT、DELETE、TRACE；DispatcherServlet默认开启对 GET、POST、PUT、DELETE、HEAD的支持；如果需要支持OPTIONS、TRACE，请添加DispatcherServlet在web.xml的初始化参数：dispatchOptionsRequest 和 dispatchTraceRequest 为true。
 
@@ -722,24 +732,35 @@ URI模板模式映射是{userId}，不能指定模板变量的数据类型，如
 
 ###### 请求数据中有指定参数名
 
-请求参数的窄化：params="test",请求参数中需要有test  
+请求参数的窄化：params="test",请求参数中需要有test 
+
+```
 @RequestMapping(params="test", method=RequestMethod.GET)
+```
 
 ###### 请求数据中没有指定参数名
 
+```
 @RequestMapping(params="!test", method=RequestMethod.GET)
+```
 
 ###### 请求数据中指定参数名=值
 
+```
 @RequestMapping(params="test=test")
+```
 
 ###### 请求数据中指定参数名!=值
 
+```
 @RequestMapping(params="test!=test")
+```
 
 ###### 组合使用是“且”的关系
 
+```
 @RequestMapping(params={"test1", "test2=test2"})
+```
 
 #### 请求头数据映射限定
 
@@ -748,6 +769,7 @@ URI模板模式映射是{userId}，不能指定模板变量的数据类型，如
 ### 数据绑定
 
 获取的数据如下图：
+
 ![](../images/springmvc_data.jpg)
 
 数据绑定，简单的说就是 Spring MVC 从请求中获取请求参数，赋予给处理方法相应的参数。主要流程如下：
@@ -831,7 +853,7 @@ public String requestparam1(@RequestParam String username)
 public String requestparam2(@RequestParam("username") String username)
 ```
 
-@RequestParam注解主要有哪些参数：
+`@RequestParam` 注解主要有哪些参数：
 
 - value：参数名字，即入参的请求参数名字，如username表示请求的参数区中的名字为username的参数的值将传入；
 - required：是否必须，默认是true，表示请求中一定要有相应的参数，否则将报404错误码；
@@ -855,24 +877,24 @@ public String requestparam7(@RequestParam(value="role") String[] roleList)
 public String requestparam8(@RequestParam(value="list") List<String> list)
 ```
 
-#### @PathVariable绑定URI模板变量值
+#### `@PathVariable` 绑定 URI 模板变量值
 
-@PathVariable用于将请求URL中的模板变量映射到功能处理方法的参数上。
+`@PathVariable`用于将请求URL中的模板变量映射到功能处理方法的参数上。
 
-#### @CookieValue绑定Cookie数据值
+#### `@CookieValue` 绑定 Cookie 数据值
 
-@CookieValue用于将请求的Cookie数据映射到功能处理方法的参数上。
+`@CookieValue` 用于将请求的 Cookie 数据映射到功能处理方法的参数上。
 
-#### @RequestHeader绑定请求头数据
+#### `@RequestHeader` 绑定请求头数据
 
-@RequestHeader用于将请求的头信息区数据映射到功能处理方法的参数上。
+`@RequestHeader` 用于将请求的头信息区数据映射到功能处理方法的参数上。
 
-@RequestHeader也拥有和@RequestParam相同的三个参数，含义一样。
+`@RequestHeader` 也拥有和 `@RequestParam` 相同的三个参数，含义一样。
 
-#### @ModelAttribute绑定请求参数到命令对象
+#### `@ModelAttribute` 绑定请求参数到命令对象
 
-@ModelAttribute一个具有如下三个作用：
+`@ModelAttribute` 一个具有如下三个作用：
 
 - 绑定请求参数到命令对象：放在功能处理方法的入参上时，用于将多个请求参数绑定到一个命令对象，从而简化绑定流程，而且自动暴露为模型数据用于视图页面展示时使用；
 - 暴露表单引用对象为模型数据：放在处理器的一般方法（非功能处理方法）上时，是为表单准备要展示的表单引用对象，如注册时需要选择的所在城市等，而且在执行功能处理方法（@RequestMapping注解的方法）之前，自动添加到模型对象中，用于视图页面展示时使用；
-- 暴露@RequestMapping方法返回值为模型数据：放在功能处理方法的返回值上时，是暴露功能处理方法的返回值为模型数据，用于视图页面展示时使用。
+- 暴露 `@RequestMapping` 方法返回值为模型数据：放在功能处理方法的返回值上时，是暴露功能处理方法的返回值为模型数据，用于视图页面展示时使用。

@@ -1,8 +1,6 @@
-# Beans
+# Bean 的初始化流程分析
 
-## Spring Beans 初始化流程分析
-
-### 主流程
+**主流程如下**：
 
 ![主流程](images/bean-creation-overall-process.png)
 
@@ -10,11 +8,11 @@
 
 #### Do Get Bean 流程
 
-Do Get Bean 流程的入口是 AbstractBeanFactory#doGetBean 方法，主流程图如下，
+Do Get Bean 流程的入口是 `AbstractBeanFactory#doGetBean` 方法，主流程图如下，
 
 ![Do Get Bean流程](images/do-get-bean-process.png)
 
-主流程大致为，从缓存中找到是否已经实例化了该 singleton bean，如果已经实例化好了，那么就直接返回；如果在缓存中没有找到，则将当前的 bean 封装为 RootBeanDefinition，然后通过调用 DefaultSingletonBeanRegistry#getSingleton 得到初始化好的 singleton bean，然后将其注册至缓存( step 1.3.3 addSingleton )，然后再判断是普通 bean 还是 factory bean 作必要的处理( step 1.4 getObjectForBeanInstance )后，最后返回；
+主流程大致为，从缓存中找到是否已经实例化了该 singleton bean，如果已经实例化好了，那么就直接返回；如果在缓存中没有找到，则将当前的 Bean 封装为 RootBeanDefinition，然后通过调用 DefaultSingletonBeanRegistry#getSingleton 得到初始化好的 singleton bean，然后将其注册至缓存( step 1.3.3 addSingleton )，然后再判断是普通 bean 还是 factory bean 作必要的处理( step 1.4 getObjectForBeanInstance )后，最后返回；
 
 ##### RootBeanDefinition
 
