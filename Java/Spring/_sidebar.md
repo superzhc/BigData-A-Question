@@ -12,7 +12,6 @@
 - [AOP](Java/Spring/AOP和设备支持/README.md)
 - [SpringMVC](Java/Spring/SpringMVC/README.md)
 - [SpringData](Java/Spring/数据访问及集成/SpringData.md)
-- [Spring 的分布式事务实现 — 使用和不使用 XA](../../阅读资源/Spring的分布式事务实现.md)
 - [SpringBoot](Java/Spring/SpringBoot/README.md)
   - [Spring Boot参考指南](../../阅读资源/Spring_Boot参考指南.md)
 
