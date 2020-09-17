@@ -66,7 +66,7 @@ Spring 框架是一个分层架构。Spring 总共大约有20个模块，由1300
 
 ### 依赖关系
 
-#### [core](./SpringCore/核心容器.md)
+#### core
 
 ![Core的依赖关系](images/SpringCore.png)
 

@@ -360,4 +360,4 @@ Spring 支持 `@AspectJ annotation style` 的方法和**基于配置模式**的�
 
 <font color="red">需要在 XML 文件中配置 `<aop:aspectj-autoproxy>`、`@AspectJ`才可用</font>
 
-[AspectJ的介绍](Java/Spring/AOP和设备支持/Aspect.md)
+[AspectJ的介绍](Java/Spring/AOP和设备支持/AspectJ.md)
