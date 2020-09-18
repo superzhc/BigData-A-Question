@@ -6,7 +6,7 @@
   - [SqlSessionFactoryBuilder](Java/Mybatis/SqlSessionFactoryBuilder.md)
   - [SqlSessionFactory](Java/Mybatis/SqlSessionFactory.md)
   - [SqlSession](Java/Mybatis/SqlSession.md)
-  - [StatementHandler](Java/Mybatis/StatementHandler.md)
   - [Executor](Java/Mybatis/Executor.md)
+  - [StatementHandler](Java/Mybatis/StatementHandler.md)
   - [ResultSetHandler](Java/Mybatis/ResultSetHandler.md)
 
