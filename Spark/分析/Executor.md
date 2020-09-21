@@ -1,1 +1,0 @@
-Executor 是 Spark 中执行任务的进程，它能被不同的调度模式所调度，例如 Standalone、Mesos、Yarn。

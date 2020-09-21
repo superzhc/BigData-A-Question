@@ -18,7 +18,7 @@ version = <your-hdfs-version>
 
 最后，需要导入一些 Spark 的类和隐式转换到你的程序，添加下面的行就可以了：
 
-```java
+```scala
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
