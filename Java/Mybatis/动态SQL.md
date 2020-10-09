@@ -1,19 +1,18 @@
-## 常用的标签
+# 动态 SQL
 
-Mybatis为了能够让开发者灵活的写SQL也是费了一番功夫，定义了很多的标签和语法，下面将会一一介绍。
+Mybatis 动态 sql 可以在 Xml 映射文件内，以标签的形式编写动态 sql，完成逻辑判断和动态拼接 sql 的功能。
 
-### if
+Mybatis 提供了 9 种动态 sql 标签：`trim|where|set|foreach|if|choose|when|otherwise|bind`
+
+## if
 
 ```xml
 <select id ='selectPats' resultType='com.xxx.domain.PatientInfo'>
   select * from patient_info 
   where status=1
-  <!--前端传来的住院号不为null，表示需要根据住院号筛选，此时Where语句就需要加上这个条件-->
   <if test="iptNum!=null">
       and ipt_num=#{iptNum}
   </if>
-  
-  <!--床位号筛选-->
   <if test="bedNum!=null">
       and bed_num=#{bedNum}
   </if>
@@ -24,22 +23,20 @@ Mybatis为了能够让开发者灵活的写SQL也是费了一番功夫，定义�
 
 ```xml
 <if test="bedNum!=null and bedNum!='' ">
-      and bed_num=#{bedNum}
-  </if>
+    and bed_num=#{bedNum}
+</if>
 ```
 
-### choose、when、otherwise
+## choose、when、otherwise
 
 ```xml
 <select id="selectPats"
      resultType="com.xxx.domain.PatientInfo">
   select * from patient_info where 1=1
   <choose>
-    <!--住院号不为null时，根据住院号查找-->
     <when test="iptNum != null">
       AND ipt_num=#{iptNum}
     </when>
-    <!--床位号不是NUll-->
     <when test="bedNum != null">
       AND bed_num = #{bedNum}
     </when>
@@ -52,11 +49,11 @@ Mybatis为了能够让开发者灵活的写SQL也是费了一番功夫，定义�
 
 MyBatis 提供了 `choose` 元素，按顺序判断 `when` 中的条件出否成立，如果有一个成立，则 `choose` 结束。当 `choose` 中所有 `when` 的条件都不满则时，则执行 `otherwise` 中的 sql。类似于 Java 的 `switch` 语句， `choose` 为 `switch` ， `when` 为 `case` ， `otherwise` 则为 `default` 。
 
-### where
+## where
 
 举个栗子：对于 `choose` 标签的例子中的查询，如果去掉 `where` 后的 `1=1` 此时的SQL语句会变成什么样子，有三种可能的SQL，如下：
 
-```
+```sql
 select * from patient_info where AND ipt_num=#{iptNum};
 
 select * from patient_info where AND bed_num = #{bedNum};
@@ -92,7 +89,7 @@ select * from patient_info where AND status=1;
 </select>
 ```
 
-### foreach
+## foreach
 
 `foreach` 是用来对集合的遍历，这个和Java中的功能很类似。通常处理SQL中的 `in` 语句。
 
@@ -124,7 +121,7 @@ select * from patient_info where AND status=1;
 | close     | 后缀                                     |
 | separator | 分隔符，表示迭代时每个元素之间以什么分隔 |
 
-### set
+## set
 
 ```xml
 <update id="updateStudent" parameterType="Object">
@@ -172,7 +169,7 @@ select * from patient_info where AND status=1;
 </update>
 ```
 
-### sql
+## sql
 
 ```xml
 <sql>
@@ -208,7 +205,7 @@ select * from patient_info where AND status=1;
 </sql>
 ```
 
-### include
+## include
 
 这个标签和 `<sql>` 是天仙配，是共生的， `include` 用于引用 `sql` 标签定义的常量。比如引用上面sql标签定义的常量，如下：
 
@@ -223,13 +220,7 @@ select * from patient_info where AND status=1;
 
 `refid` 这个属性就是指定 `<sql>` 标签中的 `id` 值（唯一标识）。
 
-### 总结
-
-- 至此，Mybatis动态SQL中常用的标签就已经介绍完了，这部分的内容在实际工作中是必须会用到的，除非你们公司不用Mybatis。
-
 ## 拓展一下
-
-前面介绍了动态SQL的一些标签以及属性，相信看完之后应该能够灵活的应用了，但是在实际开发中还是有一些奇技淫巧的，陈某今天简单的讲几个。
 
 ### Mybatis中如何避免魔数
 
@@ -245,8 +236,11 @@ select * from patient_info where AND status=1;
 <if test="type!=null and type==2">
     -- ....获取护士的权限
 </if>
-type
+```
+
+```java
 package com.xxx.core.Constants;
+
 public class CommonConstants{
   //医生
   public final static int DOC_TYPE=1;
