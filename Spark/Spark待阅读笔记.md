@@ -1,60 +1,6 @@
 ### Spark任务调度和资源调度
 
 
-#### 任务调度
-
-[![img](http://chant00.com/media/15051449619762.jpg)](http://chant00.com/media/15051449619762.jpg)
-
-1. N（N>=1）个RDD Object组成了一个DAG，它用代码实现后就是一个application
-2. DAGScheduler是任务调度的高层调度器的对象，它依据RDD之间的宽窄依赖把DAG切割成一个个Stage，然后把这些stage以TaskSet的形式提交给TaskScheduler（调用了TaskScheduler的某个方法，然后把TaskSet作为参数传进去）
-3. TaskScheduler是任务调度的底层调度器的对象
-4. Stage是一组task的组合，TaskSet是task的集合，所以两者并没有本质的区别，只是在不同层次的两个概念而已
-5. TaskScheduler遍历TaskSet，把每个task发送到Executor中的线程池中进行计算
-6. 当某个task执行失败后，会由TaskScheduler进行重新提交给Executor，默认重试3次，如果重试3次仍然失败，那么该task所在的stage就执行失败，由DAGScheduler进行重新发送，默认重试4次，如果重试4次后，stage仍然执行失败，那么该stage所在的job宣布执行失败，且不会再重试
-7. TaskScheduler还可以重试straggling tasks，就是那些运行缓慢的task，当TaskScheduler认为某task0是straggling task，那么TaskScheduler会发送一条相同的task1，task0与task1中选择先执行完的task的计算结果为最终结果，这种机制被称为**推测执行**。
-8. 推测执行建议关闭而且默认就是关闭的，原因如下：
-   **推测执行可能导致数据重复**
-   比如做数据清洗时，某个task正在往关系型数据库中写数据，而当它执行的一定阶段但还没有执行完的时候，此时如果TaskScheduler认为它是straggling task，那么TaskScheduler会新开启一个一模一样的task进行数据写入，会造成数据重复。
-   推测执行可能会大量占用资源导致集群崩溃
-   比如某条task执行时发生了数据倾斜，该task需要计算大量的数据而造成它执行缓慢，那么当它被认为是straggling task后，TaskScheduler会新开启一个一模一样的task进行计算，新的task计算的还是大量的数据，且分配得到与之前的task相同的资源，两条task执行比之前一条task执行还慢，TaskScheduler有可能再分配一条task来计算这些数据，这样下去，资源越来越少，task越加越多，形成死循环后，程序可能永远都跑不完。
-
-#### 资源调度
-
-1）
-[![img](http://chant00.com/media/15052093011051.jpg)](http://chant00.com/media/15052093011051.jpg)
-2）
-[![img](http://chant00.com/media/15052093251093.jpg)](http://chant00.com/media/15052093251093.jpg)
-3）
-[![img](http://chant00.com/media/15052093599400.jpg)](http://chant00.com/media/15052093599400.jpg)
-4）
-[![img](http://chant00.com/media/15052093791909.jpg)](http://chant00.com/media/15052093791909.jpg)
-5&6）
-[![img](http://chant00.com/media/15052094179523.jpg)](http://chant00.com/media/15052094179523.jpg)
-7&8）
-[![img](http://chant00.com/media/15052092504222.jpg)](http://chant00.com/media/15052092504222.jpg)
-
-注意：
-application执行之前申请的这批executor可以被这个application中的所有job共享。
-
-#### 粗粒度和细粒度的资源申请
-
-##### 粗粒度的资源申请：Spark
-
-在Application执行之前，将所有的资源申请完毕，然后再进行任务调度，直到最后一个task执行完毕，才会释放资源
-优点：每一个task执行之前不需要自己去申请资源，直接使用资源就可以，每一个task的启动时间就变短了，task执行时间缩短，使得整个Application执行的速度较快
-缺点：无法充分利用集群的资源，比如总共有10万的task，就要申请10万个task的资源，即使只剩下一个task要执行，也得等它执行完才释放资源，在这期间99999个task的资源没有执行任何task，但也不能被其他需要的进程或线程使用
-
-##### 细粒度的资源申请：MapReduce
-
-在Application执行之前，不需要申请好资源，直接进行任务的调度，在每一个task执行之前，自己去申请资源，申请到就执行，申请不到就等待，每一个task执行完毕后就立马释放资源。
-优点：可以充分的利用集群的资源
-缺点：每一个task的执行时间变长了，导致整个Application的执行的速度较慢
-
-##### yarn如何同时调度粗细两种方式
-
-Spark和MapReduce都可以跑在yarn上，那怎么做到一个组粒度一个细粒度呢？原因是他们各自实现**ApplicationMaster**的方式不同。
-[![img](http://chant00.com/media/15052153748327.jpg)](http://chant00.com/media/15052153748327.jpg)
-
 ### 资源调度源码分析
 
 #### 分析以集群方式提交命令后的资源调度源码

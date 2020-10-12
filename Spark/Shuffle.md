@@ -5,33 +5,99 @@ Spark Shuffle 分为两个步骤：`Shuffle Write` 和 `Shuffle Read`。
 - `Shuffle Write`：上一个 stage 的每个 map task 就必须保证将自己处理的当前分区中的数据相同的 key 写入一个分区文件中，可能会写入多个不同的分区文件中
 - `Shuffle Read`：reduce task 就会从上一个 stage 的所有 task 所在的机器上寻找属于自己的那些分区文件，这样就可以保证每一个 key 所对应的 value 都会汇聚到同一个节点上去处理和聚合
 
-## Shuffle Write
+> Spark 中有两种 Shuffle 类型，HashShuffle 和 SortShuffle
+> 
+> Spark1.1 之前是 HashShuffle 默认的分区器是 HashPartitioner，Spark1.1 引入 SortShuffle，默认的分区器是 RangePartitioner
 
-### 普通的 HashShuffle
+## HashShuffle
 
-Spark 中需要 shuffle 输出的 map 任务会为每个 reduce 创建对应的 bucket，map 产生的结果会根据设置的 partitioner 得到对应的 bucketId，然后填充到相应的 bucket 中去。每个 map 的输出结果可能包含所有的 reduce 所需要的数据，所以每个 map 会创建 R 个 bucket（R 是 reduce 的个数），M 个 map 总共会创建 M*R 个 bucket。
+ ***HashShuffleManager 适合小数据量*****
+**
 
-Map 创建的 bucket 其实对应磁盘上的一个文件，map 的结果写到每个 bucket 中其实就是写到那个磁盘文件中，这个文件也被称为 blockFile，是 DiskBlockManager 管理器通过文件名的 hash 值对应到本地目录的子目录中创建的。每个 map 要在节点上创建 R 个磁盘文件用于结果输出，map 的结果是直接输出到磁盘文件上的，100KB 的内存缓冲是用来创建 FastBufferedOutputStream 输出流。这种方式一个问题就是磁盘小文件和缓存过多，造成耗时且低效的IO操作，可能造成OOM。
+![img](images/1507195544916_16_a.png)
 
-### 优化的 HashShuffle
+如图 会产生 4*3 个小文件：
 
-针对上述 shuffle 过程产生的文件过多问题，Spark 有另外一种改进的 shuffle 过程：consolidation shuffle，以期显著减少 shuffle 文件的数量。在 consolidation shuffle 中每个 bucket 并非对应一个文件，而是对应文件中的一个 segment 部分。Job 的 map 在某个节点上第一次执行，为每个 reduce 创建 bucket 对应的输出文件，把这些文件组织成 ShuffleFileGroup，当这次 map 执行完之后，这个 ShuffleFileGroup 可以释放为下次循环利用；当又有 map 在这个节点上执行时，不需要创建新的 bucket 文件，而是在上次的 ShuffleFileGroup 中取得已经创建的文件继续追加写一个 segment；当前次 map 还没执行完，ShuffleFileGroup 还没有释放，这时如果有新的 map 在这个节点上执行，无法循环利用这个 ShuffleFileGroup，而是只能创建新的 bucket 文件组成新的 ShuffleFileGroup 来写输出。
+​     每一个map task将 ***不同结果写到不同的buffer*** 中，每个buffer的大小为 ***32K*** 。*buffer起到数据缓存的作用* 
 
-因此，文件数量为：假如总共有 c 个 core， r 个 reduce，最终会产生 c*r 个小文件，因为复用 buffer 后，每个 core 执行的所有 map task 产生 r 个小文件
+​     Map task会根据 ***分区器（默认是hashPartitioner）\***算出当前key需写入的 ***partition***，然后经过对应的缓存***写入单独的文件***，所以 buffer缓存的个数即小文件的个数由 下一个Stage的并行度（ ReduceTask个数）决定，使得 ***每一个task*** 产生 ***R个文件 （***ReduceTask个数***）***。
 
-*该优化通过设置一个参数 `spark.shuffle.consolidateFiles`，该参数默认值为false，将其设置为true即可开启优化机制。通常来说，如果使用HashShuffleManager，那么都建议开启这个选项。*
+​     如果有 ***m个MapTask*** ，则 有 ***M\*R 个小文件*** 。
 
-### 普通的 SortShuffle
+​     然后Reduce Task来拉取对应的磁盘小文件。
 
-在该模式下，数据会先写入一个内存数据结构中，此时根据不同的 shuffle 算子，可能选用不同的数据结构。如果是 reduceByKey 这种**聚合类的 shuffle 算子，那么会选用 Map 数据结构，一边通过 Map 进行聚合，一边写入内存**；如果是 join 这种普通的 shuffle 算子，那么会选用 Array 数据结构，直接写入内存。接着，每写一条数据进入内存数据结构之后，就会判断一下，是否达到了某个临界阈值。如果达到临界阈值的话，那么就会尝试将内存数据结构中的数据溢写到磁盘，然后清空内存数据结构。
+**开启：**
 
-1. 每个 map task 将计算结果写入内存数据结构中，这个内存默认大小为 5M
-2. 会有一个“监控器”来不定时的检查这个内存的大小，如果写满了5M，比如达到了5.01M，那么再给这个内存申请5.02M（5.01M * 2 – 5M = 5.02）的内存，此时这个内存空间的总大小为10.02M
-3. 当“定时器”再次发现数据已经写满了，大小10.05M，会再次给它申请内存，大小为 10.05M * 2 – 10.02M = 10.08M
-4. 假如此时总的内存只剩下5M，不足以再给这个内存分配10.08M，那么这个内存会被锁起来，把里面的数据按照相同的key为一组，进行排序后，分别写到不同的缓存中，然后溢写到不同的小文件中，而 map task 产生的新的计算结果会写入总内存剩余的5M中
-5. buffer中的数据（已经排好序）溢写的时候，会分批溢写，默认一次溢写10000条数据，假如最后一部分数据不足10000条，那么剩下多少条就一次性溢写多少条
-6. 每个map task产生的小文件，最终合并成一个大文件来让reduce拉取数据，合成大文件的同时也会生成这个大文件的索引文件，里面记录着分区信息和偏移量（比如：key为hello的数据在第5个字节到第8097个字节）
-7. 最终产生的小文件数为2*m（map task的数量）
+​    ***spark.shuffle.manager=hash\***
+
+***产生的磁盘小文件过多，会导致以下问题：***
+
+​    *a)	在Shuffle Write过程中会产生很多写磁盘小文件的对象。*
+
+​    *b)	在Shuffle Read过程中会产生很多读取磁盘小文件的对象。*
+
+​    *c)	在JVM堆内存中对象过多会造成频繁的gc,gc还无法解决运行所需要的内存 的话，就会OOM。*
+
+​    *d)	在数据传输过程中会有频繁的网络通信，频繁的网络通信出现通信故障的可能性大大增加，一旦网络通信出现了故障会导致shuffle file cannot find 由于这个错误导致的task失败，TaskScheduler不负责重试，由DAGScheduler负责重试Stage。*
+
+**HashShuffler Consolidate合并机制**
+
+![img](images/1505387841047_16_a.png)**
+**
+
+
+
+如图 会产生 2*3 个小文件：
+
+​     每个 Executor 里的 MapTask ***共用*** ***一个Buffer写缓存*** 。
+
+​     也就是 ***一个Excutor*** 才有 ***R个小文件*** 。
+
+​     所有小文件数量会减少到 ***C\*R*** 个 （C指 ***在Mapper端能够使用的Core数 ，有多少个Core就可以设置多少个Executor***）
+
+**开启方法：**
+
+​     ***spark.shuffle.consolidateFiles=true***
+
+## SortShuffle
+
+ ***SortShuffleManager 适合大数据量*****
+**
+
+  ![img](images/1507197166115_16_a.png)
+
+如图：
+
+​    ***MapTask\*** 处理 Partition 里的数据时，会向一个大小为 ***5M*** 的 ***内存数据结构*** 里写数据。
+
+​    每 ***插入32次*** 数据，就会 ***检查一次*** 内存大小，如果内存大小 ***size*** 超过 ***5M*** 就会***申请*** ***（size\*2 - 5）M\***  的空间，如果申请成功不会进行溢写，如果申请不成功，这时候会发生溢写磁盘。
+
+​    溢写会先 ***排序 与 分区***，再以每个 batch 为 ***1万条*** 数据溢写到 ***32k*** 的内存缓存区，然后再***溢写到磁盘***（产生大量磁盘小文件）。
+
+​    MapTask结束后，会将将这些 ***小文件\*** ***合并*** 成 ***一个大文件*** 和 ***一个索引文件*** 。
+
+​    ***ReduceTask\*** 从MapTask拉取数据时（***最大***  可以拉取 ***48M***），首先解析索引文件，根据索引文件再去拉取对应的数据。
+
+​    后会将这些文件放到 Executor 的 ***shuffle聚合内存***（为Executor内存的 ***20%***）聚合。
+
+​    所以所以SortShuffler会产生 ***2\*M*** 个文件  （2为 *一个大文件一个索引文件* ，M为 *MapTask个数*  ）
+
+开启：
+
+​    ***spark.shuffle.manager=sort   sort为1.6默认\***
+
+**bypass运行机制**
+
+​    当数据量比较小，或者 不需要要对数据进行排序，这是SortShuffler中的排序就没有用了。
+
+​    **触发 不进行排序** 的条件：
+
+​         **·** 当 shuffle ***ReduceTask*** 的个数 ***小于*** 参数值时，***spark.shuffle.sort.bypassMergeThreshold\*** ***默认值 200***。
+
+​         **·** ***不是***  聚合类shuffle算子时
+
+​    ![img](images/1505389017650_16_a.png)**
+**
 
 ## Shuffle Read
 
