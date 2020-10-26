@@ -117,6 +117,10 @@ Debug help:  ./hive --debug --help
 
 ## 原理
 
+Hive 框架如下图：
+
+![官方框架](images/bVlLGY)
+
 1. 用户提交查询等任务给 Driver
 2. 编译器获得该用户的任务 Plan
 3. 编译器 Compiler 根据用户任务去 MetaStore 中获取需要的 Hive 的元数据信息

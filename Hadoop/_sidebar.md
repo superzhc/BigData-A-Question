@@ -12,3 +12,4 @@
   - [HDFS的Shell命令](Hadoop/HDFS/HDFS的Shell命令.md)
   - [HDFS配置](Hadoop/HDFS/HDFS配置.md)
 - [MapReduce](Hadoop/MapReduce/README.md)
+  - [MapReduce作业运行机制](Hadoop/MapReduce/作业运行机制/README.md)

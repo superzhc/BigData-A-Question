@@ -5,7 +5,7 @@ import os
 ignores_file = ["_sidebar.md", "_navbar.md", "BlogDir.md", "README.md",
                 "sw.js", ".nojekyll", ".gitignore", "index.html"]
 
-ignores_dir = [".git", "image", "images", "Epoint"]
+ignores_dir = [".git", "image", "images", "Epoint", "操作系统", "杂乱"]
 
 ignores_full_path = []
 
@@ -21,9 +21,13 @@ def traverse_dir(path, tab=0):
         superior = path.split("/")[-2]  # 上层目录的名称
         superior_tab = "   "*(tab-1)
         if "README.md" in files:
-            s = "%s- [%s](%sREADME.md)\n" % (superior_tab, superior, path[2:])
+            s = "%s- [%s](%sREADME.md)\n" % (superior_tab,
+                                             superior, path[2:].replace(" ", "%20"))
         else:
             s = "%s- %s\n" % (superior_tab, superior)
+
+    # 判断该目录是否有效
+    valid = False
 
     for file in files:
         full_path = path+file
@@ -39,10 +43,13 @@ def traverse_dir(path, tab=0):
             # s = s+"   "*tab+file+"\n"
             infos = os.path.splitext(file)
             if infos[-1] == ".md":
+                valid = True
                 # fix bug：如果markdown文件中有空格要做一步处理，将空格转换成 %20
-                deal_file_path = file.replace(" ", "%20")
+                # deal_file_path = file.replace(" ", "%20")
+                # fix bug：对路径也做处理
+                deal_file_path = (path[2:]+file).replace(" ", "%20")
                 record = "%s- [%s](%s)\n" % (str_tab,
-                                             infos[0], path[2:]+deal_file_path)
+                                             infos[0], deal_file_path)
                 s = s+record
         else:
             if file in ignores_dir:
@@ -50,8 +57,11 @@ def traverse_dir(path, tab=0):
 
             # record = "%s- %s\n" % (str_tab, file)
             # s = s+record
-            s = s+traverse_dir(path+file+"/", tab+1)
-    return s
+            child_dir = traverse_dir(path+file+"/", tab+1)
+            if child_dir != "":
+                valid = True
+                s = s+child_dir
+    return s if valid else ""
 
 
 if __name__ == "__main__":

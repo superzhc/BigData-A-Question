@@ -1,5 +1,4 @@
 > 参考原文：<https://www.cnblogs.com/zhangyinhua/p/7681059.html>
->
 
 HDFS 的存储原理，无非就是读操作和写操作。
 

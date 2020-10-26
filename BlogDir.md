@@ -36,7 +36,6 @@
    - [Elasticsearch索引的操作](ElasticSearch/Elasticsearch索引的操作.md)
    - [Elasticsearch配置参数](ElasticSearch/Elasticsearch配置参数.md)
    - [FAQ](ElasticSearch/FAQ.md)
-   - [Lucene](ElasticSearch/Lucene/README.md)
    - 其他
       - [Elasticsearch核心技术与实战知识图谱](ElasticSearch/其他/Elasticsearch核心技术与实战知识图谱.md)
       - [Elasticsearch究竟要设置多少分片数](ElasticSearch/其他/Elasticsearch究竟要设置多少分片数.md)
@@ -93,7 +92,6 @@
          - [NodeManager运行失败](Hadoop/MapReduce/作业失败机制/NodeManager运行失败.md)
          - [ResourceManager运行失败](Hadoop/MapReduce/作业失败机制/ResourceManager运行失败.md)
          - [任务运行失败](Hadoop/MapReduce/作业失败机制/任务运行失败.md)
-      - [作业运行机制](Hadoop/MapReduce/作业运行机制/README.md)
       - [输入输出格式](Hadoop/MapReduce/输入输出格式.md)
    - [Protoc安装](Hadoop/Protoc安装.md)
    - [Windows下搭建源码环境](Hadoop/Windows下搭建源码环境.md)
@@ -105,7 +103,6 @@
       - [UI页面解析](Hadoop/YARN/UI页面解析.md)
       - [YARN工作流程](Hadoop/YARN/YARN工作流程.md)
       - [YARN应用程序设计方法](Hadoop/YARN/YARN应用程序设计方法.md)
-      - _v_images
       - [客户端设计](Hadoop/YARN/客户端设计.md)
    - [序列化](Hadoop/序列化.md)
 - [HBase](HBase/README.md)
@@ -130,7 +127,6 @@
       - [源码环境搭建](HBase/Phoenix/源码环境搭建.md)
       - [环境配置](HBase/Phoenix/环境配置.md)
    - [Scan解析](HBase/Scan解析.md)
-   - [协处理器](HBase/协处理器/README.md)
    - [开发环境搭建](HBase/开发环境搭建.md)
    - [物理目录结构](HBase/物理目录结构.md)
    - [过滤器](HBase/过滤器.md)
@@ -270,7 +266,6 @@
       - [独立功能的实现](Java/Redis/独立功能的实现.md)
    - [Spring](Java/Spring/README.md)
       - [AOP和设备支持](Java/Spring/AOP和设备支持/README.md)
-         - AOP源码解析
          - [AspectJ](Java/Spring/AOP和设备支持/AspectJ.md)
       - [FAQ](Java/Spring/FAQ.md)
       - [SpringBoot](Java/Spring/SpringBoot/README.md)
@@ -340,7 +335,6 @@
       - [CAS](Java/多线程/CAS.md)
       - [Executor框架](Java/多线程/Executor框架.md)
       - [FAQ](Java/多线程/FAQ.md)
-      - [Java内存模型](Java/多线程/Java内存模型/README.md)
       - [synchronized](Java/多线程/synchronized.md)
       - [ThreadLocal](Java/多线程/ThreadLocal.md)
       - [volatile](Java/多线程/volatile.md)
@@ -389,7 +383,6 @@
       - [数组](Java/集合/数组.md)
 - [JVM](JVM/README.md)
    - [FAQ](JVM/FAQ.md)
-   - [HeadDump](JVM/HeadDump/README.md)
    - [Hotspot虚拟机中的对象](JVM/Hotspot虚拟机中的对象.md)
    - [JVM内存分配与回收策略](JVM/JVM内存分配与回收策略.md)
    - [JVM内存分配参数](JVM/JVM内存分配参数.md)
@@ -411,9 +404,9 @@
    - 实战
       - [引入jol-core包查看Hotspot的信息](JVM/实战/引入jol-core包查看Hotspot的信息.md)
    - 工具
-      - [Eclipse Memory Analyzer(MAT)](JVM/工具/Eclipse Memory Analyzer(MAT)/README.md)
-         - [使用Memory Analyzer分析Java集合](JVM/工具/Eclipse Memory Analyzer(MAT)/使用Memory%20Analyzer分析Java集合.md)
-         - [找出被空集合占用的内存](JVM/工具/Eclipse Memory Analyzer(MAT)/找出被空集合占用的内存.md)
+      - [Eclipse Memory Analyzer(MAT)](JVM/工具/Eclipse%20Memory%20Analyzer(MAT)/README.md)
+         - [使用Memory Analyzer分析Java集合](JVM/工具/Eclipse%20Memory%20Analyzer(MAT)/使用Memory%20Analyzer分析Java集合.md)
+         - [找出被空集合占用的内存](JVM/工具/Eclipse%20Memory%20Analyzer(MAT)/找出被空集合占用的内存.md)
       - [jhat](JVM/工具/jhat.md)
       - [jinfo：Java配置信息工具](JVM/工具/jinfo：Java配置信息工具.md)
       - [jmap：Java内存映像工具](JVM/工具/jmap：Java内存映像工具.md)
@@ -534,7 +527,6 @@
    - [流和管道和重定向](Linux/流和管道和重定向.md)
    - [流程监控操作](Linux/流程监控操作.md)
    - [目录操作](Linux/目录操作.md)
-   - 脚本
    - [设置环境变量和区别](Linux/设置环境变量和区别.md)
 - [Presto](Presto/README.md)
    - [FAQ](Presto/FAQ.md)
@@ -545,7 +537,6 @@
    - [Python导入自定义模块的三种方法](Python/Python导入自定义模块的三种方法.md)
    - [Python库打包分发](Python/Python库打包分发.md)
    - [requirements详解](Python/requirements详解.md)
-   - _v_images
    - [函数](Python/函数.md)
    - [变量的命名规则](Python/变量的命名规则.md)
    - [字符串](Python/字符串.md)
@@ -590,7 +581,6 @@
    - [概述](Scala/概述.md)
    - [获取对象的Class对象](Scala/获取对象的Class对象.md)
    - [访问修饰符](Scala/访问修饰符.md)
-- script
 - [Spark](Spark/README.md)
    - [Accumulator](Spark/Accumulator.md)
    - [BlockManager](Spark/BlockManager.md)
@@ -666,7 +656,6 @@
    - [参数列表](Sqoop/参数列表.md)
    - [场景验证](Sqoop/场景验证.md)
    - [安装配置](Sqoop/安装配置.md)
-- [Tez](Tez/README.md)
 - [Zookeeper](Zookeeper/README.md)
    - [FAQ](Zookeeper/FAQ.md)
    - [Zookeeper之命令行使用](Zookeeper/Zookeeper之命令行使用.md)
@@ -747,11 +736,6 @@
    - Git
       - [git下载指定版本的代码](工具/Git/git下载指定版本的代码.md)
       - [git设置和取消代理](工具/Git/git设置和取消代理.md)
-- 操作系统
-   - [现代操作系统笔记](操作系统/现代操作系统笔记/README.md)
-      - Untitled.assets
-      - [第1章引论](操作系统/现代操作系统笔记/第1章引论.md)
-      - [第2章线程与进程](操作系统/现代操作系统笔记/第2章线程与进程.md)
 - [数据仓库](数据仓库/README.md)
    - [Lambda架构](数据仓库/Lambda架构.md)
    - [拉链表](数据仓库/拉链表.md)
@@ -790,9 +774,6 @@
    - [图](数据结构与算法/图.md)
    - [排序](数据结构与算法/排序.md)
    - [数学知识复习](数据结构与算法/数学知识复习.md)
-   - [数组](数据结构与算法/数组/README.md)
-   - [栈](数据结构与算法/栈/README.md)
-      - code
    - [树](数据结构与算法/树/README.md)
       - [B+树](数据结构与算法/树/B+树.md)
       - [B树](数据结构与算法/树/B树.md)
@@ -806,26 +787,8 @@
       - [动态规划](数据结构与算法/算法/动态规划.md)
       - [贪心算法](数据结构与算法/算法/贪心算法.md)
    - [算法时间复杂度](数据结构与算法/算法时间复杂度.md)
-   - [线性表](数据结构与算法/线性表/README.md)
-      - code
    - [逻辑结构与物理结构](数据结构与算法/逻辑结构与物理结构.md)
    - [顺序存储的地址计算方法](数据结构与算法/顺序存储的地址计算方法.md)
-- 杂乱
-   - [ELasticsearch线上活动](杂乱/ELasticsearch线上活动.md)
-   - [spark_on_yarn内存分配](杂乱/spark_on_yarn内存分配.md)
-   - test
-      - [头条-tripleC](杂乱/test/头条-tripleC.md)
-      - [头条-无精疯](杂乱/test/头条-无精疯.md)
-      - [头条-黄家公子](杂乱/test/头条-黄家公子.md)
-   - [其他](杂乱/其他.md)
-   - 培训
-      - [Elasticsearch](杂乱/培训/Elasticsearch.md)
-      - [Kafka](杂乱/培训/Kafka.md)
-   - [大数据的过去、现在和未来：万字长文解读《大数据四十二条》](杂乱/大数据的过去、现在和未来：万字长文解读《大数据四十二条》.md)
-   - [数据倾斜](杂乱/数据倾斜.md)
-   - 数据结构与算法
-      - [数据结构与算法文章](杂乱/数据结构与算法/数据结构与算法文章.md)
-   - 计划表.assets
 - [设计模式](设计模式/README.md)
    - [中介者模式](设计模式/中介者模式.md)
    - [亨元模式](设计模式/亨元模式.md)
@@ -869,7 +832,6 @@
          - [第二部分](阅读资源/origin/Spring的分布式事务实现/第二部分.md)
       - [分布式系统如何从故障中恢复？— 重试、超时和退避](阅读资源/origin/分布式系统如何从故障中恢复？—%20重试、超时和退避.md)
       - [多线程简介：一步一步来接近多线程的世界](阅读资源/origin/多线程简介：一步一步来接近多线程的世界.md)
-   - pdf
    - [Spring_Boot参考指南](阅读资源/Spring_Boot参考指南.md)
    - [Spring的分布式事务实现](阅读资源/Spring的分布式事务实现.md)
    - [分布式系统如何从故障中恢复？— 重试、超时和退避](阅读资源/分布式系统如何从故障中恢复？—%20重试、超时和退避.md)

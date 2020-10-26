@@ -17,4 +17,6 @@
 | [Google-MapReduce中文版](阅读资源/Google-MapReduce中文版_1.0.md)                     |
 | [Google-Bigtable中文版](阅读资源/Google-Bigtable中文版_1.0.md)                       |
 
+[阅读列表](其他/readInAction.md)
+
 ## [F&Q](FAQ.md)

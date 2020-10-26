@@ -1,4 +1,6 @@
-> JDK下载地址：<https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>
+> ~~JDK下载地址：<https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html>~~
+> 
+> JDK8 各小版本的下载地址：<https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html> 【更新时间：2020年10月23日】
 
 ## Windows
 
