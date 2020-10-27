@@ -36,36 +36,94 @@ Spark 的生态系统主要包含了 `Spark Core`、`Spark SQL`、`Spark Streami
 |  基于历史数据的数据挖掘  |      -       |        Mahout         |         MLlib          |
 |     图结构数据的处理     |      -       |     Pregel、Hama      |         GraphX         |
 
-## Spark 体系架构
+## Spark 基本概念
 
-**Spark基本概念**
+**`Application`**
 
-- `Application`： 用户自己写的 Spark 应用程序，批处理作业的集合。Application 的 main 方法为应用程序的入口，用户通过 Spark 的 API，定义了 RDD 和对 RDD 的操作。
-- `SparkContext`： Spark 最重要的 API，用户逻辑与 Spark 集群主要的交互接口，它会和 Cluster Master 交互，包括向它申请计算资源等。
-- `Driver 和 Executor`：Spark 在执行每个 Application 的过程中会启动 Driver 和 Executor 两种 JVM 进程。Driver 进程为主控进程，负责执行用户 Application 中的 main 方法，提交 Job，并将 Job 转化为 Task，在各个 Executor 进程间协调 Task 的调度。运行在 Worker上 的 Executor 进程负责执行 Task，并将结果返回给 Driver，同时为需要缓存的 RDD 提供存储功能。
+用户编写的 Spark 程序，通过一个有 main 方法的类执行，完成一个计算任务的处理。它是由一个 Driver 程序和一组运行于 Spark 集群上的 Executor 组成。
 
-**资源管理**
+**`RDD`**
 
-一组计算机的集合，每个计算机节点作为独立的计算资源，又可以虚拟出多个具备计算能力的虚拟机，这些虚拟机是集群中的计算单元。Spark 的核心模块专注于调度和管理虚拟机之上分布式计算任务的执行，集群中的计算资源则交给 Cluster Manager 这个角色来管理，Cluster Manager 可以为自带的Standalone、或第三方的 Yarn和 Mesos。
+弹性分布式数据集是 Spark 框架中的核心概念。通过一系列算子进行操作，当 RDD 遇到 Action 算子时，将之前的所有算子形成一个有向无环图（DAG），再在Spark中转化为Job，提交到集群执行。
 
-Cluster Manager 一般采用 Master-Slave 结构。以 Yarn 为例，部署 ResourceManager 服务的节点为 Master，负责集群中所有计算资源的统一管理和分配；部署 NodeManager 服务的节点为Slave，负责在当前节点创建一个或多个具备独立计算能力的 JVM 实例，在 Spark 中，这些节点也叫做 Worker。
+**`SparkContext`**
 
-另外还有一个 Client 节点的概念，是指用户提交Spark Application 时所在的节点。
+SparkContext 是 Spark 的入口，负责连接 Spark 集群，申请计算资源、创建 RDD、累积量和广播量等。从本质上来说，SparkContext 是 Spark 的对外接口，负责向调用者提供 Spark 的各种功能。
 
-**弹性分布式数据集(RDD)**
+Driver program 通过 SparkContext 连接到集群管理器来实现对集群中任务的控制。Spark 配置参数的设置以及对 ~~SQLContext、HiveContext~~ SparkSession（包含了 SQLContext 和 HiveContext） 和 StreamingContext 的控制也要通过 SparkContext 进行。
 
-弹性分布式数据集(RDD)是 Spark 框架中的核心概念。可以将 RDD 视作数据库中的一张表。其中可以保存任何类型的数据。Spark 将数据存储在不同分区上的 RDD 之中。
+> Only one SparkContext may be active per JVM.  You must stop() the active SparkContext before creating a new one.  This limitation may eventually be removed; see SPARK-2243 for more details.
+>
+> 每个 JVM 只有一个 SparkContext,一台服务器可以启动多个 JVM。
 
-RDD 可以帮助重新安排计算并优化数据处理过程。
+**`Driver`**
 
-此外，它还具有容错性，因为RDD知道如何重新创建和重新计算数据集。
+运行 main 方法的 Java 虚拟机进程，负责监听 Application 的 Executor 进程发来的通信和连接，将工程 jar 发送到所有的 Executor 进程中
 
-RDD 是不可变的。你可以用变换（Transformation）修改 RDD，但是这个变换所返回的是一个全新的RDD，而原有的 RDD 仍然保持不变。
+Driver 与 Master、Worker 协作完成 Application 进程的启动、DAG划分、计算任务封装、分配 task 到 Executor上、计算资源的分配等调度执行作业等
 
-RDD 支持两种类型的操作：
+Driver 调度 task 给 Executor 执行，所以 Driver 最好和 Spark 集群在一片网络内，便以通信
 
-- `变换（Transformation）`变换的返回值是一个新的 RDD 集合，而不是单个值。调用一个变换方法，不会有任何求值计算，它只获取一个 RDD 作为参数，然后返回一个新的 RDD。 变换函数包括：map，filter，flatMap，groupByKey，reduceByKey，aggregateByKey，pipe和coalesce。
-- `行动（Action）`行动操作计算并返回一个新的值。当在一个 RDD 对象上调用行动函数时，会在这一时刻计算全部的数据处理查询并返回结果值。 行动操作包括：reduce，collect，count，first，take，countByKey 以及 foreach。
+Driver 进程通常在 Worker 节点中，和Cluster Manager不在同一个节点上
+
+Cluster Manager 作用对象是整个 Spark 集群(集群资源分配),所有应用,而 Driver 是作用于某一个应用(协调已经分配给 Application 的资源)，管理层面不一样
+
+**`Worker`**
+
+集群中的工作节点，启动并运行 Executor 进程，运行作业代码的节点
+
+- standalone 模式下：Worker 进程所在节点
+- yarn 模式下：yarn 的 NodeManager 进程所在的节点
+- 
+**`Executor`**
+
+运行在 Worker 节点上，负责执行作业的任务，并将数据保存在内存或磁盘中
+
+每个 Spark Application，都有属于自己的 Executor 进程，Spark Application 不会共享一个 Executor 进程
+
+> 在启动参数中有 `executor-cores`、`executor-memory`，每个 Executor 都会占用 cpu core 和内存，又 Spark Application 间不会复用 Executor，则很容易导致 Worker 资源不足
+
+Executor 在整个 Spark Application 运行的生命周期内可以动态增加/释放
+
+Executor 使用多线程运行 SparkContext 分配过来的 task，来一批 task 就执行一批
+
+**`Job`**
+
+一个 Spark Application 可能会被分为多个 Job，每次调用 Action 时，逻辑上会生成一个 Job，一个 Job 包含了一个或多个 Stage。
+
+> 在每个 Spark Application 内部，多个 Job 可以并行执行。
+
+**`Stage`**
+
+每个 Job 都会划分为一个或多个 Stage（阶段），每个 Stage 都会有对应的一批 task(即一个 taskset)，分配到 Executor 上去执行
+
+Stage 包括两类：`ShuffleMapStage` 和 `ResultStage`，如果用户程序中调用了需要进行 Shuffle 计算的 Operator，如 groupByKey 等，就会以 Shuffle 为边界分成 ShuffleMapStage 和 ResultStage。
+
+如果一次 Shuffle 都没执行，那就只有一个 Stage
+
+**`TaskSet`**
+
+一组关联的，但相互之间没有 Shuffle 依赖关系的 Task 集合，Stage 可以直接映射为 TaskSet，一个 TaskSet 封装了一次需要运算的、具有相同处理逻辑的 Task，这些 Task 可以并行计算，粗粒度的调度是以 TaskSet 为单位的。
+
+> 一个 Stage 对应一个 Taskset
+
+**`Task`**
+
+Driver 发送到 Executor 上执行的计算单元，每个 task 负责在一个阶段(Stage)，处理一小片数据，计算出对应的结果
+
+Task 是在物理节点上运行的基本单位，Task 包含两类：`ShuffleMapTask` 和 `ResultTask`，分别对应于 Stage 中 ShuffleMapStage 和 ResultStage 中的一个执行基本单元。
+
+InputSplit-task-partition 有一一对应关系，Spark 会为每一个 partition 运行一个 task 来进行处理
+
+手动设置 task 数量：`spark.default.parallelism`
+
+**`Cluster Manager`**
+
+集群管理器，为每个 Spark Application 在集群中调度和分配资源的组件，如 Spark Standalone、YARN、Mesos 等
+
+Cluster Manager 一般采用 Master-Slave 结构。
+
+以 Yarn 为例，部署 ResourceManager 服务的节点为 Master，负责集群中所有计算资源的统一管理和分配；部署 NodeManager 服务的节点为 Slave，负责在当前节点创建一个或多个具备独立计算能力的 JVM 实例，在 Spark 中，这些节点也叫做 Worker。另外还有一个 Client 节点的概念，是指用户提交 Spark Application 时所在的节点。
 
 ## Spark 运行架构
 

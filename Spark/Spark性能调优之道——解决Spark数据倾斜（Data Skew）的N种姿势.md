@@ -41,7 +41,7 @@ Spark 在做 Shuffle 时，默认使用 HashPartitioner（非 Hash Shuffle）对
 
 现有一张测试表，名为 student_external，内有 10.5 亿条数据，每条数据有一个唯一的 id 值。现从中取出 id 取值为 9 亿到 10.5 亿的共 1.5 条数据，并通过一些处理，使得 id 为 9 亿到 9.4 亿间的所有数据对 12 取模后余数为 8（即在 Shuffle 并行度为 12 时该数据集全部被 HashPartition 分配到第 8 个 Task），其它数据集对其 id 除以 100 取整，从而使得 id 大于 9.4 亿的数据在 Shuffle 时可被均匀分配到所有 Task 中，而 id 小于 9.4 亿的数据全部分配到同一个 Task 中。处理过程如下
 
-```
+```sql
 INSERT OVERWRITE TABLE test
 SELECT CASE WHEN id < 940000000 THEN (9500000  + (CAST (RAND() * 8 AS INTEGER)) * 12 )
        ELSE CAST(id/100 AS INTEGER)
@@ -53,7 +53,7 @@ WHERE id BETWEEN 900000000 AND 1050000000;
 
 通过上述处理，一份可能造成后续数据倾斜的测试数据即以准备好。接下来，使用 Spark 读取该测试数据，并通过`groupByKey(12)`对 id 分组处理，且 Shuffle 并行度为 12。代码如下
 
-```
+```scala
 public class SparkDataSkew {
   public static void main(String[] args) {
     SparkSession sparkSession = SparkSession.builder()
