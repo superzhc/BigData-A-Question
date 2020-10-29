@@ -1,0 +1,89 @@
+# Spark Streaming性能调优
+
+## 数据接收并行度调优
+
+1. Receiver 并行化接收数据
+    每一个输入 DStream 都会在某个 Worker 的 Executor 上启动一个 Receiver，可以创建多个输入 DStream，并且配置它们接收数据源不同的分区数据，达到接收多个数据流的效果。
+
+    比如，一个接收两个 Kafka Topic 的输入 DStream，可以被拆分为两个输入 DStream，每个分别接收一个 topic 的数据。多个 DStream 可以使用 union 算子进行聚合，从而形成一个 DStream。后续使用transformation算子操作
+
+    ```java
+    int numStreams = 5;
+    List<JavaPairDStream<String, String>> kafkaStreams = new ArrayList<JavaPairDStream<String, String>>(numStreams);
+    for (int i = 0; i < numStreams; i++) {
+        kafkaStreams.add(KafkaUtils.createStream(...));
+    }
+    JavaPairDStream<String, String> unifiedStream = streamingContext.union(kafkaStreams.get(0), kafkaStreams.subList(1, kafkaStreams.size()));
+    unifiedStream.print();
+    ```
+2. 调节block interval
+    `spark.streaming.blockInterval`：设置 block interval，默认是 200ms
+
+    对于大多数 Receiver 来说，在将接收到的数据保存到 Spark 的 BlockManager 之前，都会将数据切分为一个一个的 block。而每个 batch 中的 block 数量，则决定了该 batch 对应的 RDD 的 partition 的数量，以及针对该 RDD 执行 transformation 操作时，创建的 task 的数量。每个 batch 对应的 task 数量是大约估计的，即 `task ≈ batch interval / block interval`，比如 batch interval 为 2s，block interval 为 200ms，则创建 10 个 task
+
+    调优目的是让 batch 的 task 数量大于每台机器的 cpu core 数量，尽量利用 cpu core，推荐 task 数量是 cpu core 数量的 2~3 倍
+
+    > 如果集群中有多个spark程序在跑,应该设置成所有应用的task数量总和是cpu core数量的2~3倍
+
+    推荐的 block interval 最小值是 50ms，如果低于这个数值，那么大量 task 的启动时间，可能会变成一个性能开销点。
+3. 重分区
+    `inputStream.repartition(<number of partitions>)`：可以将接收到的 batch 分布到指定数量的机器上再操作。
+
+## 任务启动调优
+
+发送 task 去 Worker 节点上的 Executor 的有延迟，耗时
+
+1. Task 序列化：使用 Kryo 序列化机制来序列化 task，可以减小 task 的大小，从而减少发送这些 task 到各个 Worker 节点上的 Executor 的时间
+2. 执行模式：在 Standalone/coarse-grained Mesos 模式下运行 Spark，比 fine-grained Mesos 模式有更少的 task 启动时间
+
+## 数据处理并行度调优
+
+让在 stage 中使用的并行 task 的数量足够多,充分利用集群资源
+
+如 reduce 默认的并行 task 的数量是由 `spark.default.parallelism` 决定，为全局变量；也可以手动指定该操作的并行度
+
+## 数据序列化调优
+
+两种场景会序列化
+
+1. 默认情况下，接收到的输入数据是存储在 Executor 的内存中的，使用的持久化级别是 `StorageLevel.MEMORY_AND_DISK_SER_2`，Receiver 反序列化从网络接收到的数据，再使用 Spark 的序列化格式序列化数据
+2. 流式计算操作生成的持久化 RDD 会持久化到内存中，默认持久化级别是 `StorageLevel.MEMORY_ONLY_SER`
+
+**优化**
+
+目标：减少用于序列化和反序列化的 CPU 性能开销和 GC 开销
+
+1. 使用 Kryo 序列化
+2. 禁止序列化：数据总量并不是很多，可以将数据以非序列化的方式进行持久化
+
+## batch interval 调优
+
+batch 处理时间(可以通过观察 Spark UI 上的 batch 处理时间)必须小于 batch interval 时间，否则会堆积数据
+
+由于临时性的数据增长导致的暂时的延迟增长是合理的，只要延迟情况可以在短时间内恢复即可
+
+## 内存调优
+
+### 增大内存
+
+在窗口时间内通过 Receiver 接收到的数据，会使用 `StorageLevel.MEMORY_AND_DISK_SER_2` 持久化级别来进行存储，因此无法保存在内存中的数据会溢写到磁盘上，会降低应用性能
+
+另外，若窗口操作中要使用大量 keys 的 updateStateByKey，同样会消耗大量内存
+
+### 垃圾回收
+
+1. DStream 的持久化
+    输入数据和某些操作生产的中间 RDD，默认持久化时都会序列化为字节，可以使用 Kryo 序列化，也可以设置 `spark.rdd.compress=true` 压缩数据，代价是 CPU 时间
+2. 清理旧数据
+    默认隔一段时间会清理数据，如按窗口时间长度清理，可以使用 `streamingContext.remember()` 延长清理时间，以便给其他操作使用数据
+3. CMS 垃圾回收器
+   并行的 GC 会降低吞吐量，但 GC 低开销，减少 batch 的处理时间
+
+   - driver端
+      spark-submit 中使用 `--driver-java-options:-XX:+UseConcMarkSweepGC`
+   - executor端
+      `spark.executor.extraJavaOptions:-XX:+UseConcMarkSweepGC`
+4. 其他
+    使用 OFF_HEAP 存储级别的保持 RDDs
+    使用更小的 heap sizes 的 executors.这将降低每个 JVM heap 内的 GC 压力
+
