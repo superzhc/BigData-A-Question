@@ -1,4 +1,6 @@
-### 简介
+# Hive Server
+
+## 简介
 
 HiveServer 可以让 Hive 以提供 Trift 服务的服务器形式来运行，可以允许许多不同语言（如：C、python、Java）编写的客户端进行通信。
 
@@ -15,7 +17,7 @@ ${HIVE_HOME}/bin/hive --servie hiveserver2 &
 
 默认的端口为 `10000`，可以通过设置`HIVE_PORT` 环境变量来设置服务器所监听的端口号。
 
-### HiveServer vs HiveServer2
+## HiveServer vs HiveServer2
 
 两者都允许远程客户端使用多种编程语言，通过 HiveServer 或 HiveServer2，客户端可以在不启动 CLI 的情况下对 Hive 中的数据进行操作。
 
@@ -30,9 +32,9 @@ HiveServer 和 HiveServer2 的 JDBC 区别：
 | HiveServer2 | `jdbc:hive2://` | `org.apache.hive.jdbc.HiveDriver`        |
 | HiveServer  | `jdbc:hive://`  | `org.apache.hadoop.hive.jdbc.HiveDriver` |
 
-### 使用
+## 使用
 
-#### HiveServer
+### ~~HiveServer~~
 
 在命令行输入 `hive --service hiveserver --help` 查看 hiveserver 的帮助信息：
 
@@ -52,9 +54,9 @@ usage:hiveserver
 
 启动 hiveserver 服务，可以得知默认 hiveserver 运行在端口 **10000**，最小 100 工作线程，最大 2147483647 工作线程
 
-注：HiveServer 计划从 Hive 0.15开始从版本中删除，需要切换到 HiveServer2
+> 注：HiveServer 计划从 Hive 0.15开始从版本中删除，需要切换到 HiveServer2
 
-#### HiveServer2
+### HiveServer2
 
 Hiveserver2 允许在配置文件 `hive-site.xml` 中进行配置管理，具体的参数为：
 

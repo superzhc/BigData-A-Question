@@ -11,12 +11,11 @@ Spark Shuffle 分为两个步骤：`Shuffle Write` 和 `Shuffle Read`。
 
 ## HashShuffle
 
- ***HashShuffleManager 适合小数据量*****
-**
+> HashShuffleManager 适合小数据量
 
 ![img](images/1507195544916_16_a.png)
 
-如图 会产生 4*3 个小文件：
+如图，会产生 4*3 个小文件：
 
 ​     每一个map task将 ***不同结果写到不同的buffer*** 中，每个buffer的大小为 ***32K*** 。*buffer起到数据缓存的作用* 
 
@@ -42,10 +41,7 @@ Spark Shuffle 分为两个步骤：`Shuffle Write` 和 `Shuffle Read`。
 
 **HashShuffler Consolidate合并机制**
 
-![img](images/1505387841047_16_a.png)**
-**
-
-
+![img](images/1505387841047_16_a.png)
 
 如图 会产生 2*3 个小文件：
 
@@ -61,8 +57,7 @@ Spark Shuffle 分为两个步骤：`Shuffle Write` 和 `Shuffle Read`。
 
 ## SortShuffle
 
- ***SortShuffleManager 适合大数据量*****
-**
+ ***SortShuffleManager 适合大数据量***
 
   ![img](images/1507197166115_16_a.png)
 
@@ -96,8 +91,7 @@ Spark Shuffle 分为两个步骤：`Shuffle Write` 和 `Shuffle Read`。
 
 ​         **·** ***不是***  聚合类shuffle算子时
 
-​    ![img](images/1505389017650_16_a.png)**
-**
+​    ![img](images/1505389017650_16_a.png)
 
 ## Shuffle Read
 
