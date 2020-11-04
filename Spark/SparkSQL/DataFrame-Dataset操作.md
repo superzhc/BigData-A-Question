@@ -114,10 +114,18 @@ df.withColumnRenamed("id","idx")
 
 ### `withColumn`：往当前DataFrame中新增一列
 
-> `whtiColumn(colName:String,col:Column)`方法根据指定colName往DataFrame中新增一列，如果colName已存在，则会覆盖当前列。
+> `whtiColumn(colName:String,col:Column)` 方法根据指定 colName 往 DataFrame 中新增一列，如果 colName 已存在，则会覆盖当前列。
+
+**Scala 版本**
 
 ```scala
 df.withColumn("id2", df("id")).show()
+```
+
+**Java 版本**
+
+```java
+Dataset<Row> newDs = ds.withColumn("new_col",org.apache.spark.sql.functions.lit(1));
 ```
 
 ### `drop`：去除指定字段，保留其他字段
@@ -222,10 +230,22 @@ df.join(df2,Seq("c1","c2"))
 
 **指定join类型**
 
-> 两个DataFrame的join操作有inner, outer, left_outer, right_outer, leftsemi类型。
+> 两个 DataFrame 的 join 操作有 inner, outer, left_outer, right_outer, leftsemi 类型。
+
+*Scala 版本*
 
 ```scala
-df.join(df2,,Seq("c1","c2"),"inner")
+df.join(df2,Seq("c1","c2"),"inner")
+```
+
+*Java 版本*
+
+```java
+// 此种方式进行join操作会保存两个进行关联的列
+df.join(df2,df.col("c1").equalTo(top5GenreDF.col("c1")),"inner");
+
+// 如果两个表的列明相同，且是内连接，第二个参数可以直接用String
+df.join(df2,"c1");
 ```
 
 **使用Column类型来join**
@@ -258,3 +278,14 @@ df.apply("id")
 df("id")
 ```
 
+### 随机数
+
+在 Spark SQL 中，`org.apache.spark.sql.functions` 包提供了一些实用的函数，其中就包含了产生随机数的函数。它们可以从一个特定的分布中提取出独立同分布值，例如产生均匀分布随机数的函数 `rand()` 和产生服从正态分布的随机数的函数 `randn()` 。
+
+### Java写法下引用 `col,sum,avg` 等方法
+
+需要保证静态引用了类，这样类中的静态方法即可被引用，如下所示：
+
+```
+import static org.apache.spark.sql.functions.*;
+```

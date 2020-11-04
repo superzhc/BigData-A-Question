@@ -24,16 +24,46 @@ val distData = sc.parallelize(data)
 sc.parallelize(data,10)
 ```
 
+**Java 版本**
+
+```java
+List<String> data = Arrays.asList("Learn","Apache","Spark","with","Tutorial Kart");
+JavaRDD<String> items = jsc.parallelize(data);   // 不指定分区数
+JavaRDD<String> items = jsc.parallelize(data,2); // 指定分区数
+```
+
 ### 外部数据源
 
 Spark 支持多种数据源，比如 HDFS、Cassandra、HBase、Amazon S3 或者其他支持 Hadoop 的数据源。Spark 支持多种文件格式，比如普通文本文件、SequenceFiles、Parquet、CSV、JSON、对象文件、Hadoop 的输入输出文件等。
+
+> 小技巧：对于结构化的数据，可以考虑先通过生成 DataFrame 在直接转换成 RDD，此种方式比较简单
 
 文本文件可以使用 SparkContext 的 `textFile(path:String,minPartitions:Int=defaultMinPartitions)` 方法创建 RDD。此方法需要一个文件的 URI（本地路径的机器上，或一个 `hdfs://`、`s3n://`等 URI），另外可以通过第二个参数 minPartitions 设置 RDD 分区数，返回值为由 String 对象组成的 `RDD[String]`。
 
 示例：从一个本地文件系统读取文本文件作为外部数据源
 
+**Scala 版本**
+
 ```scala
 val distFile = sc.textFile("file:///usr/local/data.txt",10)
+```
+
+**Java 版本**
+
+```java
+JavaRDD<String> lines = jsc.textFile("file:///usr/local/data.txt");
+
+// 支持一次性读取多个文件到一个RDD中，使用英文逗号(,)进行分割
+JavaRDD<String> lines = sc.textFile("data/rdd/input/file1.txt, data/rdd/input/file2.txt, data/rdd/input/file3.txt");
+
+// 读取整个目录下的所有txt文件
+JavaRDD<String> lines = sc.textFile("data/rdd/input");
+
+// 支持读取多个目录下的所有txt文件到一个RDD中，使用英文逗号(,)进行分割
+JavaRDD<String> lines = sc.textFile("data/rdd/input,data/rdd/anotherFolder");
+
+// 支持通配符的模式读取文件到RDD中
+JavaRDD<String> lines = sc.textFile("data/rdd/input/file[0-3].txt,data/rdd/anotherFolder/file*");
 ```
 
 #### **`textFile()`**

@@ -4,13 +4,29 @@
 
 SparkContext 是 Spark 编程的主入口点，SparkContext 负责与 Spark 集群的连接，可以被用于在集群上创建 RDDs、累加器（accumulators）和广播变量（broadcast variables）。
 
-在 `spark-shell` 中，SparkContext 已经被系统默认创建以供用户使用，变量为 sc。
+> 在 `spark-shell` 中，SparkContext 已经被系统默认创建以供用户使用，变量为 sc。
+
+**Scala 版本**
+
+```scala
+val conf:SparkConf = new SparkConf().setAppName("Demo").setMaster("local")
+val sc:SparkContext=new SparkContext(conf)
+```
+
+**Java 版本**
+
+```java
+SparkConf conf=new SparkConf().setAppName("Demo").setMaster("local");
+JavaSparkContext jsc=new JavaSparkContext(conf);
+```
 
 ## SparkSession
 
-Spark SQL模块的编程主入口是**SparkSession**，SparkSession对象不仅为用户提供了创建DataFrame对象、读取外部数据源并转化为DataFrame对象以及执行sql查询的API，还负责记录着用户希望Spark应用如何在Spark集群运行的控制、调优参数，是Spark SQL的上下文环境，是运行的基础。
+Spark SQL 模块的编程主入口是 **SparkSession**，SparkSession 对象不仅为用户提供了创建 DataFrame 对象、读取外部数据源并转化为 DataFrame 对象以及执行 sql 查询的 API，还负责记录着用户希望 Spark 应用如何在 Spark 集群运行的控制、调优参数，是 Spark SQL 的上下文环境，是运行的基础。
 
-可以通过`SparkSession.builder()`创建一个基本SparkSession对象，示例代码如下：
+> 在 `spark-shell` 中，SparkSession 已经被系统默认创建以供用户使用，变量为 spark。
+
+可以通过 `SparkSession.builder()` 创建一个基本 SparkSession 对象，示例代码如下：
 
 ```scala
 import org.apache.spark.sql.SparkSession
@@ -24,6 +40,8 @@ val sparkSession=SparkSession
 // 引入 spark.implicits._，以便于RDDs和DataFrame之间的隐式转换
 import sparkSession.implicits._
 ```
+
+> 注：**Java 版本的创建方式和 Scala 版本的创建方式是一样的，Spark 官网并没有专门提供类似 JavaSparkContext 的 JavaSparkSession**
 
 sparkSession的一些重要的变量和方法：
 

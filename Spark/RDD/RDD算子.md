@@ -1,21 +1,45 @@
-[TOC]
-
 <img src="../images/15050356690153-1568651249876.jpg" alt="img" style="zoom: 50%;" />
 
 ## Transformation
 
 ### `filter`：过滤
 
+**Scala 版本**
+
 ```scala
 val rdd = sc.makeRDD(Array("hello","hello","hello","world"))
 rdd.filter(!_.contains("hello")).foreach(println)
-结果：
-world
+// 结果：
+// world
+```
+
+**Java 版本**
+
+```java
+List<Integer> data = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10); 
+JavaRDD<Integer> rdd = jsc.parallelize(data,1);
+
+Function<Integer, Boolean> filter = k -> ( k % 3 == 0);//过滤函数
+
+JavaRDD<Integer> rddf = rdd.filter(filter);
 ```
 
 ### `map` 和 `flatMap`
 
 <img src="../images/15050362138086-1568652283504.jpg" alt="img" style="zoom: 40%;" />
+
+**Java 版本**
+
+```java
+// map操作
+JavaRDD<Integer> numbers = jsc.parallelize(Arrays.asList(14,21,88,99,455));
+JavaRDD<Double> log_values = numbers.map(x -> Math.log(x));
+
+// flatMap 操作
+String path = "data/rdd/input/sample.txt";
+JavaRDD<String> lines = jsc.textFile(path);
+JavaRDD<String> words = lines.flatMap(s -> Arrays.asList(s.split(" ")).iterator()); 
+```
 
 ### `sample` ：随机抽样
 
@@ -37,10 +61,11 @@ val rdd = sc.makeRDD(Array(
   "world1","world2","world3","world4"
 ))
 rdd.sample(false, 0.3).foreach(println)
-结果：
-hello4
-world1
-在数据量不大的时候，不会很准确
+
+// 结果：
+// hello4
+// world1
+// 在数据量不大的时候，不会很准确
 ```
 
 ### `groupByKey` 和 `reduceByKey`
@@ -102,6 +127,8 @@ object SortByOperator {
 distinct算子实际上经过了以下步骤：
 <img src="../images/15050364198942-1568652444717.jpg" alt="img" style="zoom:50%;" />
 
+**Scala 版本**
+
 ```scala
 val rdd = sc.makeRDD(Array(
       "hello",
@@ -114,8 +141,16 @@ val distinctRDD = rdd
       .reduceByKey(_+_)
       .map(_._1)
 distinctRDD.foreach {println}
-等价于：
+// 等价于：
 rdd.distinct().foreach {println}
+```
+
+**Java 版本**
+
+```java
+List<String> data = Arrays.asList("Learn", "Apache", "Spark", "Learn", "Spark", "RDD", "Functions");
+JavaRDD<String> words = jsc.parallelize(data, 1);
+JavaRDD<String> rddDistinct = words.distinct();
 ```
 
 ### `join`
@@ -226,10 +261,10 @@ joinRDD.foreach( x => {
     val salary = x._2._2
     println(id + "\t" + name + "\t" + salary)
 })
-结果：
-1 Jed 8000
-2 Tom 6000
-3 Bob 5000
+// 结果：
+// 1 Jed 8000
+// 2 Tom 6000
+// 3 Bob 5000
 
 val leftOuterJoinRDD = nameRDD.leftOuterJoin(salaryRDD)
 leftOuterJoinRDD.foreach( x => {
@@ -238,10 +273,11 @@ leftOuterJoinRDD.foreach( x => {
       val salary = x._2._2
       println(id + "\t" + name + "\t" + salary)
 }
-1 Jed Some(8000)
-2 Tom Some(6000)
-3 Bob Some(5000)
-4 Tony None
+// 结果
+// 1 Jed Some(8000)
+// 2 Tom Some(6000)
+// 3 Bob Some(5000)
+// 4 Tony None
 
 val rightOuterJoinRDD = nameRDD.rightOuterJoin(salaryRDD)
 rightOuterJoinRDD.foreach( x => {
@@ -250,10 +286,10 @@ rightOuterJoinRDD.foreach( x => {
       val salary = x._2._2
       println(id + "\t" + name + "\t" + salary)
 })
-结果：
-1 Some(Jed) 8000
-2 Some(Tom) 6000
-3 Some(Bob) 5000
+// 结果：
+// 1 Some(Jed) 8000
+// 2 Some(Tom) 6000
+// 3 Some(Bob) 5000
 
 val fullOuterJoinRDD = nameRDD.fullOuterJoin(salaryRDD)
 fullOuterJoinRDD.foreach( x => {
@@ -262,10 +298,10 @@ fullOuterJoinRDD.foreach( x => {
       val salary = x._2._2
       println(id + "\t" + name + "\t" + salary)
 })
-1 Some(Jed) Some(8000)
-2 Some(Tom) Some(6000)
-3 Some(Bob) Some(5000)
-4 Some(Tony) None
+// 1 Some(Jed) Some(8000)
+// 2 Some(Tom) Some(6000)
+// 3 Some(Bob) Some(5000)
+// 4 Some(Tony) None
 ```
 
 ### `union`：把两个RDD进行逻辑上的合并
@@ -296,22 +332,22 @@ rdd.map(x => {
   println("关闭数据库连接...")
 }).count()
 
-结果：
-创建数据库连接...
-写入数据库...
-关闭数据库连接...
+// 结果：
+// 创建数据库连接...
+// 写入数据库...
+// 关闭数据库连接...
 
-创建数据库连接...
-写入数据库...
-关闭数据库连接...
+// 创建数据库连接...
+// 写入数据库...
+// 关闭数据库连接...
 
-创建数据库连接...
-写入数据库...
-关闭数据库连接...
+// 创建数据库连接...
+// 写入数据库...
+// 关闭数据库连接...
 
-创建数据库连接...
-写入数据库...
-关闭数据库连接...
+// 创建数据库连接...
+// 写入数据库...
+// 关闭数据库连接...
 ```
 
 `mapPartitions` 以分区为单位进行操作
@@ -331,13 +367,13 @@ rdd.mapPartitions(x => {
   list.iterator
 })foreach(println)
 
-结果：
-创建数据库
-Tom:写入数据库
-Bob:写入数据库 
-创建数据库
-Tony:写入数据库
-Jerry:写入数据库
+// 结果：
+// 创建数据库
+// Tom:写入数据库
+// Bob:写入数据库 
+// 创建数据库
+// Tony:写入数据库
+// Jerry:写入数据库
 ```
 
 ### `mapPartitionsWithIndex`
@@ -361,20 +397,20 @@ for(x <- resultArr){
   println(x)
 }
 
-结果：
-分区数量:3
-partition:0 content:Tom01
-partition:0 content:Tom02
-partition:0 content:Tom03
-partition:0 content:Tom04
-partition:1 content:Tom05
-partition:1 content:Tom06
-partition:1 content:Tom07
-partition:1 content:Tom08
-partition:2 content:Tom09
-partition:2 content:Tom10
-partition:2 content:Tom11
-partition:2 content:Tom12
+// 结果：
+// 分区数量:3
+// partition:0 content:Tom01
+// partition:0 content:Tom02
+// partition:0 content:Tom03
+// partition:0 content:Tom04
+// partition:1 content:Tom05
+// partition:1 content:Tom06
+// partition:1 content:Tom07
+// partition:1 content:Tom08
+// partition:2 content:Tom09
+// partition:2 content:Tom10
+// partition:2 content:Tom11
+// partition:2 content:Tom12
 ```
 
 ### `coalesce`：改变RDD的分区数
@@ -507,27 +543,28 @@ glomRDD.foreach(x => {
   println("============")
 })
 println(glomRDD.count())
-结果：
-============
-1
-2
-3
-4
-5
-============
-============
-6
-7
-8
-9
-10
-============
-2
+
+// 结果：
+// ============
+// 1
+// 2
+// 3
+// 4
+// 5
+// ============
+// ============
+// 6
+// 7
+// 8
+// 9
+// 10
+// ============
+// 2
 ```
 
 ### `randomSplit`：拆分RDD
 
-```
+```scala
 /**
  * randomSplit:
  *   根据传入的 Array中每个元素的权重将rdd拆分成Array.size个RDD
@@ -535,19 +572,20 @@ println(glomRDD.count())
  */
 val rdd = sc.parallelize(1 to 10)
 rdd.randomSplit(Array(0.1,0.2,0.3,0.4)).foreach(x => {println(x.count)})
-理论结果：
-1
-2
-3
-4
-实际结果不一定准确
+
+// 理论结果：
+// 1
+// 2
+// 3
+// 4
+// 实际结果不一定准确
 ```
 
 ## Actions
 
 ### `count`：统计RDD中元素的个数
 
-```
+```scala
 val rdd = sc.makeRDD(Array("hello","hello","hello","world"))
 val num = rdd.count()
 println(num)
@@ -557,14 +595,36 @@ println(num)
 
 ### `foreach`：遍历RDD中的元素
 
-```
+**Scala 版本**
+
+```scala
 val rdd = sc.makeRDD(Array("hello","hello","hello","world"))
 rdd.foreach(println)
-结果：
-hello
-hello
-hello
-world
+
+// 结果：
+// hello
+// hello
+// hello
+// world
+```
+
+**Java 版本**
+
+```java
+List<String> data = Arrays.asList("Learn","Apache","Spark","with","Tutorial Kart"); 
+JavaRDD<String> items = jsc.parallelize(data,1);
+
+// apply a function for each element of RDD
+items.foreach(new VoidFunction<String>(){ 
+    public void call(String item) {
+        System.out.println("* "+item); 
+    }
+});
+
+// Java8的lambda写法如下：
+items.foreach(item -> {
+    System.out.println("* "+item); 
+});
 ```
 
 ### `foreachPartition`
@@ -573,7 +633,7 @@ world
 
 `foreach` 和 `foreachPartition` 都是actions算子；`map` 和 `mapPartition` 可以与它们做类比，但`map` 和 `mapPartition` 是transformations算子
 
-```
+```scala
 //设置rdd的分区数为2
 val rdd = sc.parallelize(1 to 6, 2)
 rdd.foreachPartition(x => {
@@ -582,15 +642,16 @@ rdd.foreachPartition(x => {
     println(x.next())
   }
 })
-结果：
-data from a partition:
-1
-2
-3
-data from a partition:
-4
-5
-6
+
+// 结果：
+// data from a partition:
+// 1
+// 2
+// 3
+// data from a partition:
+// 4
+// 5
+// 6
 ```
 
 ### `collect`：把运行结果拉回到Driver端
@@ -611,32 +672,41 @@ list.foreach(println)
 
 ### `take(n)`：取RDD中的前n个元素
 
-```
+```scala
 val rdd = sc.makeRDD(Array("hello","hello","hello","world"))
 rdd.take(2).foreach(println)
-结果：
-hello
-hello
+// 结果：
+// hello
+// hello
 ```
 
 ### `first` ：相当于 `take(1)`
 
-```
+```scala
 val rdd = sc.makeRDD(Array("hello","hello","hello","world"))
 println(rdd.first)
-结果：
-Hello
+// 结果：
+// Hello
 ```
 
 ### `reduce`：按照指定规则聚合RDD中的元素
 
-```
+**Scala 版本**
+
+```scala
 val numArr = Array(1,2,3,4,5)
 val rdd = sc.parallelize(numArr)
 val sum = rdd.reduce(_+_)
 println(sum)
-结果：
-15
+// 结果：
+// 15
+```
+
+**Java 版本**
+
+```java
+JavaRDD<Integer> numbers = jsc.parallelize(Arrays.asList(14,21,88,99,455));
+int sum = numbers.reduce((a,b)->a+b);
 ```
 
 ### `countByKey`：统计出 KV 格式的 RDD 中相同的 K 的个数

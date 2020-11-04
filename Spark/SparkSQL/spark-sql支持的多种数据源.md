@@ -38,11 +38,11 @@ val df=sparkSession.sql("select name,age from parquet.`/home/user/user.parquet`"
 
 保存操作可以选择使用**存储模式**（SaveMode），从而指定如何处理现有数据（如果存在），存储模式如下：
 
-|           Scala/Java            |   Any Language   |                                              Meaning                                               |
-| ------------------------------- | ---------------- | -------------------------------------------------------------------------------------------------- |
-| SaveMode.ErrorIfExists(default) | "error"(default) | 将DataFrame保存到数据源时，如果数据已经存在，则会抛出异常                                              |
-| SaveMode.Append                 | "append"         | 将DataFrame保存到数据源时，如果数据/表已经存在，则DataFrame的内容将被附加到现有数据中                    |
-| SaveMode.Overwrite              | "overwrite"      | 覆盖模式意味着将DataFrame保存到数据源时，如果数据表已经存在，则预期DataFrame的内容将覆盖现有数据          |
+| Scala/Java                      | Any Language     | Meaning                                                                                                    |
+| ------------------------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| SaveMode.ErrorIfExists(default) | "error"(default) | 将DataFrame保存到数据源时，如果数据已经存在，则会抛出异常                                                  |
+| SaveMode.Append                 | "append"         | 将DataFrame保存到数据源时，如果数据/表已经存在，则DataFrame的内容将被附加到现有数据中                      |
+| SaveMode.Overwrite              | "overwrite"      | 覆盖模式意味着将DataFrame保存到数据源时，如果数据表已经存在，则预期DataFrame的内容将覆盖现有数据           |
 | SaveMode.Ignore                 | "ignore"         | 忽略模式意味着当将DataFrame保存到数据源时，如果数据已经存在，则不会保存DataFrame的数据，并且不更改现有数据 |
 
 通过`mode()`方法设置数据写入指定文件的存储模式。
