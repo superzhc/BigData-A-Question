@@ -1,3 +1,5 @@
+# Hive
+
 > 官网地址：<https://cwiki.apache.org/confluence/display/Hive/Home>
 
 ## 简介
@@ -6,7 +8,7 @@ Hive 是一种建立在 Hadoop 文件系统上的数据仓库架构，并对存�
 
 Hive 最适合数据仓库应用程序，使用该应用程序进行相关的静态数据分析，不需要快速响应给出结果，而且数据本身不会频繁变化。
 
-但 Hive 不是一个完整的数据库，Hadoop 以及 HDFS 的**设计本身约束和局限性**地限制了 Hive 所能胜任的工作。其中最大的限制就是 **Hive不支持记录级别的更新、插入或者删除操作**，但是用户可以通过查询生成新表或者将查询结果导入到文件中。同时，因为 Hadoop 是一个面向批处理的系统，而 MapReduce 任务（job）的启动过程需要消耗较长的时间，所以 **Hive查询延时比较严重**。传统数据库中在秒级别可以完成的查询，在 Hive 中，即使数据集相对较小，往往也需要执行更长的时间。最后需要说明的是，**Hive不支持事务**。
+但 Hive 不是一个完整的数据库，Hadoop 以及 HDFS 的 **设计本身约束和局限性** 地限制了 Hive 所能胜任的工作。其中最大的限制就是 **Hive不支持记录级别的更新、插入或者删除操作**，但是用户可以通过查询生成新表或者将查询结果导入到文件中。同时，因为 Hadoop 是一个面向批处理的系统，而 MapReduce 任务（job）的启动过程需要消耗较长的时间，所以 **Hive查询延时比较严重**。传统数据库中在秒级别可以完成的查询，在 Hive 中，即使数据集相对较小，往往也需要执行更长的时间。最后需要说明的是，**Hive不支持事务**。
 
 Hive 是最适合数据仓库应用程序的，其可以维护海量数据，而且可以对数据进行挖掘，然后形成意见和报告等。
 
@@ -86,7 +88,7 @@ Hive的配置文件一般有如下文件：
 
 如果用户执行下面的命令，那么可以查看到 hive 命令的一个简明说明的选项列表。
 
-```sh
+```bash
 hive --help
 Usage ./hive <parameters> --service serviceName <service parameters>
 Service List: beeline cleardanglingscratchdir cli help hiveburninclient hiveserver2 hiveserver hwi jar lineage metastore metatool orcfiledump rcfilecat schemaTool version
@@ -104,14 +106,14 @@ Debug help:  ./hive --debug --help
 
 需要注意 Service List 后面的内容。这里提供了几个服务，包括使用的CLI。用户可以通过 `--service name`服务名称来启用某个服务，尽管其中有几个服务也是有快捷启动方式的。
 
-| 选项        | 名称         | 描述                                                         |
-| ----------- | ------------ | ------------------------------------------------------------ |
-| cli         | 命令行界面   | 用户定义表，执行查询等。如果没有指定服务（即`--service`），这个是默认的服务。 |
-| hiveserver2 | Hive Server  | 监听来自于其他进程的Thrift连接的一个守护进程                 |
+| 选项        | 名称         | 描述                                                                                                   |
+| ----------- | ------------ | ------------------------------------------------------------------------------------------------------ |
+| cli         | 命令行界面   | 用户定义表，执行查询等。如果没有指定服务（即`--service`），这个是默认的服务。                          |
+| hiveserver2 | Hive Server  | 监听来自于其他进程的Thrift连接的一个守护进程                                                           |
 | hwi         | Hive Web界面 | 是一个可以执行查询语句和其他命令的简单的Web界面，这样可以不用登录到集群中的某台机器上使用CLI来进行查询 |
-| jar         |              | hadoop jar命令的一个扩展， 这样可以执行需要Hive环境的应用    |
-| metastore   |              | 启动一个扩展的Hive 元数据服务，可以供多客户端使用            |
-| rcfilecat   |              | 一个可以打印出RCFile格式文件内容的工具                       |
+| jar         |              | hadoop jar命令的一个扩展， 这样可以执行需要Hive环境的应用                                              |
+| metastore   |              | 启动一个扩展的Hive 元数据服务，可以供多客户端使用                                                      |
+| rcfilecat   |              | 一个可以打印出RCFile格式文件内容的工具                                                                 |
 
 [Hive命令行(CLI)](Hive/Hive命令行.md) 
 

@@ -1,0 +1,3 @@
+# Hive 读文件时的输入任务划分
+
+Hive 是起步较早的 SQL on Hadoop 项目，最早也是诞生于 Hadoop 中，所以输入划分这部分的代码与 Hadoop 相关度非常高。现在 Hive 普遍使用的输入格式是 `CombineHiveInputFormat`，它继承于 `HiveInputFormat`，而 `HiveInputFormat` 实现了 Hadoop 的 InputFormat 接口，其中的 getSplits 方法用来获取具体的划分结果，划分出的一份输入数据被称为一个 “Split”。在执行时，每个 Split 对应到一个 map 任务。在划分 Split 时，首先挑出不能合并到一起的目录——比如开启了事务功能的路径。这些不能合并的目录必须单独处理，剩下的路径交给私有方法 getCombineSplits，这样 Hive 的一个 map task 最多可以处理多个目录下的文件。在实际操作中，一般只要通过 `set mapred.max.split.size=xx;` 即可控制文件合并的大小。当一个文件过大时，父类的 getSplits 也会帮我们完成相应的切分工作。
