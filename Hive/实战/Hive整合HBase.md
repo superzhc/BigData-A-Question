@@ -1,16 +1,15 @@
-配置 Hive 与 HBase 整合的目的是利用 HQL 语法实现对 HBase 数据库的增删改查操作，基本原理就是利用两者本身对外的API接口互相进行通信，两者通信主要是依靠 `hive_hbase-handler.jar` 工具类。 但请注意：使用Hive 操作 HBase 中的表，只是提供了便捷性，`hiveQL` 引擎使用的是 MapReduce，对于性能上，表现比较糟糕，在实际应用过程中可针对不同的场景酌情使用。
+# Hive 整合 HBase
+配置 Hive 与 HBase 整合的目的是利用 HQL 语法实现对 HBase 数据库的增删改查操作，基本原理就是利用两者本身对外的 API 接口互相进行通信，两者通信主要是依靠 `hive_hbase-handler.jar` 工具类。 但请注意：使用 Hive 操作 HBase 中的表，只是提供了便捷性，`hiveQL` 引擎使用的是 MapReduce，对于性能上，表现比较糟糕，在实际应用过程中可针对不同的场景酌情使用。
 
 ## 原理
 
-Hive与HBase利用两者本身对外的API来实现整合，主要是靠HBaseStorageHandler进行通信，利用 HBaseStorageHandler，Hive可以获取到Hive表对应的HBase表名，列簇以及列，InputFormat和 OutputFormat类，创建和删除HBase表等。 
+Hive 与 HBase 利用两者本身对外的 API 来实现整合，主要是靠 HBaseStorageHandler 进行通信，利用 HBaseStorageHandler，Hive 可以获取到 Hive 表对应的 HBase 表名，列簇以及列，InputFormat 和 OutputFormat 类，创建和删除 HBase 表等。 
 
-Hive访问HBase中表数据，实质上是通过MapReduce读取HBase表数据，其实现是在MR中，使用HiveHBaseTableInputFormat完成对HBase表的切分，获取RecordReader对象来读取数据。 
+Hive 访问 HBase 中表数据，实质上是通过 MapReduce 读取 HBase 表数据，其实现是在 MR 中，使用 HiveHBaseTableInputFormat 完成对 HBase 表的切分，获取 RecordReader 对象来读取数据。 
 
-对HBase表的切分原则是一个Region切分成一个Split,即表中有多少个Regions,MR中就有多少个Map； 
+对 HBase 表的切分原则是一个 Region 切分成一个 Split，即表中有多少个 Regions，MR 中就有多少个 Map； 
 
-读取HBase表数据都是通过构建Scanner，对表进行全表扫描，如果有过滤条件，则转化为Filter。当过滤条件为rowkey时，则转化为对rowkey的过滤； 
-
-Scanner通过RPC调用RegionServer的next()来获取数据；
+读取 HBase 表数据都是通过构建 Scanner，对表进行全表扫描，如果有过滤条件，则转化为 Filter。当过滤条件为 rowkey 时，则转化为对 rowkey 的过滤；Scanner 通过 RPC 调用 RegionServer 的 `next()` 来获取数据。
 
 ## 配置
 
@@ -18,7 +17,7 @@ Scanner通过RPC调用RegionServer的next()来获取数据；
 
 将 HBase 相关 jar 包拷贝到 Hive 的 lib 目录下
 
-```txt
+```
 hbase-client-0.98.13-hadoop2.jar
 hbase-common-0.98.13-hadoop2.jar
 hbase-server-0.98.13-hadoop2.jar
@@ -37,14 +36,12 @@ zookeeper-3.4.5.jar
 
 - 添加 `hbase.zookeeper.quorum` 属性
 
-  ```sh
+  ```xml
   <property>      
       <name>hbase.zookeeper.quorum</name>
       <value>192.168.186.40,192.168.186.41,192.168.186.42</value>
   </property>
   ```
-
-  
 
 ### 3、~~修改 `hive-env.sh` 配置文件~~
 
@@ -56,11 +53,27 @@ zookeeper-3.4.5.jar
 
 在hive中执行创建hbase的外部表，执行创建脚本：
 
-```sh
-hive> CREATE EXTERNAL TABLE ANALYSELOG(key          string,apiguid      string,apiid        string,apiname      string,clientip     string,consumer     string,context      string,forwardtime  int,method       string,requestsize  double,requesttime  int,requesturl   string,responsesize double,rowguid      string,startat      date,status       int)
-    > STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
-    > WITH SERDEPROPERTIES("hbase.columns.mapping"=":key,default:apiguid,default:apiid,default:apiname,default:clientip,default:consumer,default:context,default:forwardtime,default:method,default:requestsize,default:requesttime,default:requesturl,default:responsesize,default:rowguid,default:startat,default:status")
-    > TBLPROPERTIES("hbase.table.name" = "ANALYSELOG");
+```sql
+hive> CREATE EXTERNAL TABLE ANALYSELOG(
+        key          string,
+        apiguid      string,
+        apiid        string,
+        apiname      string,
+        clientip     string,
+        consumer     string,
+        context      string,
+        forwardtime  int,
+        method       string,
+        requestsize  double,
+        requesttime  int,
+        requesturl   string,
+        responsesize double,
+        rowguid      string,
+        startat      date,
+        status       int)
+      STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+      WITH SERDEPROPERTIES("hbase.columns.mapping"=":key,default:apiguid,default:apiid,default:apiname,default:clientip,default:consumer,default:context,default:forwardtime,default:method,default:requestsize,default:requesttime,default:requesturl,default:responsesize,default:rowguid,default:startat,default:status")
+      TBLPROPERTIES("hbase.table.name" = "ANALYSELOG");
 ```
 
 报错如下：
@@ -113,27 +126,27 @@ FAILED: Execution Error, return code 1 from org.apache.hadoop.hive.ql.exec.DDLTa
         at org.apache.hadoop.util.RunJar.main(RunJar.java:148)
 ```
 
-看错误应该是连不上hbase，hbase是用zookeeper管理的，进行如下测试：
+看错误应该是连不上 HBase，HBase是用 Zookeeper 管理的，进行如下测试：
 
-1. 测试单节点hbase的连接
+1. 测试单节点 HBase 的连接
 
-```
+```bash
 $ hive -hiveconf hbase.master=master:60000
 ```
 
-进入hive的cli后，执行创建外部表的脚本，发现还是报错。
+进入 Hive 的 CLI 后，执行创建外部表的脚本，发现还是报错。
 
-2. 测试集群hbase的连接
+2. 测试集群 HBase 的连接
 
-```
+```bash
 hive -hiveconf hbase.zookeeper.quorum=slave1,slave2,master,slave4,slave5,slave6,slave7
 ```
 
-进入hive的cli后，执行创建外部表的脚本，发现创建成功。
+进入 Hive 的 CLI 后，执行创建外部表的脚本，发现创建成功。
 
-由此可见，是hive读取hbase的zookeeper时出错了。查看hive-site.xml文件中，有个名为hive.zookeeper.quorum的property，复制一份改为hbase.zookeeper.quorum的属性。如下：
+由此可见，是 Hive 读取 HBase 的 Zookeeper 时出错了。查看 `hive-site.xml` 文件中，有个名为 `hive.zookeeper.quorum` 的属性，复制一份改为 `hbase.zookeeper.quorum` 的属性。如下：
 
-```
+```xml
   <property>
     <name>hbase.zookeeper.quorum</name>
     <value>slave1,slave2,master,slave4,slave5,slave6,slave7</value>
@@ -142,4 +155,4 @@ hive -hiveconf hbase.zookeeper.quorum=slave1,slave2,master,slave4,slave5,slave6,
   </property>
 ```
 
-至此，问题解决，创建hbase外部表成功。
+至此，问题解决，创建 HBase 外部表成功。

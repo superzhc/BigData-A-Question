@@ -80,7 +80,7 @@ Hive的配置文件一般有如下文件：
 - 配置连接元数据存储库
 - 配置HiveServer
 
-### Hive 命令
+## Hive 命令
 
 `$HIVE_HOME/bin/hive` 这个shell命令是通向包括命令行界面也就是 CLI 等 Hive 服务的通道。
 

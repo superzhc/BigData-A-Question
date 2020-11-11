@@ -12,9 +12,9 @@ Apache Hive 支持的存储格式主要有：
 在建表时使用如下语句来指定存储格式：
 
 ```sql
- STORED AS (
+STORED AS (
     TextFile|RCFile|SequenceFile|AVRO|ORC|Parquet
- )
+)
 ```
 
 ## TextFile

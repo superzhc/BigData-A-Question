@@ -1,3 +1,5 @@
+# Hive 性能优化
+
 ## 表设计层面优化
 
 ### 利用分区表优化
@@ -17,32 +19,38 @@ Hive 支持 Hadoop 中使用的几种熟悉的文件格式。
 - **TextFile**
 
 默认格式，如果建表时不指定默认为此格式。
+
 存储方式：行存储。
 
 每一行都是一条记录，每行都以换行符\n结尾。数据不做压缩时，磁盘会开销比较大，数据解析开销也比较大。
+
 可结合 Gzip、Bzip2 等压缩方式一起使用（系统会自动检查，查询时会自动解压），但对于某些压缩算法 hive 不会对数据进行切分，从而无法对数据进行并行操作。  
 
 - **SequenceFile**
 
 一种Hadoop API 提供的二进制文件，使用方便、可分割、个压缩的特点。
+
 支持三种压缩选择：NONE、RECORD、BLOCK。RECORD压缩率低，一般建议使用BLOCK压缩。
 
 - **RCFile**
 
 存储方式：数据按行分块，每块按照列存储 。
 
-首先，将数据按行分块，保证同一个record在一个块上，避免读一个记录需要读取多个block。
-其次，块数据列式存储，有利于数据压缩和快速的列存取。
+- 首先，将数据按行分块，保证同一个record在一个块上，避免读一个记录需要读取多个block。
+- 其次，块数据列式存储，有利于数据压缩和快速的列存取。
 
 - **ORC**
 
 存储方式：数据按行分块，每块按照列存储
+
 Hive 提供的新格式，属于 RCFile 的升级版，性能有大幅度提升，而且数据可以压缩存储，压缩快，快速列存取。
 
 - **Parquet**
 
 存储方式：列式存储
+
 Parquet 对于大型查询的类型是高效的。对于扫描特定表格中的特定列查询，Parquet特别有用。Parquet一般使用 Snappy、Gzip 压缩。默认 Snappy。
+
 Parquet 支持 Impala 查询引擎。
 
 表的文件存储格式尽量采用 Parquet 或 ORC，不仅降低存储量，还优化了查询，压缩，表关联等性能；  
@@ -69,16 +77,16 @@ Hive 语句最终是转化为 MapReduce 程序来执行的，而 MapReduce 的�
 
 Hive 在读数据的时候，可以只读取查询中所需要用到的列，而忽略其他的列。这样做可以节省读取开销、中间表存储开销和数据整合开销。
 
-```sh
-set hive.optimize.cp=true; //列裁剪，只取查询中需要用到的列，默认为真
+```sql
+set hive.optimize.cp=true; --列裁剪，只取查询中需要用到的列，默认为真
 ```
 
 ### 分区裁剪
 
 在查询的过程中只选择需要的分区，可以减少读入的分区数目，减少读入的数据量。
 
-```sh
-set hive.optimize.pruner=true; //默认为真
+```sql
+set hive.optimize.pruner=true; --默认为真
 ```
 
 ### 合并小文件
@@ -87,16 +95,16 @@ set hive.optimize.pruner=true; //默认为真
 
 在执行 MapReduce 程序的时候，一般情况是一个文件需要一个 mapper 来处理。但是如果数据源是大量的小文件，这样会启动大量的 mapper 任务，造成会浪费大量资源。可以将输入的小文件进行合并，从而减少 mapper 任务数量。
 
-```sh
-set hive.input.format=org.apache.hadoop.hive.ql.io.CombineHiveInputFormat; // Map端输入、合并文件之后按照block的大小分割（默认）
-set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat; // Map端输入，不合并
+```sql
+set hive.input.format=org.apache.hadoop.hive.ql.io.CombineHiveInputFormat; --Map端输入、合并文件之后按照 block 的大小分割（默认）
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat; --Map端输入，不合并
 ```
 
 - **Map/Reduce 输出合并**
 
 大量的小文件会给 HDFS 带来压力，影响处理效率。可以通过合并 Map 和 Reduce 的结果文件来消除影响。
 
-```sh
+```sql
 set hive.merge.mapfiles=true;  -- 是否合并 Map 输出文件, 默认值为真
 set hive.merge.mapredfiles=true; -- 是否合并 Reduce 端输出文件,默认值为假
 set hive.merge.size.per.task=25610001000; -- 合并文件的大小,默认值为 256000000
@@ -110,7 +118,7 @@ set hive.merge.size.per.task=25610001000; -- 合并文件的大小,默认值为 
 
 默认的 mapper 个数计算方式
 
-```sh
+```
 输入文件总大小：total_size
 hdfs 设置的数据块大小：dfs_block_size
 default_mapper_num=total_size/dfs_block_size
@@ -118,15 +126,15 @@ default_mapper_num=total_size/dfs_block_size
 
 MapReduce 中提供了如下参数来控制 map 任务数：
 
-```sh
+```sql
 set mapred.map.task=10;
 ```
 
-注：这个参数设置只有大于 default_mapper_num 的时候，才会生效。
+注：这个参数设置只有大于 `default_mapper_num` 的时候，才会生效。
 
-对于文件大小是固定，若还需要减少 mapper 数量，可以通过 `mapred.min.split.size` 设置每个任务处理的文件的大小。注，这个大小只有在大于 dfs_block_size 的时候才会生效
+对于文件大小是固定，若还需要减少 mapper 数量，可以通过 `mapred.min.split.size` 设置每个任务处理的文件的大小。注，这个大小只有在大于 `dfs_block_size` 的时候才会生效
 
-```sh
+```
 split_size=max(mapred.min.split.size,dfs_block_size)
 split_num=total_size/split_size
 compute_map_num=min(split_num,max(default_mapper_num,mapred.map.task))
@@ -179,11 +187,11 @@ N=min(参数2,总输入数据量/参数1)
 
 在 hive 中，当对 3 个或更多张表进行 join 时，如果 on 条件使用相同字段，那么它们会合并为一个 MapReduce Job，利用这种特性，可以将相同的 join on 的放入一个 job 来节省执行时间。
 
-- **启用 mapjoin**
+- **启用 map-join**
 
-mapjoin 是将 join 双方比较小的表直接分发到各个 map 进程的内存中，在 map 进程中进行 join 操作，这样就不用进行 reduce 步骤，从而提高了速度。只有 join 操作才能启用 mapjoin。
+map-join 是将 join 双方比较小的表直接分发到各个 map 进程的内存中，在 map 进程中进行 join 操作，这样就不用进行 reduce 步骤，从而提高了速度。只有 join 操作才能启用 mapjoin。
 
-```sh
+```sql
 set hive.auto.convert.join = true; -- 是否根据输入小表的大小，自动将reduce端的common join 转化为map join，将小表刷入内存中。
 set hive.mapjoin.smalltable.filesize = 2500000; -- 刷入内存表的大小(字节)
 set hive.mapjoin.maxsize=1000000;  -- Map Join所处理的最大的行数。超过此行数，Map Join进程会异常退出
@@ -193,11 +201,11 @@ set hive.mapjoin.maxsize=1000000;  -- Map Join所处理的最大的行数。超�
 
 尽量避免一个 SQL 包含复杂的逻辑，可以使用中间表来完成复杂的逻辑。
 
-- **桶表 mapjoin**
+- **桶表 map-join**
 
-当两个分桶表 join 时，如果 join on 的是分桶字段，小表的分桶数是大表的倍数时，可以启用 mapjoin 来提高效率。
+当两个分桶表 join 时，如果 join on 的是分桶字段，小表的分桶数是大表的倍数时，可以启用 map-join 来提高效率。
 
-```sh
+```sql
 set hive.optimize.bucketmapjoin = true; -- 启用桶表 map join
 ```
 
@@ -209,14 +217,14 @@ set hive.optimize.bucketmapjoin = true; -- 启用桶表 map join
 
 事实上并不是所有的聚合操作都需要在 Reduce 部分进行，很多聚合操作都可以先在 Map 端进行部分聚合，然后在 Reduce 端的得出最终结果。
 
-```sh
+```sql
 set hive.map.aggr=true; -- 开启Map端聚合参数设置
 set hive.grouby.mapaggr.checkinterval=100000; -- 在Map端进行聚合操作的条目数目`
 ```
 
 2. **有数据倾斜时进行负载均衡**
 
-```sh
+```sql
 set hive.groupby.skewindata = true; -- 有数据倾斜的时候进行负载均衡（默认是false）
 ```
 
@@ -267,7 +275,7 @@ from sale_detail
 
 **map 输出压缩**
 
-```sh
+```sql
 set mapreduce.map.output.compress=true;
 set mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCodec;
 ```
@@ -276,7 +284,7 @@ set mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCode
 
 中间数据压缩就是对 hive 查询的多个 job 之间的数据进行压缩。最好是选择一个节省 CPU 耗时的压缩方式。可以采用 snappy 压缩算法，该算法的压缩和解压效率非常高
 
-```sh
+```sql
 set hive.exec.compress.intermediate=true;
 set hive.intermediate.compression.codec=org.apache.hadoop.io.compress.SnappyCodec;
 set hive.intermediate.compression.type=BLOCK;
@@ -286,10 +294,10 @@ set hive.intermediate.compression.type=BLOCK;
 
 最终的结果数据（Reducer 输出数据）也是可以进行压缩的，可以选择一个压缩效果比较好的，可以减少数据的大小和数据的磁盘读写时间；
 
-注：常用的gzip，snappy压缩算法是不支持并行处理的，如果数据源是gzip/snappy压缩文件大文件，这样只会有有个mapper来处理这个文件，会严重影响查询效率。
+注：常用的 gzip，snappy 压缩算法是不支持并行处理的，如果数据源是 gzip/snappy 压缩文件大文件，这样只会有一个 mapper 来处理这个文件，会严重影响查询效率。
 所以如果结果数据需要作为其他查询任务的数据源，可以选择支持splitable的LZO算法，这样既能对结果文件进行压缩，还可以并行的处理，这样就可以大大的提高job执行的速度了。
 
-```sh
+```sql
 set hive.exec.compress.output=true;
 set mapreduce.output.fileoutputformat.compress=true;
 set mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.compress.GzipCodec;  
@@ -320,15 +328,15 @@ Hive 从 HDFS 中读取数据，有两种方式：启用 MapReduce 读取、直�
 - `minimal`：只有 `select * `、在分区字段上 where 过滤、有 limit 这三种场景下才启用直接抓取方式。
 - `more`：在 select、where 筛选、limit 时，都启用直接抓取方式。
 
-```sh
+```sql
 set hive.fetch.task.conversion=more; -- 启用fetch more模式
 ```
 
 ### 本地化执行
 
-Hive 在集群上查询时，默认是在集群上多台机器上运行，需要多个机器进行协调运行，这种方式很好的解决了大数据量的查询问题。但是在Hive查询处理的数据量比较小的时候，其实没有必要启动分布式模式去执行，因为以分布式方式执行设计到跨网络传输、多节点协调等，并且消耗资源。对于小数据集，可以通过本地模式，在单台机器上处理所有任务，执行时间明显被缩短。
+Hive 在集群上查询时，默认是在集群上多台机器上运行，需要多个机器进行协调运行，这种方式很好的解决了大数据量的查询问题。但是在 Hive 查询处理的数据量比较小的时候，其实没有必要启动分布式模式去执行，因为以分布式方式执行设计到跨网络传输、多节点协调等，并且消耗资源。对于小数据集，可以通过本地模式，在单台机器上处理所有任务，执行时间明显被缩短。
 
-```sh
+```sql
 set hive.exec.mode.local.auto=true; -- 打开hive自动判断是否启动本地模式的开关
 set hive.exec.mode.local.auto.input.files.max=4; -- map任务数最大值
 set hive.exec.mode.local.auto.inputbytes.max=134217728; -- map输入文件最大大小
@@ -336,19 +344,19 @@ set hive.exec.mode.local.auto.inputbytes.max=134217728; -- map输入文件最大
 
 ### JVM 重用
 
-Hive 语句最终会转换为一系列的 MapReduce 任务，每一个MapReduce 任务是由一系列的Map Task 和 Reduce Task 组成的，默认情况下，MapReduce 中一个 Map Task 或者 Reduce Task 就会启动一个 JVM 进程，一个 Task 执行完毕后，JVM进程就会退出。这样如果任务花费时间很短，又要多次启动 JVM 的情况下，JVM的启动时间会变成一个比较大的消耗，这时，可以通过重用 JVM 来解决。
+Hive 语句最终会转换为一系列的 MapReduce 任务，每一个 MapReduce 任务是由一系列的 Map Task 和 Reduce Task 组成的，默认情况下，MapReduce 中一个 Map Task 或者 Reduce Task 就会启动一个 JVM 进程，一个 Task 执行完毕后，JVM 进程就会退出。这样如果任务花费时间很短，又要多次启动 JVM 的情况下，JVM 的启动时间会变成一个比较大的消耗，这时，可以通过重用 JVM 来解决。
 
-```sh
+```sql
 set mapred.job.reuse.jvm.num.tasks=5;
 ```
 
-JVM也是有缺点的，开启JVM重用会一直占用使用到的 task 的插槽，以便进行重用，直到任务完成后才会释放。如果某个不平衡的job中有几个 reduce task 执行的时间要比其他的 reduce task 消耗的时间要多得多的话，那么保留的插槽就会一直空闲却无法被其他的 job 使用，直到所有的 task 都结束了才会释放。
+JVM 也是有缺点的，开启 JVM 重用会一直占用使用到的 task 的插槽，以便进行重用，直到任务完成后才会释放。如果某个不平衡的 job 中有几个 reduce task 执行的时间要比其他的 reduce task 消耗的时间要多得多的话，那么保留的插槽就会一直空闲却无法被其他的 job 使用，直到所有的 task 都结束了才会释放。
 
 ### 并行执行
 
 有的查询语句，hive会将其转化为一个或多个阶段，包括：MapReduce 阶段、抽样阶段、合并阶段、limit 阶段等。默认情况下，一次只执行一个阶段。但是，如果某些阶段不是互相依赖，是可以并行执行的。多阶段并行是比较耗系统资源的。
 
-```sh
+```sql
 set hive.exec.parallel=true;  -- 可以开启并发执行。
 set hive.exec.parallel.thread.number=16;  -- 同一个sql允许最大并行度，默认为8。
 ```
@@ -357,9 +365,9 @@ set hive.exec.parallel.thread.number=16;  -- 同一个sql允许最大并行度�
 
 在分布式集群环境下，因为程序Bug（包括Hadoop本身的bug），负载不均衡或者资源分布不均等原因，会造成同一个作业的多个任务之间运行速度不一致，有些任务的运行速度可能明显慢于其他任务（比如一个作业的某个任务进度只有50%，而其他所有任务已经运行完毕），则这些任务会拖慢作业的整体执行进度。为了避免这种情况发生，Hadoop采用了推测执行（Speculative Execution）机制，它根据一定的法则推测出“拖后腿”的任务，并为这样的任务启动一个备份任务，让该任务与原始任务同时处理同一份数据，并最终选用最先成功运行完成任务的计算结果作为最终结果。
 
-```sh
+```sql
 set mapreduce.map.speculative=true;
 set mapreduce.reduce.speculative=true;
 ```
 
-建议：如果用户对于运行时的偏差非常敏感的话，那么可以将这些功能关闭掉。如果用户因为输入数据量很大而需要执行长时间的map或者Reduce task的话，那么启动推测执行造成的浪费是非常巨大大。
+建议：如果用户对于运行时的偏差非常敏感的话，那么可以将这些功能关闭掉。如果用户因为输入数据量很大而需要执行长时间的 Map task 或者 Reduce task 的话，那么启动推测执行造成的浪费是非常巨大大。
