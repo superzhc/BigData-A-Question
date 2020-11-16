@@ -1,12 +1,14 @@
-# RDD 源码分析
+# RDD 存储结构
 
-根据源码对 RDD 类的注释，RDD 有 5 个基本特性：
+RDD 实现的数据结构核心如下：
 
-1. 一个分片列表。就是能被切分，和hadoop一样的，能够切分的数据才能并行计算。
-2. 一个函数计算每一个分片，这里指的是下面会提到的compute函数。
-3. 对其他的RDD的依赖列表，依赖还具体分为宽依赖和窄依赖。
-4. 可选：key-value型的RDD是根据哈希来分区的，类似于mapreduce当中的Paritioner接口，控制key分到哪个reduce。
-5. 可选：每一个分片的优先计算位置（preferred locations），比如HDFS的block的所在位置应该是优先计算的位置。
+| 属性                            | 说明                               |
+| ------------------------------- | ---------------------------------- |
+| 分区列表-partitions             | 每个分区为 RDD 的一部分数据        |
+| 依赖列表-dependencies           | 父 RDD，即依赖 RDD                 |
+| 计算函数-compute                | 利用父分区计算 RDD 各分区的值      |
+| 分区器-partitioner              | 指明 RDD 的分区方式（Hash、Range） |
+| 分区位置列表-preferredLocations | 指明分区优先存放的节点位置         |
 
 RDD 的 5 个特性会对应源码中的 4 个方法和 1 个属性。`RDD.scala` 是一个总的抽象，不同的子类会对 RDD 中的方法进行重载。
 

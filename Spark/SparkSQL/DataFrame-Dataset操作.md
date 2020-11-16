@@ -76,8 +76,38 @@ df.describe("c1" , "c2", "c4" ).show()
 
 > 根据传入的String/Column类型字段名，获取指定字段的值，以DataFrame类型返回
 
+**Scala 版本**
+
 ```scala
-df.select("col1","col2").show()
+df.select("name").show()
+
+// This import is needed to use the $-notation
+import spark.implicits._
+df.select($"name", $"age" + 1).show()
+```
+
+**Java 版本**
+
+```java
+// Select only the "name" column
+df.select("name").show();
+// +-------+
+// |   name|
+// +-------+
+// |Michael|
+// |   Andy|
+// | Justin|
+// +-------+
+
+// Select everybody, but increment the age by 1
+df.select(col("name"), col("age").plus(1)).show();
+// +-------+---------+
+// |   name|(age + 1)|
+// +-------+---------+
+// |Michael|     null|
+// |   Andy|       31|
+// | Justin|       20|
+// +-------+---------+
 ```
 
 ### `selectExpr`：可以对指定字段进行特殊处理
@@ -100,8 +130,24 @@ df.where("col1 = 1 and col2 = 2 or col3=4").show()
 
 > 传入筛选条件表达式，得到DataFrame类型的返回结果。和where使用条件相同
 
+**Scala 版本**
+
 ```scala
-df.filter("col1 = 1 and col2 = 2 or col3=4").show()
+// This import is needed to use the $-notation
+import spark.implicits._
+df.filter($"age" > 21).show()
+```
+
+**Java 版本**
+
+```java
+// Select people older than 21
+df.filter(col("age").gt(21)).show();
+// +---+----+
+// |age|name|
+// +---+----+
+// | 30|Andy|
+// +---+----+
 ```
 
 ### `withColumnRenamed`：重命名DataFrame中的指定字段名
@@ -151,9 +197,17 @@ df.limit(3).show()
 >
 > groupBy方法有两种调用方式，可以传入String类型的字段名，也可传入Column类型的对象。
 
+**Scala 版本**
+
 ```scala
 df.groupBy("c1" )
 df.groupBy(df("c1"))
+```
+
+**Java 版本**
+
+```java
+df.groupBy("c1" )
 ```
 
 该方法得到的是`GroupedData`类型对象，在GroupedData的API中提供了group by之后的操作，比如:
@@ -268,6 +322,30 @@ df.except(df.limit(1)).show()
 
 ## 其他
 
+### `printSchema`：打印 schema
+
+**Scala 版本**
+
+```scala
+// This import is needed to use the $-notation
+import spark.implicits._
+// Print the schema in a tree format
+df.printSchema()
+// root
+// |-- age: long (nullable = true)
+// |-- name: string (nullable = true)
+```
+
+**Java 版本**
+
+```java
+// Print the schema in a tree format
+df.printSchema();
+// root
+// |-- age: long (nullable = true)
+// |-- name: string (nullable = true)
+```
+
 ### `col,apply`：获取指定字段
 
 > 只能获取一个字段，返回对象为Column类型。
@@ -286,6 +364,10 @@ df("id")
 
 需要保证静态引用了类，这样类中的静态方法即可被引用，如下所示：
 
-```
+```java
 import static org.apache.spark.sql.functions.*;
+
+// 或者用到一个引用一个
+// col("...") is preferable to df.col("...")
+import static org.apache.spark.sql.functions.col;
 ```

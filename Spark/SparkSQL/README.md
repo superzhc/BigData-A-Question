@@ -1,3 +1,5 @@
+# Spark SQL
+
 Spark SQL 是 Spark 中用于处理结构化数据的模块。它与基本的 Spark RDD API 不同的地方在于其接口提供了更多关于结构化数据的信息，能够更好地应用于计算过程。这些额外的信息也能够帮助系统进行优化，从而提高计算的性能。
 
 Spark SQL 允许 Spark 执行用 SQL, HiveQL 或者 Scala 表示的关系查询。这个模块的核心是一个新类型的 RDD-[SchemaRDD](http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.SchemaRDD)。SchemaRDDs 由[行](http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.sql.package@Row:org.apache.spark.sql.catalyst.expressions.Row.type)对象组成，行对象拥有一个模式（scheme）来描述行中每一列的数据类型。SchemaRDD与关系型数据库中的表很相似。可以通过存在的RDD、一个[Parquet](http://parquet.io/)文件、一个JSON数据库或者对存储在[Apache Hive](http://hive.apache.org/)中的数据执行HiveSQL查询中创建。

@@ -1,4 +1,16 @@
-# 输入 DStream
+# DStream
+
+DStream（离散数据流） 是 Spark Streaming 提供的基本的抽象，它代表了连续的数据流。与 RDD 类似，DStream 有两种产生方式，一种是从源中获取的输入流，另一种则是输入流通过转换算子生成的处理后的数据流。
+
+在内部，DStreams 由一系列连续的 RDD 组成。
+
+DStreams 中的每个 RDD 都包含确定时间间隔内的数据，如下图所示：
+
+![DStreams](images/2015-08-16_55d04e98b664c.png)
+
+任何对 DStream 的操作都转换成了对 DStream 隐含的 RDD 的操作。
+
+## 输入 DStream
 
 输入 DStream 表示从数据源获取输入数据流的 DStream。每一个输入流 DStream 和一个 Receiver 相关联，这个 Receiver 从源中获取数据，并将数据存入内存中用于处理。
 
@@ -14,11 +26,27 @@
 - 如果分配给应用程序的核的数量少于或者等于输入 DStream 或者 Receiver 的数量，系统只能够接收数据而不能处理它们；
 - 当运行在本地，如果用户的 master URL 被设置成了 local，这样就只有一个核运行任务。这对程序来说是不足的，因为作为 Receiver 的输入 DStream 将会占用这个核，这样就没有剩余的核来处理数据了。
 
+### socketTextStream
+
+**Scala 版本**
+
+```scala
+// 创建一个将要连接到 hostname:port 的 DStream，如 localhost:9999 
+val lines = ssc.socketTextStream("localhost", 9999)
+```
+
+**Java 版本**
+
+```java
+// Create a DStream that will connect to hostname:port, like localhost:9999
+JavaReceiverInputDStream<String> lines = jssc.socketTextStream("localhost", 9999);
+```
+
 ## DStream 的 transformation 操作
 
 Dstream 的转化操作分为**无状态的(stateless)**和**有状态的(stateful)**：
 
-- 无状态转化：每个批次处理都不依赖于先前批次的数据，如 `map()`、`filter()`、`reduceByKey()`等均属于无状态的
+- 无状态转化：每个批次处理都不依赖于先前批次的数据，如 `map()`、`filter()`、`reduceByKey()` 等均属于无状态的
 - 有状态转化：依赖之前的批次数据或者中间结果来计算当前批次的数据，包括 `updateStatebyKey()` 和 `window()`
 
 ### 无状态操作
@@ -29,24 +57,42 @@ Dstream 的转化操作分为**无状态的(stateless)**和**有状态的(statef
 
 Spark Streaming 中无状态操作的算子：
 
-```
-map
-filter
-flatMap
-repartition
-reduceByKey
-groupByKey
-```
+|                方法                | 描述                                                                                                                                                                                                                                                    |
+| :--------------------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|             `map(fun)`             | 由源 DStream 中的每个元素经过 func 计算后得到一个新的DStream。                                                                                                                                                                                          |
+|          `flatMap(func)`           | 与 map 类似，但是每个输入项可以映射到 0 或者多个输出项。                                                                                                                                                                                                |
+|           `filter(func)`           | 返回一个新的 DStream，其仅仅包含源 DStream 中通过 func 返回 true 的元素。                                                                                                                                                                               |
+|    `repartition(numPartitions)`    | 通过创建或者减少 partition 的数量，来改变 DStream 的并行度（这个函数在 Spark Streaming 调优的时候经常用到，我们可以通过改变 partition 的数量充分利用集群资源，增大并行度）。                                                                            |
+|        `union(otherStream)`        | 将源 DStream 和另一个 DStream 内的元素联合，生成一个新的 DStream 并返回。                                                                                                                                                                               |
+|             `count()`              | 计算源 DStream 中每个 RDD 包含的元素数量，并返回以单元素为内容的 RDDs 的新 DStream。                                                                                                                                                                    |
+|           `reduce(func)`           | 将源 DStream 中的每个 RDD 利用传入的函数 func 进行聚合，生成一个包含单元素 RDDs 的新 DStream。其中 func 函数接受两个参数并返回一个值（就像一个序列两两合并，最后合并成一个单一值作为输出一样），并且应当是独立可交换的，这样可以并行执行。              |
+|          `countByValue()`          | 对于元素类型为键值对（K, V）的 DStream，统计每个 RDD 中的每个 Key 出现的频率，构成 (K, Long) 新DStream并返回。                                                                                                                                          |
+|  `reduceByKey(func, [numTasks])`   | 该操作需用在一个以键值对（K, V）为类型的 DStream 上，reduceByKey 操作会将 Key 相同的 Value，利用传入的 func 函数聚合起来，生成一个同样以 (K, V) 为类型聚合过后的 DStream。另外，参数中可以通过传入任务数来指定该操作的并发任务数，默认按照 Spark 配置。 |
+|  `join(otherStream, [numTasks])`   | 该操作应用于两个键值对类型的 DStream，只不过 Key 类型一致但 Value 类型不同（一个包含（K, V）对，一个包含 (K, W) 对），会新生成一个包含 (K, (V, W)) 对的新 DStream，同样可以传入任务数。                                                                 |
+| `cogroup(otherStream, [numTasks])` | 与 join 操作类似，也是应用于键一致但值不同的两个 DStream（一个包含（K, V）对，一个包含(K, W)对），不同的是会将两者的 Value 组成 Seq，新生成一个包含 (K, Seq[V], Seq[W]) 的 DStream，同样可以传入任务数。                                                |
+|         `transform(func)`          | 该操作允许直接操作 DStream 内部的 RDD，通过对源 DStream 中的 RDD 应用 func（RDD到RDD）函数，创建一个新的 DStream。注意这里可以直接对 DStream 内部的每个 RDD 进行操作，我们可以直接使用一些 DStream 没有暴露出来的 RDD 接口，在某些场景非常有用。        |
 
-**transform**
+#### transform
 
 transform 操作，应用在 DStream 上时，可以用于执行任意的 RDD 到 RDD 的转换操作。可以用于实现 DStream API 中所没有提供的操作
+
+**Scala 版本**
 
 ```scala
 val transformedDStream = DStream.transform(xxxRDD => {
   //当做rdd使用
   ...
 })
+```
+
+**Java 版本**
+
+```java
+import org.apache.spark.streaming.api.java.*;
+
+JavaPairDStream<String, Integer> cleanedDStream = wordCounts.transform(rdd -> {
+  ...
+});
 ```
 
 ### 有状态操作
@@ -66,7 +112,7 @@ Spark Streaming 中状态管理函数包括 updateStateByKey 和 mapWithState，
 
 会统计全局的 key 的状态，不管有没有数据输入，它会在每一个批次间隔返回之前的 key 的状态。会对已存在的 key 进行 state 的状态更新，同时还会对每个新出现的 key 执行相同的更新函数操作。如果通过更新函数对 state 更新后返回值为 none，此时 key 对应的 state 状态会被删除（state 可以是任意类型的数据的结构）.
 
-`updateStateByKey()` 的结果会是一个新的 DStream，其内部的 RDD 序列是由每个时间区间对应的（键，状态）对组成的。updateStateByKey 操作使得用户可以在用新信息进行更新时保持任意的状态。
+`updateStateByKey(func)` 的结果会是一个新的 DStream，其内部的 RDD 序列是由每个时间区间对应的（键，状态）对组成的。updateStateByKey 操作使得用户可以在用新信息进行更新时保持任意的状态。
 
 **条件**
 
@@ -79,6 +125,8 @@ Spark Streaming 中状态管理函数包括 updateStateByKey 和 mapWithState，
 updateStateByKey 可以用来统计历史数据，每次输出所有的 key 值。例如统计不同时间段用户平均消费金额，消费次数，消费总额，网站的不同时间段的访问量等指标。
 
 **代码**
+
+Scala 版本：
 
 ```scala
 package com.atguigu.bigdata.spark.streaming
@@ -142,6 +190,18 @@ object SparkStreaming_UpdateState {
         streamingContext.awaitTermination()
     }
 }
+```
+
+Java 版本：
+
+```java
+Function2<List<Integer>, Optional<Integer>, Optional<Integer>> updateFunction =
+  (values, state) -> {
+    Integer newSum = ...  // add the new values with the previous running count to get the new count
+    return Optional.of(newSum);
+  };
+
+JavaPairDStream<String, Integer> runningCounts = pairs.updateStateByKey(updateFunction);
 ```
 
 #### mapWithState
@@ -221,9 +281,18 @@ object SparkStreamingMapWithState {
 
 ### 窗口操作
 
-每次掉落在窗口内的 RDD 的数据，会被聚合起来执行计算操作
+Spark Streaming 提供了基于窗口的计算，允许在滑动窗口数据上进行 Transformation 操作，如下图所示：
 
 ![img](images/1608e3f9f6270a44)
+
+由上图可以看出，在原始 DStream 上，窗口每滑动一次，在窗口范围内的 RDDs 进行聚合操作，形成一个新的基于窗口的 DStream（windowed DStream），这个过程涉及下面两个参数：
+
+- 窗口长度（window length）：窗口的持续时长
+- 滑动间隔（sliding interval）：执行窗口操作的时间间隔
+
+上面两个参数都必须是 DStream 的批间隔的整数倍。
+
+**Scala 版本**
 
 ```scala
 //每隔10s，将最近60s的数，执行reduceByKey操作
@@ -231,6 +300,13 @@ val searchWordCountsDSteram = searchWordPairsDStream.reduceByKeyAndWindow(
     (v1: Int, v2: Int) => v1 + v2, 
     Seconds(60), 
     Seconds(10))  
+```
+
+**Java 版本**
+
+```java
+// Reduce last 30 seconds of data, every 10 seconds
+JavaPairDStream<String, Integer> windowedWordCounts = pairs.reduceByKeyAndWindow((i1, i2) -> i1 + i2, Durations.seconds(30), Durations.seconds(10));
 ```
 
 | Transform             | 意义                                     |
@@ -241,15 +317,15 @@ val searchWordCountsDSteram = searchWordPairsDStream.reduceByKeyAndWindow(
 | reduceByKeyAndWindow  | 对每个滑动窗口的数据执行reduceByKey操作  |
 | countByValueAndWindow | 对每个滑动窗口的数据执行countByValue操作 |
 
-## DStream 的 output操作
+## DStream 的 output 操作
 
-| Output                           | Meaning                                                                                                                                                                       |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| print                            | 打印每个batch中的**前10个元素**，主要用于测试，或者是用于简单触发一下 Job。                                                                                                   |
-| saveAsTextFile(prefix, [suffix]) | 将每个batch的数据保存到文件中。每个batch的文件的命名格式为：prefix-TIME_IN_MS[.suffix]                                                                                        |
-| saveAsObjectFile                 | 同上，但是将每个batch的数据以序列化对象的方式，保存到SequenceFile中。                                                                                                         |
-| saveAsHadoopFile                 | 同上，将数据保存到Hadoop文件中                                                                                                                                                |
-| foreachRDD                       | 最常用的output操作，遍历DStream中的每个产生的RDD，进行处理。可以将每个RDD中的数据写入外部存储，比如文件、数据库、缓存等。通常在其中，是针对RDD执行action操作的，比如foreach。 |
+| Output                             | Meaning                                                                                                                                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| print                              | 打印每个batch中的**前10个元素**，主要用于测试，或者是用于简单触发一下 Job。                                                                                                                                   |
+| `saveAsTextFile(prefix, [suffix])` | 将 DStream 中的内容保存为一个文本文件。每个批间隔生成的文件基于传入的 prefix 和 suffix 来确定名字，形如 `prefix-TIME_IN_MS[.suffix]`。                                                                        |
+| `saveAsObjectFile`                 | 将 DStream 中的内容以 Java 序列化对象的序列化文件进行存储，每个批间隔生成的文件基于传入的 prefix 和 suffix 而确定，形如 `prefix-TIME_IN_MS[.suffix]`（由于用到了 Java 序列化，Python 中是不支持该操作的）中。 |
+| `saveAsHadoopFile`                 | 将 DStream 中的内容保存为一个 Hadoop 文件，输出到 HDFS 上。每个批间隔生成的文件基于 prefix 和 suffix 来确定名字，形如 `prefix-TIME_IN_MS[.suffix]`（该操作Python API中不可用）中                              |
+| foreachRDD                         | 最常用的output操作，遍历 DStream 中的每个产生的 RDD，进行处理。可以将每个 RDD 中的数据写入外部存储，比如文件、数据库、缓存等。通常在其中，是针对 RDD 执行 action 操作的，比如 foreach。                       |
 
 **DStream中的所有计算，都是由 output 操作触发的**，比如 `print()`。如果没有任何 output 操作，就不会执行定义的计算逻辑。
 
@@ -282,6 +358,9 @@ val searchWordCountsDSteram = searchWordPairsDStream.reduceByKeyAndWindow(
     }
     ```
 - 合理方式一：使用 RDD 的 foreachPartition 操作，并且在该操作内部，创建 Connection 对象，这样就相当于是，为 RDD 的每个 partition 创建一个 Connection 对象，节省资源的多了。
+    
+    **Scala 版本**
+
     ```scala
     dstream.foreachRDD { rdd =>
         rdd.foreachPartition { partitionOfRecords =>
@@ -293,7 +372,25 @@ val searchWordCountsDSteram = searchWordPairsDStream.reduceByKeyAndWindow(
         }
     }
     ```
+
+    **Java 版本**
+
+    ```java
+    dstream.foreachRDD(rdd -> {
+        rdd.foreachPartition(partitionOfRecords -> {
+            Connection connection = createNewConnection();
+            while (partitionOfRecords.hasNext()) {
+                connection.send(partitionOfRecords.next());
+            }
+            connection.close();
+        });
+    });
+    ```
+
 - 合理方式二：手动封装一个静态连接池，使用 RDD 的 foreachPartition 操作，并且在该操作内部，从静态连接池中，通过静态方法，获取到一个连接，使用之后再还回去。这样的话，甚至在多个 RDD 的 partition 之间，也可以**复用连接**了。而且可以让连接池采取懒创建的策略，并且空闲一段时间后，将其释放掉。
+    
+    **Scala 版本**
+    
     ```scala
     dstream.foreachRDD { rdd =>
         rdd.foreachPartition { partitionOfRecords =>
@@ -302,4 +399,19 @@ val searchWordCountsDSteram = searchWordPairsDStream.reduceByKeyAndWindow(
             ConnectionPool.returnConnection(connection)  
         }
     }
+    ```
+
+    **Java 版本**
+
+    ```java
+    dstream.foreachRDD(rdd -> {
+        rdd.foreachPartition(partitionOfRecords -> {
+            // ConnectionPool is a static, lazily initialized pool of connections
+            Connection connection = ConnectionPool.getConnection();
+            while (partitionOfRecords.hasNext()) {
+                connection.send(partitionOfRecords.next());
+            }
+            ConnectionPool.returnConnection(connection); // return to the pool for future reuse
+        });
+    });
     ```

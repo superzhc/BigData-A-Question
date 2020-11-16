@@ -505,7 +505,7 @@ partition:1 content:[partition:2 content:Tom12]
 
 ### `partitionBy`：通过自定义分区器改变RDD分区数
 
-```scala
+```java
 JavaPairRDD<Integer, String> partitionByRDD = nameRDD.partitionBy(new Partitioner() {
               
     private static final long serialVersionUID = 1L;
@@ -528,7 +528,8 @@ JavaPairRDD<Integer, String> partitionByRDD = nameRDD.partitionBy(new Partitione
 });
 ​```  
   
-##### glom：把分区中的元素封装到数组中
+##### `glom`：把分区中的元素封装到数组中
+
 ​```scala
 val rdd = sc.parallelize(1 to 10,2) 
 /**

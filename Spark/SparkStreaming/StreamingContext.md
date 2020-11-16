@@ -1,10 +1,12 @@
-# 初始化 StreamingContext
+# StreamingContext <!-- {docsify-ignore} -->
 
 为了初始化 Spark Streaming 程序，一个 StreamingContext 对象必需被创建，它是 Spark Streaming 所有流操作的主要入口。
 
 在创建 StreamingContext 时需要指明 sparkConf 和 batchDuration(批次时间)，Spark 流处理本质是将流数据拆分为一个个批次，然后进行微批处理，batchDuration 就是批次拆分的时间间隔。这个时间可以根据业务需求和服务器性能进行指定，如果业务要求低延迟并且服务器性能也允许，则这个时间可以指定得很短。
 
 一个 StreamingContext 对象可以用 SparkConf 对象创建：
+
+**Scala 版本**
 
 ```scala
 import org.apache.spark._
@@ -13,14 +15,38 @@ val conf = new SparkConf().setAppName(appName).setMaster(master)
 val ssc = new StreamingContext(conf, Seconds(1))
 ```
 
+**Java 版本**
+
+```java
+import org.apache.spark.*;
+import org.apache.spark.api.java.function.*;
+import org.apache.spark.streaming.*;
+import org.apache.spark.streaming.api.java.*;
+
+// Create a local StreamingContext with two working thread and batch interval of 1 second
+SparkConf conf = new SparkConf().setAppName(appName).setMaster(master);
+JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
+```
+
 > 注意：StreamingContext 在内部创建了一个 SparkContext 对象，可以通过 `ssc.sparkContext` 访问这个 SparkContext 对象。
 
 也可以利用已经存在的 `SparkContext` 对象创建 `StreamingContext` 对象：
+
+**Scala 版本**
 
 ```scala
 import org.apache.spark.streaming._
 val sc = ...                // existing SparkContext
 val ssc = new StreamingContext(sc, Seconds(1))
+```
+
+**Java 版本**
+
+```java
+import org.apache.spark.streaming.api.java.*;
+
+JavaSparkContext sc = ...   //existing JavaSparkContext
+JavaStreamingContext ssc = new JavaStreamingContext(sc, Durations.seconds(1));
 ```
 
 当一个上下文（StreamingContext）定义之后，用户必须按照以下几步进行操作：
