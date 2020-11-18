@@ -4,9 +4,7 @@
 
 按照数据表的某列或某些列分为多个分区，分区从形式上可以理解为**文件夹**，比如我们要收集某个大型网站的日志数据，一个网站每天的日志数据存在同一张表上，由于每天会生成大量的日志，导致数据表的内容巨大，在查询时进行全表扫描耗费的资源非常多。那其实这个情况下，我们可以按照日期对数据表进行分区，不同日期的数据存放在不同的分区，在查询时只要指定分区字段的值就可以直接从该分区查找。分区是以字段的形式在表结构中存在，通过 `describe table` 命令可以查看到字段存在，但是该字段不存放实际的数据内容，仅仅是分区的标识。
 
-### 静态分区
-
-#### 创建分区
+### 创建分区
 
 ```sql
 CREATE TABLE partition_table(
@@ -16,7 +14,20 @@ PARTITIONED BY(age INT, day STRING)
 STORED AS SEQUENCEFILE;
 ```
 
-#### 添加分区
+### 删除分区
+
+```sql
+ALERT TABLE <table_name> DROP PARTITION(col_name=col_value[,...])
+```
+
+### 查看分区相关信息
+
+- 使用命令 `show partitions <table_name>;` 查看表的所有分区
+- 使用 `desc formatted table_name partition(col_name=col_value[,...])` 查看该分区的详细信息，包括该分区在 HDFS 上的路径
+
+### 添加分区
+
+#### 静态分区
 
 **使用 `INSERT` 添加分区**
 
@@ -40,18 +51,7 @@ INSERT OVERWRITE TABLE partition_table PARTITION (age=20,day ='03-02')
 ALTER TABLE partition_table ADD PARTITION (age=20,day ='03-02') location 'hdfs://namenode/tmp/partition_table/age=20/day=03-02/';
 ```
 
-#### 删除分区
-
-```sql
-ALERT TABLE <table_name> DROP PARTITION(col_name=col_value[,...])
-```
-
-#### 查看分区相关信息
-
-- 使用命令 `show partitions <table_name>;` 查看表的所有分区
-- 使用 `desc formatted table_name partition(col_name=col_value[,...])` 查看该分区的详细信息，包括该分区在 HDFS 上的路径
-
-### 动态分区
+#### 动态分区
 
 Hive 提供了动态分区的功能，其可以基于查询参数推断出需要创建的分区的名称。
 
@@ -91,13 +91,13 @@ insert overwrite table xxxx.wy partition(age)
 **静态分区**
 
 - 静态分区是在编译期间指定的指定分区名。
-- 支持load和insert两种插入方式。
+- 支持 load 和 insert 两种插入方式。
 - 适用于分区数少，分区名可以明确的数据。
 
 **动态分区**
 
 - 根据分区字段的实际值，动态进行分区
-- 是在SQL执行的时候进行分区
+- 是在 SQL 执行的时候进行分区
 - 需要先将动态分区设置打开 `set hive.exec.dynamic.partition.mode=nonstrict`
 - 只能用 insert 方式
 - 通过普通表选出的字段包含分区字段，分区字段放置在最后，多个分区字段按照分区顺序放置。

@@ -1,10 +1,16 @@
-Presto 是专门为大数据实时查询计算而设计和开发的产品。
+# Presto
+
+## 简介
+
+Apache Presto 是一个分布式并行查询执行引擎，针对低延迟和交互式查询分析进行了优化。 Presto 可以轻松运行查询，甚至无需停机就能从 GB 级(千兆字节)扩展到 PB 级(千万亿字节)。
+
+单个 Presto 查询可以处理来自多个来源的数据，如 HDFS，MySQL，Cassandra，Hive 等。 Presto 采用 Java 构建，容易与其他数据基础架构组件集成。 Presto 功能强大，因此 Airbnb，DropBox，Groupon 和 Netflix 等行业领先的公司正在采用它。
 
 ## 概念
 
 ### Presto 服务进程
 
-Presto 集群中一共有两种服务器进程：Coordinator 服务进程和 Worker 服务进程，其中 Coordinator 服务进程的主要作用是：接收查询请求、解析查询语句、生成查询执行计划、任务调度和 Worker 管理Coordina。而 Worker 服务进程则执行被分解后的查询执行任务：Task。
+Presto 集群中一共有两种服务器进程：Coordinator 服务进程和 Worker 服务进程，其中 Coordinator 服务进程的主要作用是：*接收查询请求*、*解析查询语句*、*生成查询执行计划*、*任务调度*和 *Worker 管理*；Worker 服务进程则执行被分解后的查询执行任务：*Task*。
 
 #### Coordinator
 
@@ -60,11 +66,11 @@ Stage 即查询执行阶段。当 Presto 运行 Query 时，Presto 会将一个 
 
 Presto 中的 Stage 共分为 4 种，具体介绍如下：
 
-| Stage 类型       | 描述                                                         |
-| ---------------- | ------------------------------------------------------------ |
-| Coordinator_Only | 这种类型的 Stage 用于执行 DDL 或者 DML 语句中最终的表结构创建或者更改 |
-| Single           | 这种类型的 Stage 用于聚合子 Stage 的输出数据，并将最终数据输出给终端用户 |
-| Fixed            | 这种类型的 Stage 用于接受其子 Stage 产生的数据并在集群中对这些数据进行分布式的聚合或者分组计算 |
+| Stage 类型       | 描述                                                                                                                                                                    |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Coordinator_Only | 这种类型的 Stage 用于执行 DDL 或者 DML 语句中最终的表结构创建或者更改                                                                                                   |
+| Single           | 这种类型的 Stage 用于聚合子 Stage 的输出数据，并将最终数据输出给终端用户                                                                                                |
+| Fixed            | 这种类型的 Stage 用于接受其子 Stage 产生的数据并在集群中对这些数据进行分布式的聚合或者分组计算                                                                          |
 | Source           | 这种类型的 Stage 用于直接连接数据源，从数据源读取数据，在读取数据的时候，该阶段也会根据 Presto 对查询执行计划的优化完成相关的断言下发（Predicate PushDown）和条件过滤等 |
 
 #### Exchange
@@ -91,7 +97,7 @@ Split 即分片。一个分片其实就是一个大的数据集中的一个小�
 
 #### Page
 
-Page 是 Presto 中处理的最小数据单元。一个 Page 对象包含多个 Block 对象，而每个 Block 对象是一个字节数组，存储一个字段的若干行。多个 Block 横切的一行是真实的一行数据。一个 Page 最大为 1MB，最多 16\*1024 行数据。
+Page 是 Presto 中处理的最小数据单元。一个 Page 对象包含多个 Block 对象，而每个 Block 对象是一个字节数组，存储一个字段的若干行。多个 Block 横切的一行是真实的一行数据。一个 Page 最大为 1MB，最多 `16*1024` 行数据。
 
 Page 的结构如下图所示：
 
@@ -103,16 +109,16 @@ Page 的结构如下图所示：
 
 从上图可以看到，在 Presto 中一次查询执行会被分解为多个 Stage，Stage 与 Stage之间是有前后依赖关系的。每个 Stage 内部又会进一步地被分解为多个 Task，属于每个 Stage 的 Task 被均分在每个 Worker 上并行执行。在每个 Task 内部又会被分解为多个 Driver，每个 Driver 负责处理一个 Split，而且每个 Driver 由一系列前后相连的 Operator 组成，这里的每个 Operator 都代表针对于一个 Split 的一种操作。
 
-## Presto 软件架构
+## Presto 架构
 
 ![image-20200921225015582](images/image-20200921225015582.png)
 
 由上图可知，在 Presto 中执行一个查询一共分为 7 步：
 
-1. 客户端通过 HTTP 协议发送一个查询语句给 Presto 集群的 Coordinator
-2. Coordinator 接到客户端传递过来的查询语句，会对该查询语句进行解析，生成查询计划，并根据查询执行计划依次生成 SqlQueryExecution、SqlStageExecution、HttpRemoteTask。Coordinator 会根据数据本地性生成对应的 HttpRemoteTask
-3. Coordinator 将每个 Task 都分发到其所需要处理的数据所在的 Worker 上进行执行。这个过程是通过 HttpRemoteTask 中的 HttpClient 将创建或者更新 Task 的请求发送给数据所在节点上 TaskResource 所提供的 RESTful 接口，TaskResource 接收到请求之后最终会在对应的 Worker 上启动一个 SqlTaskExecution 对象或者更新对应的 SqlTaskExecution 对象需要处理的 Split
-4. 执行处于上游的 Source Stage 中的 Task，这些 Task 通过各种 Connector 从相应的数据源中读取所需要的数据
-5. 处于下游 Stage 中的 Task 会读取上游 Stage 产生的输出结果，并在该 Stage 每个 Task 所在 Worker 的内存中进行后续的计算和处理
-6. Coordinator 从分发 Task 之后，就会一直持续不断地从 Single Stage 中的 Task 获取计算结果，并将计算结果缓存到 Buffer 中，直到所有计算结束
-7. Client 从提交查询语句之后，就会不停地从 Coordinator 中获取本次查询的计算结果，直到获得了所有的计算结果。并不是等到所有的查询结果都产生完毕之后一次全部显示出来，而是每产生一部分，就会显示一部分，直到所有的查询结果都显示完毕
+1. 客户端通过 HTTP 协议发送一个查询语句给 Presto 集群的 Coordinator；
+2. Coordinator 接到客户端传递过来的查询语句，会对该查询语句进行解析，生成查询计划，并根据查询执行计划依次生成 SqlQueryExecution、SqlStageExecution、HttpRemoteTask。Coordinator 会根据数据本地性生成对应的 HttpRemoteTask；
+3. Coordinator 将每个 Task 都分发到其所需要处理的数据所在的 Worker 上进行执行。这个过程是通过 HttpRemoteTask 中的 HttpClient 将创建或者更新 Task 的请求发送给数据所在节点上 TaskResource 所提供的 RESTful 接口，TaskResource 接收到请求之后最终会在对应的 Worker 上启动一个 SqlTaskExecution 对象或者更新对应的 SqlTaskExecution 对象需要处理的 Split；
+4. 执行处于上游的 Source Stage 中的 Task，这些 Task 通过各种 Connector 从相应的数据源中读取所需要的数据；
+5. 处于下游 Stage 中的 Task 会读取上游 Stage 产生的输出结果，并在该 Stage 每个 Task 所在 Worker 的内存中进行后续的计算和处理；
+6. Coordinator 从分发 Task 之后，就会一直持续不断地从 Single Stage 中的 Task 获取计算结果，并将计算结果缓存到 Buffer 中，直到所有计算结束；
+7. Client 从提交查询语句之后，就会不停地从 Coordinator 中获取本次查询的计算结果，直到获得了所有的计算结果。并不是等到所有的查询结果都产生完毕之后一次全部显示出来，而是每产生一部分，就会显示一部分，直到所有的查询结果都显示完毕。

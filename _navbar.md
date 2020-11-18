@@ -1,7 +1,7 @@
 - [首页](/)
 - 速查手册
   - [JVM参数](JVM/JVM参数.md)
-  - [HiveQL](Hive/HiveQL.md)
+  - [HiveQL](Hive/HiveQL/HiveQL.md)
   - [Hive内置函数](Hive/Hive内置函数.md)
   - [HBase Shell](HBase/HBase_Shell命令.md)
   - [Spark SQL 内置函数](Spark/SparkSQL/函数.md)

@@ -16,7 +16,20 @@ Hive 是最适合数据仓库应用程序的，其可以维护海量数据，而
 
 ## Hive 系统架构
 
-[Hive 架构](Hive/Hive架构.md)
+Hive 框架如下图：
+
+![image-20201116185934612](images/image-20201116185934612.png)
+
+1. 用户提交查询等任务给 Driver
+2. 编译器获得该用户的任务 Plan
+3. 编译器 Compiler 根据用户任务去 MetaStore 中获取需要的 Hive 的元数据信息
+4. 编译器 Compiler 得到元数据信息，对任务进行编译，先将 HiveQL 转换为抽象语法树，然后将抽象语法树转换为查询块，将查询块转化为逻辑的查询计划，重写逻辑查询计划，将逻辑计划转化为物理的计划（MapReduce），最后选择最佳的策略
+5. 将最终的计划提交给 Driver
+6. Driver 将计划 Plan 转交给 ExecutionEngine 去执行，获取元数据消息，提交给 YARN 执行该任务，任务会直接读取 HDFS 中文件进行相应的操作
+7. 获取执行的结果
+8. 取得并返回执行结果
+
+详细见：[Hive 架构](Hive/Hive架构.md)
 
 ## 元数据
 
@@ -24,7 +37,7 @@ Hive 是最适合数据仓库应用程序的，其可以维护海量数据，而
 
 元数据存储中存储了如表的模式和分区信息等元数据信息。
 
-## Hive的数据单元
+## Hive 的数据模型
 
 Hive 没有专门的数据存储格式，也没有为数据建立索引，用户可以非常自由的组织 Hive 中的表，只需要在创建表的时候告诉 Hive 数据中的列分隔符和行分隔符，Hive 就可以解析数据。
 
@@ -116,18 +129,3 @@ Debug help:  ./hive --debug --help
 | rcfilecat   |              | 一个可以打印出RCFile格式文件内容的工具                                                                 |
 
 [Hive命令行(CLI)](Hive/Hive命令行.md) 
-
-## 原理
-
-Hive 框架如下图：
-
-![官方框架](images/bVlLGY)
-
-1. 用户提交查询等任务给 Driver
-2. 编译器获得该用户的任务 Plan
-3. 编译器 Compiler 根据用户任务去 MetaStore 中获取需要的 Hive 的元数据信息
-4. 编译器 Compiler 得到元数据信息，对任务进行编译，先将 HiveQL 转换为抽象语法树，然后将抽象语法树转换为查询块，将查询块转化为逻辑的查询计划，重写逻辑查询计划，将逻辑计划转化为物理的计划（MapReduce），最后选择最佳的策略
-5. 将最终的计划提交给 Driver
-6. Driver 将计划 Plan 转交给 ExecutionEngine 去执行，获取元数据消息，提交给 JobTracker 或者 SourceManager 执行该任务，任务会直接读取 HDFS 中文件进行相应的操作
-7. 获取执行的结果
-8. 取得并返回执行结果

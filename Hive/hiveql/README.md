@@ -18,6 +18,8 @@ SHOW TABLES;
 SHOW TABLES IN mydb;
 -- 按正则表达式显示表
 SHOW TABLES 'h*'
+--查看表的详细信息
+desc formatted <tablename>;
 
 /* 分区 */
 -- 显示表的所有分区

@@ -37,10 +37,12 @@ LOAD DATA LOCAL INPATH './examples/files/kv2.txt' OVERWRITE INTO TABLE invites P
 ```sql
 -- 基本模式
 INSERT OVERWRITE TABLE tablename1 [PARTITION (partcol1=val1, partcol2=val2 ...)] select_statement1 FROM from_statement
--- 多插入模式
+
+-- 多插入模式：MULTI_TABLE_INSERT
 FROM from_statement
 INSERT OVERWRITE TABLE tablename1 [PARTITION (partcol1=val1, partcol2=val2 ...)] select_statement1
 [INSERT OVERWRITE TABLE tablename2 [PARTITION ...] select_statement2] ...
+
 -- 自动分区模式
 INSERT OVERWRITE TABLE tablename PARTITION (partcol1[=val1], partcol2[=val2] ...) select_statement FROM from_statement
 ```
