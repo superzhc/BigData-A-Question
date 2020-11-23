@@ -18,6 +18,7 @@
 | [Google-File-System中文版](阅读资源/Google-File-System中文版_1.0.md)                 |
 | [Google-MapReduce中文版](阅读资源/Google-MapReduce中文版_1.0.md)                     |
 | [Google-Bigtable中文版](阅读资源/Google-Bigtable中文版_1.0.md)                       |
+| [现代流式计算的基石：Google DataFlow](阅读资源/Google_DataFlow-github版本.md)        |
 
 [阅读列表](其他/readInAction.md)
 

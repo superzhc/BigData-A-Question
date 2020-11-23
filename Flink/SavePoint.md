@@ -1,0 +1,4 @@
+# SavePoint
+
+Flink通过SavePoint功能可以升级程序，然后继续从升级前的那个点开始执行计算，保证数据不中断。SavePoint可以生成全局、一致性的快照，也可以保存数据源、Offset、Operator操作状态等信息，还可以从应用在过去任意做了SavePoint的时刻开始继续执行。
+

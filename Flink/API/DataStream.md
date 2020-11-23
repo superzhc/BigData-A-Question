@@ -1,0 +1,352 @@
+# DataStream API
+
+DataStream API 主要分为3块：DataSource、Transformation、Sink。
+
+- DataSource 是程序的数据源输入，可以通过 `StreamExecutionEnvironment.addSource(sourceFunction)` 为程序添加一个数据源。
+- Transformation 是具体的操作，它对一个或多个输入数据源进行计算处理，比如 map、flatMap 和 filter 等操作。
+- Sink 是程序的输出，它可以把 Transformation 处理之后的数据输出到指定的存储介质中。
+
+## DataSource
+
+Flink 针对 DataStream 提供了大量的已经实现的 DataSource（数据源）接口，比如下面 4 种：
+
+1. 基于文件
+   > 适合监听文件修改并读取其内容
+2. 基于 Socket
+   > 监听主机的 host port，从 Socket 中获取数据
+3. 基于集合
+   > 有界数据集，更偏向于本地测试用
+4. 自定义输入
+   ```java
+   //addSource 可以实现读取第三方数据源的数据
+   env.addSource(sourceFunction)
+   ```
+
+### 基于文件
+
+1. `readTextFile(path)` - 读取文本文件，即符合 TextInputFormat 规范的文件，并将其作为字符串返回。
+2. `readFile(fileInputFormat, path)` - 根据指定的文件输入格式读取文件（一次）。
+3. `readFile(fileInputFormat, path, watchType, interval, pathFilter, typeInfo)` - 这是上面两个方法内部调用的方法。它根据给定的 fileInputFormat 和读取路径读取文件。根据提供的 watchType，这个 source 可以定期（每隔 interval 毫秒）监测给定路径的新数据（FileProcessingMode.PROCESS_CONTINUOUSLY），或者处理一次路径对应文件的数据并退出（FileProcessingMode.PROCESS_ONCE）。你可以通过 pathFilter 进一步排除掉需要处理的文件。
+
+示例：
+
+```java
+StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+// 读取文本文件
+DataStream<String> text = env.readTextFile("file:///path/to/file");
+
+// 根据指定的fileInputFormat读取文件
+DataStream<MyEvent> stream = env.readFile(
+        myFormat, myFilePath, FileProcessingMode.PROCESS_CONTINUOUSLY, 100,
+        FilePathFilter.createDefaultFilter(), typeInfo);
+```
+
+实现:
+
+在具体实现上，Flink 把文件读取过程分为两个子任务，即目录监控和数据读取。每个子任务都由单独的实体实现。目录监控由单个非并行（并行度为1）的任务执行，而数据读取由并行运行的多个任务执行。后者的并行性等于作业的并行性。单个目录监控任务的作用是扫描目录（根据 watchType 定期扫描或仅扫描一次），查找要处理的文件并把文件分割成切分片（splits），然后将这些切分片分配给下游 reader。reader 负责读取数据。每个切分片只能由一个 reader 读取，但一个 reader 可以逐个读取多个切分片。
+
+重要注意：
+
+- 如果 watchType 设置为 `FileProcessingMode.PROCESS_CONTINUOUSLY`，则当文件被修改时，其内容将被重新处理。这会打破“exactly-once”语义，因为在文件末尾附加数据将导致其所有内容被重新处理。
+- 如果 watchType 设置为 `FileProcessingMode.PROCESS_ONCE`，则 source 仅扫描路径一次然后退出，而不等待 reader 完成文件内容的读取。当然 reader 会继续阅读，直到读取所有的文件内容。关闭 source 后就不会再有检查点。这可能导致节点故障后的恢复速度较慢，因为该作业将从最后一个检查点恢复读取。
+
+### 基于 Socket
+
+- `socketTextStream(String hostname, int port)` - 从 socket 读取。元素可以用分隔符切分。
+
+示例：
+
+```java
+StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+DataStream<String> dataStream = env
+        .socketTextStream("localhost", 9999); // 监听 localhost 的 9999 端口过来的数据
+```
+
+### 基于集合
+
+1. `fromCollection(Collection)` - 从 Java 的 `Java.util.Collection` 创建数据流。集合中的所有元素类型必须相同。
+2. `fromCollection(Iterator, Class)` - 从一个迭代器中创建数据流。Class 指定了该迭代器返回元素的类型。
+3. `fromElements(T …)` - 从给定的对象序列中创建数据流。所有对象类型必须相同。
+4. `fromParallelCollection(SplittableIterator, Class)` - 从一个迭代器中创建并行数据流。Class 指定了该迭代器返回元素的类型。
+5. `generateSequence(from, to)` - 创建一个生成指定区间范围内的数字序列的并行数据流。
+
+示例：
+
+```java
+StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+DataStream<Event> input = env.fromElements(
+	new Event(1, "barfoo", 1.0),
+	new Event(2, "start", 2.0),
+	new Event(3, "foobar", 3.0),
+	...
+);
+```
+
+### 自定义输入
+
+Flink 也提供了一批内置的 Connector（连接器）。连接器会提供对应的 Source 支持，如下表所示：
+
+| 连接器                      | 是否提供 Source 支持 | 是否提供 Sink 支持 |
+| --------------------------- | -------------------- | ------------------ |
+| Apache Kafka                | 是                   | 是                 |
+| Apache Cassandra            | 否                   | 是                 |
+| Amazon Kinesis Data Streams | 是                   | 是                 |
+| Elasticsearch               | 否                   | 是                 |
+| HDFS                        | 否                   | 是                 |
+| RabbitMQ                    | 是                   | 是                 |
+| Apache NiFi                 | 是                   | 是                 |
+| Twitter Streaming API       | 是                   | 否                 |
+
+Flink 通过 Apache Bahir 组件提供了对这些连接器的支持，如下表所示：
+
+| 连接器          | 是否提供 Source 支持 | 是否提供 Sink 支持 |
+| --------------- | -------------------- | ------------------ |
+| Apache ActiveMQ | 是                   | 是                 |
+| Apache Flume    | 否                   | 是                 |
+| Redis           | 否                   | 是                 |
+| Akka            | 否                   | 是                 |
+| Netty           | 是                   | 否                 |
+
+用户也可以自定义数据源，有两种实现方式：
+
+- 通过实现 SourceFunction 接口来自定义无并行度（也就是并行度只能为 1）的数据源。
+- 通过实现 ParallelSourceFunction 接口或者继承 RichParallelSourceFunction 来自定义有并行度的数据源。
+
+## Transformation
+
+Flink 针对 DataStream 提供了大量的已经实现的算子。
+
+### map
+
+> 输入一个元素，然后返回一个元素，中间可以进行清洗转换等操作。
+
+**Java 版本**
+
+```java
+SingleOutputStreamOperator<Tuple1<Long>> val= dss.map(new MapFunction<Long, Tuple1<Long>>()
+{
+    @Override public Tuple1<Long> map(Long value) throws Exception {
+        return new Tuple1<>(value);
+    }
+});
+```
+
+**Scala 版本**
+
+```scala
+val v=dss.map(d=>(d))
+```
+
+### flatMap
+
+> 输入一个元素，可以返回零个、一个或者多个元素。
+
+```java
+SingleOutputStreamOperator<Student> flatMap = dss.flatMap(new FlatMapFunction<Student, Student>() {
+    @Override
+    public void flatMap(Student value, Collector<Student> out) throws Exception {
+        if (value.id % 2 == 0) {
+            out.collect(value);
+        }
+    }
+});
+```
+
+### filter
+
+> 过滤函数，对传入的数据进行判断，符合条件的数据会被留下。
+
+```java
+SingleOutputStreamOperator<Student> filter = dss.filter(new FilterFunction<Student>() {
+    @Override
+    public boolean filter(Student value) throws Exception {
+        if (value.id > 95) {
+            return true;
+        }
+        return false;
+    }
+});
+```
+
+### keyBy
+
+> 根据指定的 Key 进行分组，Key 相同的数据会进入同一个分区。
+
+keyBy 的两种典型用法如下：
+
+- `dss.keyBy("someKey")`：指定对象中的 someKey 属性作为分组 Key
+- ~~`dss.keyBy(0)`：指定 Tuple 中的第一个元素作为分组 Key~~
+
+```java
+KeyedStream<Student, Integer> keyBy = student.keyBy(new KeySelector<Student, Integer>() {
+    @Override
+    public Integer getKey(Student value) throws Exception {
+        return value.age;
+    }
+});
+```
+
+### reduce
+
+> 对数据进行聚合操作，结合当前元素和上一次 reduce 返回的值进行聚合操作，然后返回一个新的值。
+
+```java
+SingleOutputStreamOperator<Student> reduce = student.keyBy(new KeySelector<Student, Integer>() {
+    @Override
+    public Integer getKey(Student value) throws Exception {
+        return value.age;
+    }
+}).reduce(new ReduceFunction<Student>() {
+    @Override
+    public Student reduce(Student value1, Student value2) throws Exception {
+        Student student1 = new Student();
+        student1.name = value1.name + value2.name;
+        student1.id = (value1.id + value2.id) / 2;
+        student1.password = value1.password + value2.password;
+        student1.age = (value1.age + value2.age) / 2;
+        return student1;
+    }
+});
+```
+
+注意：reduce 操作只能是 KeyedStream
+
+### Aggregations
+
+> DataStream API 支持各种聚合，例如 min，max，sum 等。 这些函数可以应用于 KeyedStream 以获得 Aggregations 聚合。
+
+```java
+KeyedStream.sum(0) 
+KeyedStream.sum("key") 
+KeyedStream.min(0) 
+KeyedStream.min("key") 
+KeyedStream.max(0) 
+KeyedStream.max("key") 
+KeyedStream.minBy(0) 
+KeyedStream.minBy("key") 
+KeyedStream.maxBy(0) 
+KeyedStream.maxBy("key")
+```
+
+max 和 maxBy 之间的区别在于 max 返回流中的最大值，但 maxBy 返回具有最大值的键， min 和 minBy 同理。
+
+### union
+
+> 合并多个流，新的流会包含所有流中的数据，但是 union 有一个限制，就是所有合并的流类型必须是一致的。
+
+```java
+inputStream.union(inputStream1, inputStream2, ...);
+```
+
+### connect
+
+> 和 union 类似，但是只能连接两个流，两个流的数据类型可以不同，会对两个流中的数据应用不同的处理方法。
+
+### coMap 和 coFlatMap
+
+> 在 ConnectedStream 中需要使用这种函数，类似于 map 和 flatMap。
+
+### split
+
+> 根据规则把一个数据流切分为多个流。
+
+```java
+SplitStream<Integer> split = inputStream.split(new OutputSelector<Integer>() {
+    @Override
+    public Iterable<String> select(Integer value) {
+        List<String> output = new ArrayList<String>(); 
+        if (value % 2 == 0) {
+            output.add("even");
+        }
+        else {
+            output.add("odd");
+        }
+        return output;
+    }
+});
+```
+
+### select
+
+> 和 split 配合使用，选择切分后的流。
+
+```java
+DataStream<Integer> even = split.select("even"); 
+DataStream<Integer> odd = split.select("odd"); 
+DataStream<Integer> all = split.select("even","odd");
+```
+
+### 数据分区算子
+
+Flink 针对 DataStream 提供了一些数据分区规则，具体如下：
+
+- Random partitioning：随机分区
+  ```java
+  dss.shuffle()
+  ```
+- Rebalancing：对数据集进行再平衡、重分区和消除数据倾斜
+  ```java
+  dss.rebalance()
+  ```
+- Rescaling：重新调节
+  ```java
+  dss.rescale()
+  ```
+  如果上游操作有 2 个并发，而下游操作有 4 个并发，那么上游的 1 个并发结果分配给了下游的 2 个并发操作，另外的 1 个并发结果则分配给了下游的另外 2 个并发操作。另一方面，下游有 2 个并发操作而上游有 4 个并发操作，那么上游的其中 2 个操作的结果分配给了下游的一个并发操作，而另外 2 个并发操作的结果则分配给了另外 1 个并发操作。
+
+  Rescaling 与 Rebalancing 的区别为 Rebalancing 会产生全量重分区，而 Rescaling 不会。
+- Custom partitioning：自定义分区
+
+  自定义分区实现 Partitioner 接口的方法如下:
+  ```java
+  dss.partitionCustom(partitioner,"someKey");
+  // 或者
+  dss.partitionCustom(partitioner,0);
+  ```
+
+## Sink
+
+Flink 针对 DataStream 提供了大量的已经实现的数据目的地（Sink）。
+
+### writeAsText
+
+> 将元素以字符串形式逐行写入，这些字符串通过调用每个元素的 `toString()` 方法来获取
+
+### `print/printToErr`
+
+> 打印每个元素的 `toString()` 方法的值到标准输出或者标准错误输出流中
+
+### 自定义输出
+
+> 通过 addSink 可以实现把数据输出到第三方存储介质中
+
+系统提供了一批内置的 Connector，它们会提供对应的 Sink 支持，如下表所示：
+
+| 连接器                      | 是否提供 Source 支持 | 是否提供 Sink 支持 |
+| --------------------------- | -------------------- | ------------------ |
+| Apache Kafka                | 是                   | 是                 |
+| Apache Cassandra            | 否                   | 是                 |
+| Amazon Kinesis Data Streams | 是                   | 是                 |
+| Elasticsearch               | 否                   | 是                 |
+| HDFS                        | 否                   | 是                 |
+| RabbitMQ                    | 是                   | 是                 |
+| Apache NiFi                 | 是                   | 是                 |
+| Twitter Streaming API       | 是                   | 否                 |
+
+Flink 通过 Apache Bahir 组件也提供了对这些连接器的支持，如下表所示：
+
+| 连接器          | 是否提供 Source 支持 | 是否提供 Sink 支持 |
+| --------------- | -------------------- | ------------------ |
+| Apache ActiveMQ | 是                   | 是                 |
+| Apache Flume    | 否                   | 是                 |
+| Redis           | 否                   | 是                 |
+| Akka            | 否                   | 是                 |
+| Netty           | 是                   | 否                 |
+
+用户也可以自定义 Sink 的实现，有如下两种实现：
+
+- 实现 SinkFunction 接口
+- 继承 RichSinkFunction 类
