@@ -6,4 +6,6 @@
   - [HBase Shell](HBase/HBase_Shell命令.md)
   - [Spark SQL 内置函数](Spark/SparkSQL/函数.md)
   - [Kafka脚本工具](Kafka/Kafka工具使用.md)
+- 工具
+  - [IDEA](工具/idea/IDEA.md)
 - [提问](https://github.com/superzhc/BigData-A-Question/issues/new)
