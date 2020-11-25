@@ -24,6 +24,8 @@ Flink 针对 DataStream 提供了大量的已经实现的 DataSource（数据源
 
 ### 基于文件
 
+Flink 系统支持将文件内容读取到系统中，并转换成分布式数据集 DataStream 进行数据处理。
+
 1. `readTextFile(path)` - 读取文本文件，即符合 TextInputFormat 规范的文件，并将其作为字符串返回。
 2. `readFile(fileInputFormat, path)` - 根据指定的文件输入格式读取文件（一次）。
 3. `readFile(fileInputFormat, path, watchType, interval, pathFilter, typeInfo)` - 这是上面两个方法内部调用的方法。它根据给定的 fileInputFormat 和读取路径读取文件。根据提供的 watchType，这个 source 可以定期（每隔 interval 毫秒）监测给定路径的新数据（FileProcessingMode.PROCESS_CONTINUOUSLY），或者处理一次路径对应文件的数据并退出（FileProcessingMode.PROCESS_ONCE）。你可以通过 pathFilter 进一步排除掉需要处理的文件。
@@ -117,7 +119,11 @@ Flink 通过 Apache Bahir 组件提供了对这些连接器的支持，如下表
 
 ## Transformation
 
-Flink 针对 DataStream 提供了大量的已经实现的算子。
+即通过从一个或多个 DataStream 生成新的 DataStream 的过程被称为 Transformation 操作。在转换过程中，每种操作类型被定义为不同的 Operator，Flink 程序能够将多个 Transformation 组成一个 DataFlow 的拓扑。所有 DataStream 的转换操作可分为单 Single-DataStream、Multi-DaataStream、物理分区三类类型。
+
+- Single-DataStream 操作定义了对单个 DataStream 数据集元素的处理逻辑
+- Multi-DataStream 操作定义了对多个 DataStream 数据集元素的处理逻辑
+- 物理分区定义了对数据集中的并行度和数据分区调整转换的处理逻辑。
 
 ### map
 
@@ -281,23 +287,33 @@ DataStream<Integer> all = split.select("even","odd");
 
 ### 数据分区算子
 
+物理分区（Physical Partitioning）操作的作用是根据指定的分区策略将数据重新分配到不同节点的 Task 案例上执行。当使用 DataStream 提供的 API 对数据处理过程中，依赖于算子本身对数据的分区控制，如果用户希望自己控制数据分区，例如当数据发生了数据倾斜的时候，就需要通过定义物理分区策略的方式对数据集进行重新分布处理。Flink 中已经提供了常见的分区策略，例如随机分区（Random Partitioning）、平衡分区（Roundobin Partitioning）、按比例分区（Rescaling Partitioning）等。当然如果给定的分区策略无法满足需求，也可以根据 Flink 提供的分区控制接口创建分区器，实现自定义分区控制。
+
 Flink 针对 DataStream 提供了一些数据分区规则，具体如下：
 
-- Random partitioning：随机分区
+- Random Partitioning：随机分区
+  
+  通过随机的方式将数据分配在下游算子的每个分区中，分区相对均衡，但是较容易失去原有数据的分区结构。
   ```java
   dss.shuffle()
   ```
-- Rebalancing：对数据集进行再平衡、重分区和消除数据倾斜
+
+- Rebalancing Partitionin：对数据集进行再平衡、重分区和消除数据倾斜
+  
+  通过循环的方式对数据集中的数据进行重分区，能够尽可能保证每个分区的数据平衡，当数据集发生数据倾斜的时候使用这种策略就是比较有效的优化方法。
   ```java
   dss.rebalance()
   ```
-- Rescaling：重新调节
+
+- Rescaling Partitionin：重新调节
+  
   ```java
   dss.rescale()
   ```
   如果上游操作有 2 个并发，而下游操作有 4 个并发，那么上游的 1 个并发结果分配给了下游的 2 个并发操作，另外的 1 个并发结果则分配给了下游的另外 2 个并发操作。另一方面，下游有 2 个并发操作而上游有 4 个并发操作，那么上游的其中 2 个操作的结果分配给了下游的一个并发操作，而另外 2 个并发操作的结果则分配给了另外 1 个并发操作。
 
   Rescaling 与 Rebalancing 的区别为 Rebalancing 会产生全量重分区，而 Rescaling 不会。
+  
 - Custom partitioning：自定义分区
 
   自定义分区实现 Partitioner 接口的方法如下:

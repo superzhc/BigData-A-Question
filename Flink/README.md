@@ -6,20 +6,38 @@
 
 Flink 不仅能提供同时支持高吞吐和 exactly-once 语义的实时计算，还能提供批量数据处理。
 
-## 架构模型
+## 组件栈
 
 ![image-20201118143106513](images/image-20201118143106513.png)
 
 由上图可知，Flink 架构可以分为 4 层，包括 Deploy 层、Core 层、API 层和 Library 层。
 
 - Deploy 层：该层主要涉及 Flink 的部署模式，Flink 支持多种部署模式——本地、集群（Standalone/YARN）和云服务器（GCE/EC2）。
-- Core 层：该层提供了支持 Flink 计算的全部核心实现，为 API 层提供基础服务。
+- Core 层：该层提供了支持 Flink 计算的全部核心实现，为 API 层提供基础服务，支持分布式 Stream 作业的执行、JobGraph 到 ExecutionGraph 的映射转换、任务调度等。将 DataSteam 和 DataSet 转成统一的可执行的 Task Operator，达到在流式引擎下同时处理批量计算和流式计算的目的。
 - API 层：该层主要实现了面向无界 Stream 的流处理和面向 Batch 的批处理 API，其中流处理对应 DataStream API，批处理对应 DataSet API。
 - Library 层：该层也被称为 Flink 应用框架层，根据 API 层的划分，在 API 层之上构建的满足特定应用的实现计算框架，也分别对应于面向流处理和面向批处理两类。面向流处理支持 CEP（复杂事件处理）、基于 SQL-like 的操作（基于 Table 的关系操作）；面向批处理支持 FlinkML（机器学习库）、Gelly（图处理）、Table 操作。
 
-## 基本编程模型
+## 架构图
 
-![基础编程模型](images/05a76220-1589-11ea-8029-776dd26574d8)
+![img](images/p92UrK.jpg)
+
+Flink 系统架构设计如上图所示，Flink 整个系统主要由两个组件组成，分别为 JobManager 和 TaskManager, Flink 架构也遵循 Master-Slave 架构设计原则， JobManager 为 Master 节点，TaskManager 为 Worker（Slave）节点。所有组件之间的通信都是借助于 Akka Framework，包括任务的状态以及 Checkpoint 触发等信息。
+
+### Client 客户端
+
+客户端负责将任务提交到集群，与 JobManager 构建 Akka 连接，然后将任务提交到 JobManager，通过和 JobManager 之间进行交互获取任务执行状态。客户端提交任务可以采用 CLI 方式或者通过使用 Flink WebUI 提交，也可以在应用程序中指定 JobManager 的 RPC 网络端口构建 ExecutionEnvironment 提交 Flink 应用。
+
+### JobManager
+
+JobManager 负责整个 Flink 集群任务的调度以及资源的管理，从客户端中获取提交的应用，然后根据集群中 TaskManager 上 TaskSlot 的使用情况，为提交的应用分配相应的 TaskSlots 资源并命令 TaskManger 启动从客户端中获取的应用。JobManager 相当于整个集群的 Master 节点，且整个集群中有且仅有一个活跃的 JobManager，负责整个集群的任务管理和资源管理。JobManager 和 TaskManager 之间通过 Actor System 进行通信，获取任务执行的情况并通过 Actor System 将应用的任务执行情况发送给客户端。同时在任务执行过程中，Flink JobManager 会触发 Checkpoints 操作，每个 TaskManager 节点收到 Checkpoint 触发指令后，完成 Checkpoint 操作，所有的 Checkpoint 协调过程都是在 Flink JobManager 中完成。当任务完成后，Flink 会将任务执行的信息反馈给客户端，并且释放掉 TaskManager 中的资源以供下一次提交任务使用。
+
+### TaskManager
+
+TaskManager 相当于整个集群的 Slave 节点，负责具体的任务执行和对应任务在每个节点上的资源申请与管理。客户端通过将编写好的 Flink 应用编译打包，提交到 JobManager，然后 JobManager 会根据已经注册在 JobManager 中 TaskManager 的资源情况，将任务分配给有资源的 TaskManager 节点，然后启动并运行任务。TaskManager 从 JobManager 接收需要部署的任务，然后使用 Slot 资源启动 Task，建立数据接入的网络连接，接收数据并开始数据处理。同时 TaskManager 之间的数据交互都是通过数据流的方式进行的。
+
+## 编程模型
+
+![编程模型](images/05a76220-1589-11ea-8029-776dd26574d8)
 
 上图是来自 Flink 官网的运行流程图，由上图可知，一个 Flink Job 需要如下 3 个部分组成：
 
@@ -44,15 +62,3 @@ Flink Job = Source + Transformation + Sink
 Flink 以固定的缓存块为单位进行网络数据传输，用户可以通过设置缓存块超时值指定缓存块的传输时机。如果缓存块的超时值为 0，则 Flink 的数据传输方式类似于前面所提到的流处理系统的标准模型，此时系统可以获得最低的处理延迟；如果缓存块的超时值为无限大，则 Flink 的数据传输方式类似于前面所提到的批处理系统的标准模型，此时系统可以获得最高的吞吐量。
 
 缓存块的超时值也可以设置为 0 到无限大之间的任意值，缓存块的超时阈值越小，Flink 流处理执行引擎的数据处理延迟就越低，但吞吐量也会降低，反之亦然。通过调整缓存块的超时阈值，用户可根据需求灵活地权衡系统延迟和吞吐量。
-
-## 作业提交架构流程
-
-![img](images/p92UrK.jpg)
-
-Program Code：用户编写的 Flink 应用程序代码
-
-Client：Client 是 Flink 程序提交的客户端，当用户提交一个 Flink 程序时，会首先创建一个 Client，该 Client 首先会对用户提交的 Flink 程序进行预处理，并提交到 Flink 集群中处理，所以 Client 需要从用户提交的 Flink 程序配置中获取 JobManager 的地址，并建立到 JobManager 的连接，将 Flink Job 提交给 JobManager。
-
-JobManager：主进程（也称为作业管理器）协调和管理程序的执行。 它的主要职责包括安排任务，管理 Checkpoint ，故障恢复等。机器集群中至少要有一个 master，master 负责调度 task，协调 Checkpoints 和容灾，高可用设置的话可以有多个 master，但要保证一个是 leader, 其他是 standby; JobManager 包含 Actor system、Scheduler、Check pointing 三个重要的组件
-
-TaskManager：从 JobManager 处接收需要部署的 Task。TaskManager 是在 JVM 中的一个或多个线程中执行任务的工作节点。任务执行的并行性由每个 TaskManager 上可用的任务槽决定。 每个任务代表分配给任务槽的一组资源。 例如，如果 TaskManager 有四个插槽，那么它将为每个插槽分配 25％ 的内存。 可以在任务槽中运行一个或多个线程。 同一插槽中的线程共享相同的 JVM。 同一 JVM 中的任务共享 TCP 连接和心跳消息。TaskManager 的一个 Slot 代表一个可用线程，该线程具有固定的内存，注意 Slot 只对内存隔离，没有对 CPU 隔离。默认情况下，Flink 允许子任务共享 Slot，即使它们是不同 task 的 subtask，只要它们来自相同的 job。这种共享可以有更好的资源利用率。
