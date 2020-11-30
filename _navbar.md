@@ -1,3 +1,10 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-08-18 08:46:10
+ * @LastEditTime : 2020-11-30 11:33:28
+ * @Copyright 2020 SUPERZHC
+-->
 - [首页](/)
 - 速查手册
   - [JVM参数](JVM/JVM参数.md)
@@ -8,4 +15,5 @@
   - [Kafka脚本工具](Kafka/Kafka工具使用.md)
 - 工具
   - [IDEA](工具/idea/IDEA.md)
+  - [Aria2](工具/Aira2.md)
 - [提问](https://github.com/superzhc/BigData-A-Question/issues/new)
