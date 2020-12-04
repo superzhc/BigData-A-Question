@@ -2,7 +2,7 @@
  * @Github       : https://github.com/superzhc/BigData-A-Question
  * @Author       : SUPERZHC
  * @CreateDate   : 2020-08-31 14:56:30
- * @LastEditTime : 2020-11-30 11:33:40
+ * @LastEditTime : 2020-12-04 11:49:14
  * @Copyright 2020 SUPERZHC
 -->
 # Aria2
@@ -225,6 +225,22 @@ Status Legend:
 (INPR):download in-progress.
 aria2 will resume download if the transfer is restarted.
 If there are any errors, then see the log file. See '-l' option in help/man page for details.
+```
+
+## 开启 RPC 功能
+
+后续的图形化界面都是基于 aria2 开启 RPC 功能才能使用的，开启 RPC 配置如下：
+
+```conf
+## RPC
+#允许rpc
+enable-rpc=true
+#允许所有来源, web界面跨域权限需要
+rpc-allow-origin-all=true
+#允许非外部访问
+rpc-listen-all=true
+#RPC端口, 仅当默认端口被占用时修改
+#rpc-listen-port=6800
 ```
 
 ## 图形化界面：AriaNg

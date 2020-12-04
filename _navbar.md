@@ -2,7 +2,7 @@
  * @Github       : https://github.com/superzhc/BigData-A-Question
  * @Author       : SUPERZHC
  * @CreateDate   : 2020-08-18 08:46:10
- * @LastEditTime : 2020-11-30 11:33:28
+ * @LastEditTime : 2020-11-30 14:19:19
  * @Copyright 2020 SUPERZHC
 -->
 - [首页](/)
@@ -15,5 +15,5 @@
   - [Kafka脚本工具](Kafka/Kafka工具使用.md)
 - 工具
   - [IDEA](工具/idea/IDEA.md)
-  - [Aria2](工具/Aira2.md)
+  - [Aria2](工具/Aria2.md)
 - [提问](https://github.com/superzhc/BigData-A-Question/issues/new)
