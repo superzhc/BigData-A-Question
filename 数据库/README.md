@@ -1,3 +1,10 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-05-08 10:12:30
+ * @LastEditTime : 2020-12-16 09:52:58
+ * @Copyright 2020 SUPERZHC
+-->
 # 数据库
 
 ## 数据库和实例的定义
@@ -82,5 +89,5 @@ REVOKE – 撤回授权权限
 
 > SELECT 属于 DQL，数据查询语言：简称 `DQL`(Data Query Language)，用来查询数据库中表的记录，关键字：select from where 等
 
-![QQ20160612-0](https://i.loli.net/2020/03/31/zAloNP62Zf9ru7O.png)
+![QQ20160612-0](images/QQ20160612-0-1024x634.png)
 
