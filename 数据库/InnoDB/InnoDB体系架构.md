@@ -1,6 +1,13 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-05-08 10:12:30
+ * @LastEditTime : 2020-12-17 17:39:54
+ * @Copyright 2020 SUPERZHC
+-->
 # InnoDB 体系架构
 
-![image-20200331002758397](images/image-20200331002758397.png)
+![image-20200331002758397](../images/image-20200331002758397.png)
 
 上图显示了 InnoDB 的存储引擎的体系架构，从图可见，InnoDB 存储引擎有多个内存块，可以认为这些内存组成了一个大的内存池，负责如下工作：
 - 维护所有进程/线程需要访问的多个内部数据结构
@@ -44,7 +51,7 @@ InnoDB 存储引擎是基于磁盘存储的，并将其中的记录按照页的�
 
 下图显示了 InnoDB 存储引擎中内存地结构情况：
 
-![image-20200331013239672](images/image-20200331013239672.png)
+![image-20200331013239672](../images/image-20200331013239672.png)
 
 从 InnoDB 1.0.x 版本开始，允许有多个缓冲池实例。每个页根据哈希值平均分配到不同缓冲池中。这样做地好处是减少数据库内部的资源竞争，增加数据库的并发处理能力。可以通过参数 `innodb_buffer_pool_instances` 来进行配置，该值默认为 1。
 

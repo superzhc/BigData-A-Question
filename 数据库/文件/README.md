@@ -1,3 +1,10 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-05-08 10:12:30
+ * @LastEditTime : 2020-12-17 17:38:19
+ * @Copyright 2020 SUPERZHC
+-->
 # 文件
 
 ## 参数文件
@@ -71,4 +78,4 @@ frm 还用来存放视图的定义，如用户创建了一个 v_a 视图，那�
 
 因为 MySQL 表存储引擎的关系，每个存储引擎都会有自己的文件来保存各种数据。这些存储引擎真正存储了记录和索引等数据。
 
- 详细见：[InnoDB存储引擎文件](InnoDB存储引擎文件.md) 
+详细见：[InnoDB存储引擎文件](../InnoDB/InnoDB存储引擎文件.md) 

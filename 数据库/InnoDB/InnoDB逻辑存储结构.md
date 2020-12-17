@@ -1,8 +1,15 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-05-08 10:12:30
+ * @LastEditTime : 2020-12-17 17:39:36
+ * @Copyright 2020 SUPERZHC
+-->
 # InnoDB 逻辑存储结构
 
 从 InnoDB 存储引擎的逻辑存储结构来看，所有数据都被逻辑地存放在一个空间中，称之为表空间（tablespace）。表空间又由段（segment）、区（extent）、页（page）组成。页在一些文档中有时也称为块（block），InnoDB 存储引擎的逻辑存储结构大致如下所示：
 
-![image-20200401083336873](images/image-20200401083336873.png)
+![image-20200401083336873](../images/image-20200401083336873.png)
 
 ## 表空间
 
