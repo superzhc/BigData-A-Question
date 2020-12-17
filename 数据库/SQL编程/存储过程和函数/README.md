@@ -2,7 +2,7 @@
  * @Github       : https://github.com/superzhc/BigData-A-Question
  * @Author       : SUPERZHC
  * @CreateDate   : 2020-12-16 14:56:48
- * @LastEditTime : 2020-12-17 17:20:02
+ * @LastEditTime : 2020-12-17 17:25:49
  * @Copyright 2020 SUPERZHC
 -->
 # 存储过程和函数
@@ -87,7 +87,7 @@ param_name type
 
 ### 变量的使用
 
-[变量的使用](数据库/SQL编程/存储过程和函数/变量.md ':include')
+[变量的使用](变量.md ':include')
 
 ### 定义条件和处理程序
 
@@ -159,7 +159,7 @@ DECLARE EXIT HANDLER FOR SQLEXCEPTION SET @info='ERROR';
 
 ### 游标的使用
 
-[游标的使用](数据库/SQL编程/存储过程和函数/游标.md ':include')
+[游标的使用](游标.md ':include')
 
 ### 流程控制的使用
 
@@ -167,31 +167,31 @@ DECLARE EXIT HANDLER FOR SQLEXCEPTION SET @info='ERROR';
 
 #### IF 语句
 
-[IF 语句](数据库/SQL编程/存储过程和函数/IF语句.md ':include')
+[IF 语句](IF语句.md ':include')
 
 #### CASE 语句
 
-[CASE 语句](数据库/SQL编程/存储过程和函数/CASE语句.md ':include')
+[CASE 语句](CASE语句.md ':include')
 
 #### LOOP 语句
 
-[LOOP 语句](数据库/SQL编程/存储过程和函数/LOOP语句.md ':include')
+[LOOP 语句](LOOP语句.md ':include')
 
 #### LEAVE 语句
 
-[LEAVE 语句](数据库/SQL编程/存储过程和函数/LEAVE语句.md ':include')
+[LEAVE 语句](LEAVE语句.md ':include')
 
 #### ITERATE 语句
 
-[ITERATE 语句](数据库/SQL编程/存储过程和函数/ITERATE语句.md ':include')
+[ITERATE 语句](ITERATE语句.md ':include')
 
 #### REPEAT 语句
 
-[REPEAT 语句](数据库/SQL编程/存储过程和函数/REPEAT语句.md ':include')
+[REPEAT 语句](REPEAT语句.md ':include')
 
 #### WHILE 语句
 
-[WHILE 语句](数据库/SQL编程/存储过程和函数/WHILE语句.md ':include')
+[WHILE 语句](WHILE语句.md ':include')
 
 ## 调用存储过程和函数
 
