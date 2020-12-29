@@ -14,6 +14,7 @@
   - [Spark SQL 内置函数](Spark/SparkSQL/函数.md)
   - [Kafka脚本工具](Kafka/Kafka工具使用.md)
 - 工具
+  - [Git](工具/Git/README.md)
   - [IDEA](工具/idea/IDEA.md)
   - [Aria2](工具/Aria2.md)
 - [提问](https://github.com/superzhc/BigData-A-Question/issues/new)
