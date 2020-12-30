@@ -1,3 +1,10 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-06-10 23:56:52
+ * @LastEditTime : 2020-12-24 17:36:07
+ * @Copyright 2020 SUPERZHC
+-->
 # Executor 框架
 
 1.5 后引入的 Executor 框架的最大优点是把任务的提交和执行解耦。要执行任务的人只需把 Task 描述清楚，然后提交即可。这个 Task 是怎么被执行的，被谁执行的，什么时候执行的，提交的人就不用关心了。具体点讲，提交一个 Callable 对象给 ExecutorService（如最常用的线程池 ThreadPoolExecutor），将得到一个 Future 对象，调用 Future 对象的 get 方法等待执行结果就好了。经过这样的封装，对于使用者来说，提交任务获取结果的过程大大简化，调用者直接从提交的地方就可以等待获取执行结果。
@@ -28,7 +35,7 @@ System.out.println(outputs);
 
 从类图上可以看到，接口 ExecutorService 继承自 Executor。不像 Executor 中只定义了一个方法来执行任务，在 ExecutorService 中，正如其名字暗示的一样，定义了一个服务，定义了完整的线程池的行为，可以接受提交任务、执行任务、关闭服务。抽象类 AbstractExecutorService 类实现了 ExecutorService 接口，也实现了接口定义的默认行为。
 
-AbstractExecutorService 任务提交的 submit 方法有三个实现。第一个接收一个 Runnable 的 Task，没有执行结果；第二个是两个参数：一个任务，一个执行结果；第三个一个 Callable，本身就包含执任务内容和执行结果。 submit 方法的返回结果是 Future 类型，调用该接口定义的 get 方法即可获得执行结果。 **V get() 方法的返回值类型 V 是在提交任务时就约定好了的。**
+AbstractExecutorService 任务提交的 submit 方法有三个实现。第一个接收一个 Runnable 的 Task，没有执行结果；第二个是两个参数：一个任务，一个执行结果；第三个一个 Callable，本身就包含执任务内容和执行结果。 submit 方法的返回结果是 Future 类型，调用该接口定义的 get 方法即可获得执行结果。 **`V get()` 方法的返回值类型 V 是在提交任务时就约定好了的。**
 
 除了 submit 任务的方法外，作为对服务的管理，在 ExecutorService 接口中还定义了服务的关闭方法 shutdown 和 shutdownNow 方法，可以平缓或者立即关闭执行服务，实现该方法的子类根据自身特征支持该定义。在 ThreadPoolExecutor 中，维护了 RUNNING、SHUTDOWN、STOP、TERMINATED 四种状态来实现对线程池的管理。
 
@@ -77,16 +84,16 @@ private final HashSet<Worker> workers = new HashSet<Worker>();
 
 ```java 
 public void execute(Runnable command) {
-       if (command == null)
-           throw new NullPointerException();
-       if (poolSize >= corePoolSize || !addIfUnderCorePoolSize(command)) {
-           if (runState == RUNNING && workQueue.offer(command)) {
-               if (runState != RUNNING || poolSize == 0)
-                   ensureQueuedTaskHandled(command);
-           }
-           else if (!addIfUnderMaximumPoolSize(command))
-               reject(command); // is shutdown or saturated
-       }
+    if (command == null)
+        throw new NullPointerException();
+    if (poolSize >= corePoolSize || !addIfUnderCorePoolSize(command)) {
+        if (runState == RUNNING && workQueue.offer(command)) {
+            if (runState != RUNNING || poolSize == 0)
+                ensureQueuedTaskHandled(command);
+        }
+        else if (!addIfUnderMaximumPoolSize(command))
+            reject(command); // is shutdown or saturated
+    }
 }
 ```
 
@@ -201,7 +208,7 @@ private void runTask(Runnable task) {
 
 FutureTask 内部定义了一个 Sync 的内部类，继承自 AQS，来维护任务状态。关于 AQS 的设计思路，可以参照参考 Doug Lea 大师的原著[ *The java*.*util*.*concurrent Synchronizer Framework*](http://gee.cs.oswego.edu/dl/papers/aqs.pdf)。
 
-[![img](images/a0db52b2a2fcebb792fac81d705e5d1f.jpg)](https://www.infoq.cn/mag4media/repositories/fs/articles//zh/resources/0601001.jpg)
+![img](images/a0db52b2a2fcebb792fac81d705e5d1f.jpg)
 
 和其他的同步工具类一样，FutureTask 的主要工作内容也是委托给其定义的内部类 Sync 来完成。
 
@@ -214,7 +221,7 @@ public void run() {
 
 `FutureTask.Sync.innerRun()`，这样做的目的就是为了维护任务执行的状态，只有当执行完后才能够获得任务执行结果。在该方法中，首先设置执行状态为 RUNNING 只有判断任务的状态是运行状态，才调用任务内封装的回调，并且在执行完成后设置回调的返回值到 FutureTask 的 result 变量上。在 FutureTask 中，innerRun 等每个“写”方法都会首先修改状态位，在后续会看到 innerGet 等“读”方法会先判断状态，然后才能决定后续的操作是否可以继续。下图是 FutureTask.Sync 中几个重要状态的流转情况，和其他的同步工具类一样，状态位使用的也是父类 AQS 的 state 属性。
 
-[![img](images/13a066b34ffc05302f7b8b6811e52b21.png)](https://www.infoq.cn/mag4media/repositories/fs/articles//zh/resources/0601002.png)
+![img](images/13a066b34ffc05302f7b8b6811e52b21.png)
 
 ```java 
 void innerRun() {

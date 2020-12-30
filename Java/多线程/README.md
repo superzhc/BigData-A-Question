@@ -1,3 +1,10 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-06-11 01:45:53
+ * @LastEditTime : 2020-12-24 17:01:43
+ * @Copyright 2020 SUPERZHC
+-->
 # 多线程
 
 - [多线程](#多线程)
@@ -54,11 +61,10 @@
     - [LinkedTransferQueue](#linkedtransferqueue)
     - [LinkedBlockingDeque](#linkedblockingdeque)
   - [线程池](#线程池)
-    - [Executor](#executor)
-      - [Executors](#executors)
-      - [ThreadPoolExecutor](#threadpoolexecutor)
-      - [ScheduledThreadPoolExecutor](#scheduledthreadpoolexecutor)
-    - [Fature](#fature)
+    - [ThreadPoolExecutor](#threadpoolexecutor)
+    - [ScheduledThreadPoolExecutor](#scheduledthreadpoolexecutor)
+    - [Executors](#executors)
+    - [Future](#future)
 
 ## 进程和线程
 
@@ -82,7 +88,7 @@
 - 内存共享（Java采用）
 - 消息传递
 
-### 内存模型
+### [内存模型](Java/多线程/Java内存模型/README.md)
 
 - **重排序**
   - 为了程序的性能，处理器、编译器都会对程序进行重排序处理
@@ -106,13 +112,13 @@
 - **as-if-serial**
   - 所有的操作均可以为了优化而被重排序，但是必须要保证重排序后执行的结果不能被改变
 
-### synchronized
+### [synchronized](Java/多线程/synchronized.md)
 
 synchronized：同步、重量级锁🔒
 
 - **原理**
 
-synchronized可以保证方法或者代码块在运行时，同一时刻只有一个方法可以进入到临界区，同时它还可以保证共享变量的内存可见性
+synchronized 可以保证方法或者代码块在运行时，同一时刻只有一个方法可以进入到临界区，同时它还可以保证共享变量的内存可见性。
 
 - **锁对象**
 
@@ -122,16 +128,15 @@ synchronized可以保证方法或者代码块在运行时，同一时刻只有�
 
 - **实现机制**
 
-1. Java对象头
-   - synchronized的锁就是保存在Java对象头中
+1. Java 对象头
+   - synchronized 的锁就是保存在 Java 对象头中
    - 包括两部分数据
     1. Mark Word（标记字段）
-       - Mard Word被设计成一个非固定的数据结构以便在极小的空间内存存储尽量多的数据，它会根据对象的状态复用自己的存储空间
-       - 包括：哈希码（HashCode）、GC分代年龄、锁状态标志、线程持有锁、偏向线程ID、偏向时间戳
+       - Mard Word 被设计成一个非固定的数据结构以便在极小的空间内存存储尽量多的数据，它会根据对象的状态复用自己的存储空间
+       - 包括：哈希码（HashCode）、GC 分代年龄、锁状态标志、线程持有锁、偏向线程 ID、偏向时间戳
     2. Klass Pointer（类型指针）
 2. monitor
-   
-   - Owner：初始时为NULL表示当前没有任何线程拥有该monitor record，当线程成功拥有该锁后保存线程唯一标识，当锁被释放时又设置为NULL
+   - Owner：初始时为NULL表示当前没有任何线程拥有该 monitor record，当线程成功拥有该锁后保存线程唯一标识，当锁被释放时又设置为 NULL
 
 - **锁优化**
 
@@ -144,24 +149,24 @@ synchronized可以保证方法或者代码块在运行时，同一时刻只有�
   - 自旋的次数不再是固定的，它是由前一次在同一个锁上的自旋时间及锁的拥有者的状态来决定
   - 自旋成功，则可以增加自旋次数，如果获取锁经常失败，那么自旋次数会减少
 - 锁消除
-  - 若不存在数据竞争的情况，JVM会消除锁机制
+  - 若不存在数据竞争的情况，JVM 会消除锁机制
   - 判断依据：变量逃逸
 - 锁粗化
   - 将多个连续的加锁、解锁操作连接在一起，扩展成一个范围更大的锁。例如for循环内部获取锁
 - 轻量级锁
   - 在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗
-  - 通过CAS来获取锁和释放锁
+  - 通过 CAS 来获取锁和释放锁
   - 性能依据：对于绝大部分锁，在整个生命周期内都是不会存在竞争的
   - 缺点：在多线程环境下，其运行效率比重量级锁还会慢
 - 偏向锁
   - 为了在无多线程竞争的情况下尽量减少不必要的轻量级锁执行路径
-  - 主要尽可能避免不必须要的CAS操作，如果竞争失败，则升级为轻量级锁
+  - 主要尽可能避免不必须要的 CAS 操作，如果竞争失败，则升级为轻量级锁
 
-### volatile
+### [volatile](Java/多线程/volatile.md)
 
 - **特性**
 
-volatile可见性，对一个volatile修饰的变量的读，总可以看到对这个变量最终的写
+volatile 可见性，对一个 volatile 修饰的变量的读，总可以看到对这个变量最终的写
 
 - **实现机制**
 
@@ -169,15 +174,15 @@ volatile可见性，对一个volatile修饰的变量的读，总可以看到对�
 
 - **内存语义**
 
-当写一个volatile变量时，JMM会把该线程对应的本地内存中的共享变量值立即刷新到主内存中；当读一个volatile变量时，JMM会把该线程对应的本地内存设置为无效，直接从主内存中读取共享变量
+当写一个 volatile 变量时，JMM 会把该线程对应的本地内存中的共享变量值立即刷新到主内存中；当读一个 volatile 变量时，JMM 会把该线程对应的本地内存设置为无效，直接从主内存中读取共享变量
 
 - **操作系统语义**
 
 主存、高速缓存（线程私有）缓存一致？
 
 解决方案：
-- 通过在总线加LOCK#锁的方式
-- 通过缓存一致性协议（MESI协议）
+- 通过在总线加 LOCK# 锁的方式
+- 通过缓存一致性协议（MESI 协议）
 
 - **内存模型**
 
@@ -191,22 +196,22 @@ volatile可见性，对一个volatile修饰的变量的读，总可以看到对�
   - 重排序
   - happens-before
 - 解决方案：
-  - volatile方案：禁止重排序
-  - 基于类初始化的解决方案：利用classloader的机制来保证初始化instance时只有一个线程。JVM在类初始化阶段会获取一个锁，这个锁可以同步多个线程对同一个类的初始化
+  - volatile 方案：禁止重排序
+  - 基于类初始化的解决方案：利用 classloader 的机制来保证初始化 instance 时只有一个线程。JVM 在类初始化阶段会获取一个锁，这个锁可以同步多个线程对同一个类的初始化。
 
 ## 并发基础
 
-### AQS
+### [AQS](Java/多线程/AQS.md)
 
-AQS：AbstractQueuedSynchronized，同步器，实现JUC核心基础组件
+AQS：AbstractQueuedSynchronized，同步器，实现 JUC 核心基础组件
 
-解决了子类实现同步器时涉及的大量细节问题，例如获取同步状态、FIFO同步队列
+解决了子类实现同步器时涉及的大量细节问题，例如获取同步状态、FIFO 同步队列
 
-采用模板方法模式，AQS实现大量通用方法，子类通过继承方式实现其抽象方法来管理同步状态
+采用模板方法模式，AQS 实现大量通用方法，子类通过继承方式实现其抽象方法来管理同步状态
 
-CLH同步队列：
-- FIFO双向队列，AQS依赖它来解决同步状态的管理问题
-- 首节点唤醒，等待队列加入到CLH同步队列的尾部
+CLH 同步队列：
+- FIFO 双向队列，AQS 依赖它来解决同步状态的管理问题
+- 首节点唤醒，等待队列加入到 CLH 同步队列的尾部
 
 - **同步状态的获取与释放**
 
@@ -222,26 +227,26 @@ CLH同步队列：
 
 - **线程阻塞和唤醒**
 
-当有线程获取锁了，其他再次获取时需要阻塞，当线程释放锁后，AQS负责唤醒线程
+当有线程获取锁了，其他再次获取时需要阻塞，当线程释放锁后，AQS 负责唤醒线程
 
 LookSupport：
 - 是用来创建锁和其他同步类的基本线程阻塞原语
-- 每个使用LockSupport的线程都会与一个许可关联，如果该许可可用，并且可在进程中使用，则调用`pack()`将会立即返回，否则可能阻塞。如果许可尚不可用，则可以调用unpark使其可用
+- 每个使用 LockSupport 的线程都会与一个许可关联，如果该许可可用，并且可在进程中使用，则调用 `pack()` 将会立即返回，否则可能阻塞。如果许可尚不可用，则可以调用 unpark 使其可用
 - `pack()`、`unpack()`
 
-### CAS
+### [CAS](Java/多线程/CAS.md)
 
-CAS：Compare And Swap，整个JUC体系最核心、最基础理论
+CAS：Compare And Swap，整个 JUC 体系最核心、最基础理论
 
-内存值V、旧的预期值A、要更新的值B，当且仅对内存值V的值等于旧的预期值A时才会将内存值V的值修改为B，否则什么都不干。
+内存值 V、旧的预期值 A、要更新的值 B，当且仅对内存值 V 的值等于旧的预期值 A 时才会将内存值 V 的值修改为 B，否则什么都不干。
 
-native中存在四个参数
+native 中存在四个参数
 
 - **缺陷**：
 
 1. 循环时间太长
 2. 只能保证一个共享变量原子操作
-3. ABA问题
+3. ABA 问题
    - 解决方案：
      - 版本号
      - AtomicStampedReference
@@ -314,7 +319,7 @@ Lock提供条件Condition，对线程的等待、唤醒操作更加详细和灵�
 
 ## 其他
 
-### ThreadLocal
+### [ThreadLocal](Java/多线程/ThreadLocal.md)
 
 一个解决多线程环境下成员变量的问题的方案，但是与线程同步无关。其思路是为每一个线程创建一个单独的变量副本，从而每个每个线程都可以独立地改变自己所拥有的变量副本，而不会影响其他线程所对应的副本。
 
@@ -345,7 +350,7 @@ ThreadLocalMap：
 
 核心思想：
 - "分治"
-- fork分解任务，join手机数据
+- fork 分解任务，join 收集数据
 
 工作窃取：
 - 某个线程从其他队列里窃取任务来执行
@@ -353,8 +358,8 @@ ThreadLocalMap：
 - 队列要采用双向队列
 
 核心类：
-- `ForkJoinPool`:执行任务的线程池
-- `ForkJoinTask`:表示任务，用于ForkJoinPool的任务抽象
+- `ForkJoinPool`：执行任务的线程池
+- `ForkJoinTask`：表示任务，用于 ForkJoinPool 的任务抽象
 - `ForkJoinWorkerThread`：执行任务的工作线程
 
 ## Java并发集合
@@ -442,7 +447,7 @@ Skip List让已排序的数据分布在多层链表中，以0-1随机数决定�
 
 内部采用ConcurrentSkipListMap实现
 
-## atomic
+## [atomic](Java/多线程/Atomic.md)
 
 ### 基本类型
 
@@ -580,20 +585,14 @@ Delay接口
 
 运用：“工作窃取模式”
 
-## 线程池
+## [线程池](Java/多线程/线程池/README.md)
 
 好处：
 - 降低资源消耗：通过重复利用已创建的线程降低线程创建和销毁造成的消耗
 - 提高响应速度：当任务到达时，任务可以不需要等到线程创建就能立即执行
 - 提高线程的可管理性：进行统一分配、调优和监控
 
-### Executor
-
-#### Executors
-
-静态工厂类，提供了Executor、ExecutorService、ScheduledExecutorService、ThreadFactory、Callable等类的静态工厂方法
-
-#### ThreadPoolExecutor
+### ThreadPoolExecutor
 
 - **参数含义**
 
@@ -650,19 +649,23 @@ Delay接口
 
 - **线程池监控**
 
-#### ScheduledThreadPoolExecutor
+### ScheduledThreadPoolExecutor
 
 - 继承自ThreadPoolExecutor
 - 给定的延迟之后运行任务，或者定期执行任务
 - 内部使用DelayQueue来实现，会把调度的任务放入DelayQueue中。DelayQueue内部封装PriorityQueue，这个PriorityQueue会对队列中的ScheduledFutureTask进行排序
 
-### Fature
+### Executors
+
+静态工厂类，提供了Executor、ExecutorService、ScheduledExecutorService、ThreadFactory、Callable等类的静态工厂方法
+
+### Future
 
 异步计算
 
-Fature提供的操作：
+Fature 提供的操作：
 - 执行任务的取消
 - 查询任务是否完成
 - 获取任务的执行结果
 
-FatureTask：实现RunnableFature接口，即可以作为Runnable被执行，也可以作为Fature得到Callable的返回值；内部基于AQS实现
+FatureTask：实现 RunnableFature 接口，即可以作为 Runnable 被执行，也可以作为 Fature 得到 Callable 的返回值；内部基于 AQS 实现

@@ -1,4 +1,11 @@
-# JDK的bin目录下exe的用途
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-07-01 00:52:24
+ * @LastEditTime : 2020-12-23 15:56:14
+ * @Copyright 2020 SUPERZHC
+-->
+# JDK 的 bin 目录下 exe 的用途
 
 ## appletviewer
 

@@ -7,11 +7,11 @@ tags: java
 
 ## 概述
 
-NIO主要有三大核心部分：Channel(通道)，Buffer(缓冲区), Selector。传统IO基于字节流和字符流进行操作，而NIO基于Channel和Buffer(缓冲区)进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。Selector(选择区)用于监听多个通道的事件（比如：连接打开，数据到达）。因此，单个线程可以监听多个数据通道。
+NIO 主要有三大核心部分：Channel(通道)，Buffer(缓冲区)，Selector。传统 IO 基于字节流和字符流进行操作，而 NIO 基于 Channel 和 Buffer(缓冲区)进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。Selector(选择区)用于监听多个通道的事件（比如：连接打开，数据到达）。因此，单个线程可以监听多个数据通道。
 
-NIO和传统IO（一下简称IO）之间第一个最大的区别是，IO是面向流的，NIO是面向缓冲区的。 Java IO面向流意味着每次从流中读一个或多个字节，直至读取所有字节，它们没有被缓存在任何地方。此外，它不能前后移动流中的数据。如果需要前后移动从流中读取的数据，需要先将它缓存到一个缓冲区。NIO的缓冲导向方法略有不同。数据读取到一个它稍后处理的缓冲区，需要时可在缓冲区中前后移动。这就增加了处理过程中的灵活性。但是，还需要检查是否该缓冲区中包含所有您需要处理的数据。而且，需确保当更多的数据读入缓冲区时，不要覆盖缓冲区里尚未处理的数据。
+NIO 和传统 IO（一下简称 IO）之间第一个最大的区别是，IO 是面向流的，NIO 是面向缓冲区的。 Java IO 面向流意味着每次从流中读一个或多个字节，直至读取所有字节，它们没有被缓存在任何地方。此外，它不能前后移动流中的数据。如果需要前后移动从流中读取的数据，需要先将它缓存到一个缓冲区。NIO 的缓冲导向方法略有不同。数据读取到一个它稍后处理的缓冲区，需要时可在缓冲区中前后移动。这就增加了处理过程中的灵活性。但是，还需要检查是否该缓冲区中包含所有您需要处理的数据。而且，需确保当更多的数据读入缓冲区时，不要覆盖缓冲区里尚未处理的数据。
 
-IO的各种流是阻塞的。这意味着，当一个线程调用read() 或 write()时，该线程被阻塞，直到有一些数据被读取，或数据完全写入。该线程在此期间不能再干任何事情了。 NIO的非阻塞模式，使一个线程从某通道发送请求读取数据，但是它仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取。而不是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。 非阻塞写也是如此。一个线程请求写入一些数据到某通道，但不需要等待它完全写入，这个线程同时可以去做别的事情。 线程通常将非阻塞IO的空闲时间用于在其它通道上执行IO操作，所以一个单独的线程现在可以管理多个输入和输出通道（channel）。
+IO 的各种流是阻塞的。这意味着，当一个线程调用 `read()` 或 `write()` 时，该线程被阻塞，直到数据被读取完成，或数据完全写入。该线程在此期间不能再干任何事情了。 NIO 的非阻塞模式，使一个线程从某通道发送请求读取数据，但是它仅能得到目前可用的数据，如果目前没有数据可用时，就什么都不会获取。而不是保持线程阻塞，所以直至数据变的可以读取之前，该线程可以继续做其他的事情。 非阻塞写也是如此。一个线程请求写入一些数据到某通道，但不需要等待它完全写入，这个线程同时可以去做别的事情。 线程通常将非阻塞IO的空闲时间用于在其它通道上执行 IO 操作，所以一个单独的线程现在可以管理多个输入和输出通道（channel）。
 
 ## Channel
 
@@ -222,65 +222,65 @@ int bytesSent = channel.send(buf, new InetSocketAddress("test.com", 80));
 
 ## Buffer
 
-Java NIO中的Buffer用于和NIO通道进行交互，数据是从通道读入缓冲区，从缓冲区写入到通道中的。
+Java NIO 中的 Buffer 用于和 NIO 通道进行交互，数据是从通道读入缓冲区，从缓冲区写入到通道中的。
 
-缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。
+缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成 NIO Buffer 对象，并提供了一组方法，用来方便的访问该块内存。
 
-NIO中的关键Buffer实现有：ByteBuffer, CharBuffer, DoubleBuffer, FloatBuffer, IntBuffer, LongBuffer, ShortBuffer，分别对应基本数据类型: byte, char, double, float, int, long, short。当然NIO中还有MappedByteBuffer, HeapByteBuffer, DirectByteBuffer等。
+NIO 中的关键 Buffer 实现有：ByteBuffer、CharBuffer、DoubleBuffer、FloatBuffer、IntBuffer、LongBuffer、ShortBuffer，分别对应基本数据类型: byte、char、double、float、int、long、short。当然 NIO 中还有 MappedByteBuffer、HeapByteBuffer、DirectByteBuffer 等。
 
-### Buffer的使用
+### Buffer 的使用
 
-使用Buffer一般遵循以下几个步骤：
+使用 Buffer 一般遵循以下几个步骤：
 
-1. 分配空间（ByteBuffer buf = ByteBuffer.allocate(1024); 还有一种是allocateDirector）
-2. 写入数据到Buffer
-    - 从Channel写到Buffer，（int bytesRead = fileChannel.read(buf);）
-    - 通过Buffer的put()方法写到Buffer里，（buf.put(127);）
-3. 调用filp()方法（ buf.flip();）
-4. 从Buffer中读取数据（System.out.print((char)buf.get());）
-5. 调用clear()方法或者compact()方法
+1. 分配空间（`ByteBuffer buf = ByteBuffer.allocate(1024);` 还有一种是 allocateDirector）
+2. 写入数据到 Buffer
+    - 从 Channel 写到 Buffer，（`int bytesRead = fileChannel.read(buf);`）
+    - 通过 Buffer 的 `put()` 方法写到 Buffer 里（`buf.put(127);`）
+3. 调用 `filp()` 方法（ `buf.flip();`）
+4. 从 Buffer 中读取数据（`System.out.print((char)buf.get());`）
+5. 调用 `clear()` 方法或者 `compact()` 方法
 
-当向Buffer写入数据时，Buffer会记录下写了多少数据。一旦要读取数据，需要通过flip()方法将Buffer从写模式切换到读模式。在读模式下，可以读取之前写入到Buffer的所有数据。
+当向 Buffer 写入数据时，Buffer 会记录下写了多少数据。一旦要读取数据，需要通过 `flip()` 方法将 Buffer 从写模式切换到读模式。在读模式下，可以读取之前写入到 Buffer 的所有数据。
 
-Buffer顾名思义：缓冲区，实际上是一个容器，一个连续数组。Channel提供从文件、网络读取数据的渠道，但是读写的数据都必须经过Buffer。如下图：
+Buffer 顾名思义：缓冲区，实际上是一个容器，一个连续数组。Channel 提供从文件、网络读取数据的渠道，但是读写的数据都必须经过 Buffer。如下图：
 
-![](http://ozchbp0v3.bkt.clouddn.com/nio-buffer.jpg)
+![](./images/nio-buffer.jpg)
 
-- 向Buffer中写数据：
-    1. 从Channel写到Buffer (fileChannel.read(buf))
-    2. 通过Buffer的put()方法 （buf.put(…)）
-- 从Buffer中读取数据：
-    1. 从Buffer读取到Channel (channel.write(buf))
-    2. 使用get()方法从Buffer中读取数据 （buf.get()）
+- 向 Buffer 中写数据：
+    1. 从 Channel 写到 Buffer (`fileChannel.read(buf)`)
+    2. 通过 Buffer 的 `put()` 方法 (`buf.put(…)`)
+- 从 Buffer 中读取数据：
+    1. 从 Buffer 读取到 Channel (`channel.write(buf)`)
+    2. 使用 `get()` 方法从 Buffer 中读取数据 (`buf.get()`)
 
-Buffer可以简单地理解为一组基本数据类型的元素列表，它通过几个变量来保存这个数据的当前位置状态：capacity, position, limit, mark：
+Buffer 可以简单地理解为一组基本数据类型的元素列表，它通过几个变量来保存这个数据的当前位置状态：capacity、position、limit、mark：
 
-索引|说明
-:------:|:--------:
-capacity|缓冲区数组的总长度
-position|下一个要操作的数据元素的位置
-limit|缓冲区数组中不可操作的下一个元素的位置：limit<=capacity
-mark|用于记录当前position的前一个位置或者默认是0
+|   索引   |                          说明                           |
+| :------: | :-----------------------------------------------------: |
+| capacity |                   缓冲区数组的总长度                    |
+| position |              下一个要操作的数据元素的位置               |
+|  limit   | 缓冲区数组中不可操作的下一个元素的位置：limit<=capacity |
+|   mark   |       用于记录当前position的前一个位置或者默认是0       |
 
 示例：
 
-通过ByteBuffer.allocate(11)方法创建了一个11个byte的数组的缓冲区，position的位置为0，capacity和limit默认都是数组长度，初始状态如下图：
+通过 `ByteBuffer.allocate(11)` 方法创建了一个 11 个 byte 的数组的缓冲区，position 的位置为 0，capacity 和 limit 默认都是数组长度，初始状态如下图：
 
-![](http://ozchbp0v3.bkt.clouddn.com/nio-buffer1.jpg)
+![](./images/nio-buffer1.jpg)
 
-当写入5个字节时，变化如下图：
+当写入 5 个字节时，变化如下图：
 
-![](http://ozchbp0v3.bkt.clouddn.com/nio-buffer2.jpg)
+![](./images/nio-buffer2.jpg)
 
-这时需要将缓冲区中的5个字节数据写入Channel的通信信道，所以调用ByteBuffer.flip()方法，变化如下图所示(position设回0，并将limit设成之前的position的值)：
+这时需要将缓冲区中的 5 个字节数据写入 Channel 的通信信道，所以调用 `ByteBuffer.flip()` 方法，变化如下图所示( position 设回 0，并将 limit 设成之前的 position 的值)：
 
-![](http://ozchbp0v3.bkt.clouddn.com/nio-buffer3.jpg)
+![](./images/nio-buffer3.jpg)
 
-这时底层操作系统就可以从缓冲区中正确读取这个5个字节数据并发送出去了。在下一次写数据之前再调用clear()方法，缓冲区的索引位置又回到了初始位置。
+这时底层操作系统就可以从缓冲区中正确读取这个5个字节数据并发送出去了。在下一次写数据之前再调用 `clear()` 方法，缓冲区的索引位置又回到了初始位置。
 
-调用clear()方法：position将被设回0，limit设置成capacity，换句话说，Buffer被清空了，其实Buffer中的数据并未被清除，只是这些标记告诉我们可以从哪里开始往Buffer里写数据。如果Buffer中有一些未读的数据，调用clear()方法，数据将“被遗忘”，意味着不再有任何标记会告诉你哪些数据被读过，哪些还没有。如果Buffer中仍有未读的数据，且后续还需要这些数据，但是此时想要先先写些数据，那么使用compact()方法。compact()方法将所有未读的数据拷贝到Buffer起始处。然后将position设到最后一个未读元素正后面。limit属性依然像clear()方法一样，设置成capacity。现在Buffer准备好写数据了，但是不会覆盖未读的数据。
+调用 `clear()` 方法：position 将被设回 0，limit 设置成 capacity，换句话说，Buffer 被清空了，其实 Buffer 中的数据并未被清除，只是这些标记告诉我们可以从哪里开始往 Buffer 里写数据。如果 Buffer 中有一些未读的数据，调用 `clear()` 方法，数据将“被遗忘”，意味着不再有任何标记会告诉你哪些数据被读过，哪些还没有。如果 Buffer 中仍有未读的数据，且后续还需要这些数据，但是此时想要先先写些数据，那么使用 `compact()` 方法。`compact()` 方法将所有未读的数据拷贝到 Buffer 起始处。然后将 position 设到最后一个未读元素正后面。limit 属性依然像 `clear()` 方法一样，设置成 capacity。现在 Buffer 准备好写数据了，但是不会覆盖未读的数据。
 
-通过调用Buffer.mark()方法，可以标记Buffer中的一个特定的position，之后可以通过调用Buffer.reset()方法恢复到这个position。Buffer.rewind()方法将position设回0，所以你可以重读Buffer中的所有数据。limit保持不变，仍然表示能从Buffer中读取多少个元素。
+通过调用 `Buffer.mark()` 方法，可以标记 Buffer 中的一个特定的 position，之后可以通过调用 `Buffer.reset()` 方法恢复到这个 position。`Buffer.rewind()` 方法将 position 设回 0，所以可以重读 Buffer 中的所有数据。limit 保持不变，仍然表示能从 Buffer 中读取多少个元素。
 
 ## Selector
 
