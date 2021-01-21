@@ -10,27 +10,27 @@
 
 ## spark-submit 详细参数说明
 
-| 参数名                | 参数说明                                                                                                       |
-| --------------------- | -------------------------------------------------------------------------------------------------------------- |
-| —master               | master 的地址，提交任务到哪里执行，例如 `spark://host:port`, yarn, local。具体指可参考下面关于Master_URL的列表 |
-| —deploy-mode          | 在本地 (client) 启动 driver 或在 cluster 上启动，默认是 client                                                 |
-| —class                | 应用程序的主类，仅针对 java 或 scala 应用                                                                      |
-| —name                 | 应用程序的名称                                                                                                 |
-| —jars                 | 用逗号分隔的本地 jar 包，设置后，这些 jar 将包含在 driver 和 executor 的 classpath 下                          |
-| —packages             | 包含在driver 和executor 的 classpath 中的 jar 的 maven 坐标                                                    |
-| —exclude-packages     | 为了避免冲突 而指定不包含的 package                                                                            |
-| —repositories         | 远程 repository                                                                                                |
-| —conf PROP=VALUE      | 指定 spark 配置属性的值， 例如 `-conf spark.executor.extraJavaOptions='-XX:MaxPermSize=256m'`                  |
-| —properties-file      | 加载的配置文件，默认为 `conf/spark-defaults.conf`                                                              |
-| —driver-memory        | Driver内存，默认 1G                                                                                            |
-| —driver-java-options  | 传给 driver 的额外的 Java 选项                                                                                 |
-| —driver-library-path  | 传给 driver 的额外的库路径                                                                                     |
-| —driver-class-path    | 传给 driver 的额外的类路径                                                                                     |
-| —driver-cores         | Driver 的核数，默认是1。在 yarn 或者 standalone 下使用                                                         |
-| —executor-memory      | 每个 executor 的内存，默认是1G                                                                                 |
-| —total-executor-cores | 所有 executor 总共的核数。仅仅在 mesos 或者 standalone 下使用                                                  |
-| —num-executors        | 启动的 executor 数量。默认为2。在 yarn 下使用                                                                  |
-| —executor-core        | 每个 executor 的核数。在yarn或者standalone下使用                                                               |
+| 参数名                | 参数说明                                                                                                             |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| —master               | master 的地址，提交任务到哪里执行，例如 `spark://host:port`, yarn, local。具体指可参考下面关于Master_URL的列表       |
+| —deploy-mode          | 在本地 (client) 启动 driver 或在 cluster 上启动，默认是 client                                                       |
+| —class                | 应用程序的主类，仅针对 java 或 scala 应用                                                                            |
+| —name                 | 应用程序的名称                                                                                                       |
+| --jars                | 用逗号分隔的本地 jar 包，设置后，这些 jar 将包含在 driver 和 executor 的 classpath 下。【注：不支持通配符添加jar包】 |
+| —packages             | 包含在driver 和executor 的 classpath 中的 jar 的 maven 坐标                                                          |
+| —exclude-packages     | 为了避免冲突 而指定不包含的 package                                                                                  |
+| —repositories         | 远程 repository                                                                                                      |
+| —conf PROP=VALUE      | 指定 spark 配置属性的值， 例如 `-conf spark.executor.extraJavaOptions='-XX:MaxPermSize=256m'`                        |
+| —properties-file      | 加载的配置文件，默认为 `conf/spark-defaults.conf`                                                                    |
+| —driver-memory        | Driver内存，默认 1G                                                                                                  |
+| —driver-java-options  | 传给 driver 的额外的 Java 选项                                                                                       |
+| —driver-library-path  | 传给 driver 的额外的库路径                                                                                           |
+| —driver-class-path    | 传给 driver 的额外的类路径                                                                                           |
+| —driver-cores         | Driver 的核数，默认是1。在 yarn 或者 standalone 下使用                                                               |
+| —executor-memory      | 每个 executor 的内存，默认是1G                                                                                       |
+| —total-executor-cores | 所有 executor 总共的核数。仅仅在 mesos 或者 standalone 下使用                                                        |
+| —num-executors        | 启动的 executor 数量。默认为2。在 yarn 下使用                                                                        |
+| —executor-core        | 每个 executor 的核数。在yarn或者standalone下使用                                                                     |
 
 ### Master URL
 
