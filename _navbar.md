@@ -2,7 +2,7 @@
  * @Github       : https://github.com/superzhc/BigData-A-Question
  * @Author       : SUPERZHC
  * @CreateDate   : 2020-08-18 08:46:10
- * @LastEditTime : 2020-12-29 10:38:46
+ * @LastEditTime : 2021-02-05 11:29:21
  * @Copyright 2020 SUPERZHC
 -->
 - [首页](/)
@@ -14,6 +14,7 @@
   - [Spark SQL 内置函数](Spark/SparkSQL/函数.md)
   - [Kafka脚本工具](Kafka/Kafka工具使用.md)
 - 工具
+  - [装机软件](工具/装机软件.md)
   - [Git](工具/Git/README.md)
   - [IDEA](工具/idea/IDEA.md)
   - [Aria2](工具/Aria2.md)
