@@ -1,3 +1,5 @@
+# MapReduce 的 Shuffle
+
 > MapReduce 确保每个 reducer 的输入都是按键排序的。系统执行排序、将 map 输出作为输入传给 reducer 的过程称为 ***shuffle***。
 
 ![image-20200624152328007](images/image-20200624152328007.png)

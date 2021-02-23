@@ -1,3 +1,5 @@
+# RDD 创建
+
 Spark 提供了两种常见的创建 RDD 的方式：
 
 - 调用 SparkContext 的 `parallelize()` 方法将数据并行化生成 RDD
@@ -42,10 +44,20 @@ Spark 支持多种数据源，比如 HDFS、Cassandra、HBase、Amazon S3 或者
 
 示例：从一个本地文件系统读取文本文件作为外部数据源
 
+> 注意：要加载本地文件，必须采用`file://`开头的格式
+
 **Scala 版本**
 
 ```scala
 val distFile = sc.textFile("file:///usr/local/data.txt",10)
+```
+
+注：`sc.textFile("hdfs://localhost:9000/user/hadoop/test.txt")`中的`hdfs://localhost:9000`是服务器上安装的Hadoop确定下来的端口地址。实际上，也可以省略不写，如下三条语句都是等价的：
+
+```scala
+val textFile=sc.textFile("hdfs://localhost:9000/user/hadoop/test.txt")
+val textFile=sc.textFile("/user/hadoop/test.txt")
+val textFile=sc.textFile("test.txt")
 ```
 
 **Java 版本**
@@ -90,3 +102,81 @@ JavaRDD<String> lines = sc.textFile("data/rdd/input/file[0-3].txt,data/rdd/anoth
 - 对于其他的 Hadoop InputFormats，你可以使用 `SparkContext.hadoopRDD` 方法，它可以指定任意的 `JobConf`，输入格式(InputFormat)，key 类型，values 类型。你可以跟设置 Hadoop job 一样的方法设置输入源。你还可以在新的 MapReduce 接口(org.apache.hadoop.mapreduce)基础上使用 `SparkContext.newAPIHadoopRDD`(译者注：老的接口是 `SparkContext.newHadoopRDD`)。
 - `RDD.saveAsObjectFile` 和 `SparkContext.objectFile` 支持保存一个RDD，保存格式是一个简单的 Java 对象序列化格式。这是一种效率不高的专有格式，如 Avro，它提供了简单的方法来保存任何一个 RDD。
 
+### 读写 HBase 数据
+
+**读取HBase**
+
+> 在开始编程操作HBase之前，需要将HBase的lib目录下的一些jar包拷贝到Spark中，这些都是编程时需要引入的jar包，需要拷贝的jar包包括：所有`hbase开头`的jar包、`guava-12.0.1.jar`、`htrace-core-3.1.0-incubating.jar`和`protobuf-java-2.5.0.jar`
+
+如果要让Spark读取HBase，就需要使用SparkContext提供的`newAPIHadoopRDD API`将表的内容以RDD的形式加载到Spark中。
+
+```scala
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.hbase._
+import org.apache.hadoop.hbase.client._
+import org.apache.hadoop.hbase.mapreduce.TableInputFormat
+import org.apache.hadoop.hbase.util.Bytes
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkContext._
+import org.apache.spark.SparkConf
+
+object SparkOperateHBase {
+  def main(args: Array[String]) {
+
+      val conf = HBaseConfiguration.create()
+      val sc = new SparkContext(new SparkConf())
+      //设置查询的表名
+      conf.set(TableInputFormat.INPUT_TABLE, "student")
+      val stuRDD = sc.newAPIHadoopRDD(conf, classOf[TableInputFormat], classOf[org.apache.hadoop.hbase.io.ImmutableBytesWritable], classOf[org.apache.hadoop.hbase.client.Result])
+      val count = stuRDD.count()
+      println("Students RDD Count:" + count)
+      stuRDD.cache()
+
+      //遍历输出
+      stuRDD.foreach({ case (_,result) =>
+          val key = Bytes.toString(result.getRow)
+          val name = Bytes.toString(result.getValue("info".getBytes,"name".getBytes))
+          val gender = Bytes.toString(result.getValue("info".getBytes,"gender".getBytes))
+          val age = Bytes.toString(result.getValue("info".getBytes,"age".getBytes))
+          println("Row key:"+key+" Name:"+name+" Gender:"+gender+" Age:"+age)
+      })
+  }
+}
+```
+
+**写入HBase**
+
+```scala
+import org.apache.hadoop.hbase.HBaseConfiguration  
+import org.apache.hadoop.hbase.mapreduce.TableOutputFormat  
+import org.apache.spark._  
+import org.apache.hadoop.mapreduce.Job  
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable  
+import org.apache.hadoop.hbase.client.Result  
+import org.apache.hadoop.hbase.client.Put  
+import org.apache.hadoop.hbase.util.Bytes  
+
+object SparkWriteHBase {  
+  def main(args: Array[String]): Unit = {  
+    val sparkConf = new SparkConf().setAppName("SparkWriteHBase").setMaster("local")  
+    val sc = new SparkContext(sparkConf)        
+    val tablename = "student"        
+    sc.hadoopConfiguration.set(TableOutputFormat.OUTPUT_TABLE, tablename)  
+
+    val job = new Job(sc.hadoopConfiguration)  
+    job.setOutputKeyClass(classOf[ImmutableBytesWritable])  
+    job.setOutputValueClass(classOf[Result])    
+    job.setOutputFormatClass(classOf[TableOutputFormat[ImmutableBytesWritable]])    
+
+    val indataRDD = sc.makeRDD(Array("3,Rongcheng,M,26","4,Guanhua,M,27")) //构建两行记录
+    val rdd = indataRDD.map(_.split(',')).map{arr=>{  
+      val put = new Put(Bytes.toBytes(arr(0))) //行健的值 
+      put.add(Bytes.toBytes("info"),Bytes.toBytes("name"),Bytes.toBytes(arr(1)))  //info:name列的值
+      put.add(Bytes.toBytes("info"),Bytes.toBytes("gender"),Bytes.toBytes(arr(2)))  //info:gender列的值
+      put.add(Bytes.toBytes("info"),Bytes.toBytes("age"),Bytes.toBytes(arr(3).toInt))  //info:age列的值
+      (new ImmutableBytesWritable, put)   
+    }}        
+    rdd.saveAsNewAPIHadoopDataset(job.getConfiguration())  
+  }    
+}
+```

@@ -1,3 +1,12 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2019-10-08 11:41:38
+ * @LastEditTime : 2021-02-05 16:46:04
+ * @Copyright 2021 SUPERZHC
+-->
+# `spark-shell`
+
 `spark-shell` 作为一个强大的交互式数据分析工具，提供了一个简单的方式来学习 API。
 
 在 Spark 目录里使用下面的方式开始运行：

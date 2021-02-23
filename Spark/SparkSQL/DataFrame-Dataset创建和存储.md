@@ -134,6 +134,102 @@ import org.apache.spark.sql.Row;
 Dataset<Row> df = spark.read().json("examples/src/main/resources/people.json");
 ```
 
+## Parquet 文件读写
+
+Parquet是一种流行的 **列式存储格式**，可以高效地存储具有且套字段的记录。Parquet是语言无关的，而且不与任何一种数据处理框架绑定在一起，适配多种语言和组件，能够与Parquet配合的组件有：
+
+- 查询引擎：Hive，Impala，Pig，Presto，Drill，Tajo，HAWQ，IBM Big SQL
+- 计算框架：MapReduce，Spark，Cascading，Crunch，Scalding，Kite
+- 数据模型：Avro，Thrift，Protocol Buffers，POJOs
+
+**读取Parquet**
+
+```scala
+import spark.implicits._
+
+val parquetFileDF = spark.read.parquet("file:///usr/local/spark/examples/src/main/resources/users.parquet")
+parquetFileDF.createOrReplaceTempView("parquetFile")
+val namesDF = spark.sql("SELECT * FROM parquetFile")
+namesDF.foreach(attributes =>println("Name: " + attributes(0)+"  favorite color:"+attributes(1)))
+```
+
+**将DataFrame保存成parquet文件**
+
+```scala
+import spark.implicits._
+
+val peopleDF = spark.read.json("file:///usr/local/spark/examples/src/main/resources/people.json")
+peopleDF.write.parquet("file:///usr/local/spark/mycode/newpeople.parquet")
+```
+
+## 通过 JDBC 读写数据库
+
+Spark SQL支持通过JDBC方式连接到其他数据库获取数据生成DataFrame，也可以将DataFrame对象作为表存入数据库。
+
+### 准备工作
+
+在开始使用之前，需要在Spark类路径（SPARK_CLASSPATH）下添加指定数据库的JDBC驱动程序的Jar包。
+
+### 使用
+
+- 连接数据库，读取数据：
+
+```scala
+val jdbcDF = spark.read.format("jdbc")
+	.option("url", "jdbc:mysql://localhost:3306/spark")
+	.option("driver","com.mysql.jdbc.Driver")
+	.option("dbtable", "student")
+	.option("user", "root")
+	.option("password", "hadoop")
+	.load()
+```
+
+- 连接数据库，写入数据：
+
+```scala
+import java.util.Properties
+import org.apache.spark.sql.types._
+import org.apache.spark.sql.Row
+ 
+//下面我们设置两条数据表示两个学生信息
+val studentRDD = spark.sparkContext.parallelize(Array("3 Rongcheng M 26","4 Guanhua M 27")).map(_.split(" "))
+ 
+//下面要设置模式信息
+val schema = StructType(List(StructField("id", IntegerType, true),StructField("name", StringType, true),StructField("gender", StringType, true),StructField("age", IntegerType, true)))
+ 
+//下面创建Row对象，每个Row对象都是rowRDD中的一行
+val rowRDD = studentRDD.map(p => Row(p(0).toInt, p(1).trim, p(2).trim, p(3).toInt))
+ 
+//建立起Row对象和模式之间的对应关系，也就是把数据和模式对应起来
+val studentDF = spark.createDataFrame(rowRDD, schema)
+ 
+//下面创建一个prop变量用来保存JDBC连接参数
+val prop = new Properties()
+prop.put("user", "root") //表示用户名是root
+prop.put("password", "hadoop") //表示密码是hadoop
+prop.put("driver","com.mysql.jdbc.Driver") //表示驱动程序是com.mysql.jdbc.Driver
+ 
+//下面就可以连接数据库，采用append模式，表示追加记录到数据库spark的student表中
+studentDF.write.mode("append").jdbc("jdbc:mysql://localhost:3306/spark", "spark.student", prop)
+```
+
+### JDBC操作的属性
+
+
+| 属性名                                  | 含义                                                                                                                                                                       |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| url                                     | 要连接到的JDBC URL，源特定的连接属性可以在URL中指定。例如：`jdbc:mysql://localhost:3306/test?user=root&password=123456`                                                    |
+| dbtable                                 | 读取的数据库的表，也可以是SQL语句（在SQL查询的from子句中有效的任何内容）                                                                                                   |
+| driver                                  | 用于连接到此URL的JDBC驱动程序的类名                                                                                                                                        |
+| partitionColumn，lowerBound，upperBound | 如果指定了这三个选项中的任意一个，则这三个选项均需要指定。另外，还必须指定numPartitions。这些参数描述了如何从多个工作节点并行读取时对表格进行分区                          |
+| numPartitions                           | 表格读取和写入时可用于并行的分区的最大数目。这也决定了并发JDBC连接的最大数量。如果要写入的分区数量超过此限制，则在写入之前通过调用`coalesce(numPartition)`将其减少到此限制 |
+| fetchsize                               | JDBC提取大小，它决定每次往返取多少行。这可以帮助默认为低读取大小的执行性能，这个选项只适用于读取表                                                                         |
+| batchsize                               | JDBC批量大小，用于确定每次往返插入多少行。这个选项只适用于写入表，它默认为1000                                                                                             |
+| isolationLevel                          | 事务隔离级别，适用于当前连接                                                                                                                                               |
+| truncate                                | todo                                                                                                                                                                       |
+| createTableOptions                      | todo                                                                                                                                                                       |
+| createTableColumnTypes                  | todo                                                                                                                                                                       |
+
 ## ~~在文件上直接进行SQL查询~~
 
 相比于使用read API将文件加载到DataFrame并对其进行查询，还可以使用SQL直接查询该文件。

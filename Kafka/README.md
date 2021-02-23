@@ -1,3 +1,10 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-03-08 12:42:47
+ * @LastEditTime : 2021-02-05 15:54:04
+ * @Copyright 2021 SUPERZHC
+-->
 # Kafka
 
 ## 简介
@@ -26,6 +33,8 @@ Kafka
 ```
 
 **查看 Kafka 版本**
+
+Kafka 并没有提供类似其他命令的选项-version来快速查看版本。可以通过执行以下命令，获得 Kafka 的版本
 
 ```sh
 # There is nothing like kafka --version at this point. So you should either check the version from $KAFKA_HOME/libs/ folder or you can run

@@ -1,3 +1,13 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-05-15 08:44:55
+ * @LastEditTime : 2020-12-07 13:59:39
+ * @Copyright 2020 SUPERZHC
+-->
+
+# HBase
+
 ## 简介
 
 HBase 是基于 Apache Hadoop 的面向列的 NoSQL 数据库，是 Google 的 BigTable 的开源实现。HBase 是一个针对半结构化数据的开源的、多版本的、可伸缩的、高可靠的、高性能的、分布式的和面向列的动态模式数据库。
@@ -18,30 +28,40 @@ HBase 在充分利用列式存储优势的同时，通过列簇减少列连接�
 
 ## 架构
 
+HBase 的体系结构是典型的 Master-Slave 模型。系统中有一个管理集群的 Master 节点以及大量实际服务用户读写的 RegionServer 节点。除此之外，HBase 中所有数据最终都存储在 HDFS 系统中；系统中还有一个 Zookeeper 节点，协助 Master 对集群进行管理。HBase 体系结构如下图所示：
+
 ![HBase架构](images/52297ef305db9.jpg)
 
-通过上图可以得到 HBase 中的每张表都按照一定的范围被分割成多个子表（HRegion），默认一个 HRegion 超过 256M 就要被分割成两个，由 HRegionServer 管理，管理哪些 HRegion 由 HMaster 分配。
+通过上图可以得到 HBase 中的每张表都按照一定的范围被分割成多个子表（Region），默认一个 Region 超过 256M 就要被分割成两个，由 RegionServer 管理，管理哪些 Region 由 Master 分配。
 
-- **Client**：包含访问HBase的接口，并维护cache来加快对HBase的访问；通过 RPC 机制和 Master，RegionServer 通信
-- **Zookeeper**：HBase 依赖 Zookeeper，默认情况下 HBase 管理 Zookeeper 实例（启动或关闭 Zookeeper），Master 与 RegionServers 启动时会向 Zookeeper 注册。Zookeeper 的作用如下：
-  - 保证任何时候，集群中只有一个 Master
-  - 存储所有 Region 的寻址入口
-  - 实时监控 RegionServer 的上线和下线信息。并实时通知给 Master
-  - 存储 HBase 元数据信息
-  - HBase 中可以启动多个 HMaster，通过 Zookeeper 的 Master Election 机制保证总有一个 Master 运行
+- **Client**
+  
+  提供了 Shell 命令行接口、原生 Java API 编程接口、Thrift/REST API 编程接口以及 MapReduce 编程接口。HBase 客户端支持所有常见的 DML 操作以及 DDL 操作，即数据的增删改查和表的日常维护等。其中 Thrift/REST API 主要用于支持非 Java 的上层业务需求，MapReduce 接口主要用于批量数据导入以及批量数据读取。
+  
+  HBase 客户端访问数据行之前，首先需要通过元数据表定位目标数据所在 RegionServer，之后才会发送请求到该 RegionServer。同时这些元数据会被缓存在客户端本地，以方便之后的请求访问。如果集群 RegionServer 发生宕机或者执行了负载均衡等，从而导致数据分片发生迁移，客户端需要重新请求最新的元数据并缓存在本地。
+  
+- **Zookeeper**
+  
+  HBase 依赖 Zookeeper，默认情况下 HBase 管理 Zookeeper 实例（启动或关闭 Zookeeper），Master 与 RegionServers 启动时会向 Zookeeper 注册。Zookeeper 的作用如下：
+
+  - 实现 Master 高可用：通常情况下系统中只有一个 Master 工作，一旦 ActiveMaster 由于异常宕机，ZooKeeper 会检测到该宕机事件，并通过一定机制选举出新的 Master，保证系统正常运转
+  - 管理系统核心元数据：比如，管理当前系统中正常工作的 RegionServer 集合，保存系统元数据表 `hbase:meta` 所在的 RegionServer 地址等
+  - 参与 RegionServer 宕机恢复：ZooKeeper 通过心跳可以感知到 RegionServer 是否宕机，并在宕机后通知 Master 进行宕机处理
+  - 实现分布式表锁：HBase 中对一张表进行各种管理操作（比如 alter 操作）需要先加表锁，防止其他用户对同一张表进行管理操作，造成表状态不一致。和其他 RDBMS 表不同， HBase 中的表通常都是分布式存储，ZooKeeper 可以通过特定机制实现分布式表锁
 
 - **Master**
+  
+  Master 主要负责 HBase 系统的各种管理工作：
+  
+  - 处理用户的各种管理请求，包括建表、修改表、权限操作、切分表、合并数据分片以及 Compaction 等
+  - 管理集群中所有 RegionServer，包括 RegionServer 中 Region 的负载均衡、RegionServer 的宕机恢复以及 Region 的迁移等
+  - 清理过期日志以及文件，Master 会每隔一段时间检查 HDFS 中 HLog 是否过期、HFile 是否已经被删除，并在过期之后将其删除
 
-  - 为 RegionServer 分配 region
-  - 负责 RegionServer 的负载均衡
-  - 发现挂掉的 RegionServer 并重新分配其上的 region
-  - 负责表的创建、删除等操作
+  > 由于 Master 只维护表和 Region 的元数据，而不参与表数据 I/O 的过程，Master 下线仅导致所有的元数据的修改被冻结（无法创建删除表，无法修改表的 schema，无法进行 Region 的负载均衡，无法处理 Region 上下线，无法进行 Region 的合并，唯一例外的是 Region 的 split 可以正常进行，因为只有 RegionServer 参与），表的数据读写还可以正常进行。因此 Master 下线短时间内对整个 HBase 集群没有影响
 
-  > 由于 Master 只维护表和 region 的元数据，而不参与表数据 I/O 的过程，Master 下线仅导致所有的元数据的修改被冻结（无法创建删除表，无法修改表的 schema，无法进行 region 的负载均衡，无法处理 region 上下线，无法进行 region 的合并，唯一例外的是 region 的 split 可以正常进行，因为只有 region server 参与），表的数据读写还可以正常进行。因此 Master 下线短时间内对整个 HBase 集群没有影响
+- **RegionServer**：用来维护 Master 分配给它的 Region，处理对这些 Region 的 I/O 请求；负责切分正在运行过程中变的过大的 Region。
 
-- **HRegionServer**：用来维护 Master 分配给它的 Region，处理对这些 Region 的 I/O 请求；负责切分正在运行过程中变的过大的 Region。
-
-- **HRegion**：HBase 表在行的方向上分隔为多个 Region。Region 是 HBase 中分布式存储和负载均衡的最小单元，即不同的 Region 可以分别在不同的 RegionServer上，但同一个 Region 是不会拆分到多个 server 上。Region 按大小分隔，每个表一般是只有一个 Region，当 Region 的某个列簇达到一个阈值（默认256M）时就会分成两个新的 Region。
+- **Region**：HBase 表在行的方向上分隔为多个 Region。Region 是 HBase 中分布式存储和负载均衡的最小单元，即不同的 Region 可以分别在不同的 RegionServer 上，但同一个 Region 是不会拆分到多个 server 上。Region 按大小分隔，每个表一般是只有一个 Region，当 Region 的某个列簇达到一个阈值（默认256M）时就会分成两个新的 Region。
 
 - **Store**：每一个 Region 由一个或多个 Store 组成，至少是一个 Store，HBase 会把一起访问的数据放在一个 Store 里面，即为每个列簇建一个 Store，如果有几个列簇，也就有几个 Store。一个 Store 由一个 memStore 和 0 或者多个 StoreFile 组成。Store 的大小被 HBase 用来判断是否需要切分 Region。
 
@@ -85,7 +105,7 @@ HBase采用表来组织数据，表由许多行和列组成，列划分为多个
 
 在表里面，每一行代表着一个数据对象。每一行都是由一个**行键**（**Row Key**）和一个或者多个列组成的。
 
-行键是用来表示唯一一行记录的**主键**，HBase的数据是按照RowKey的**字典顺序**进行全局排序的，所有的查询，这一个排序维度。
+行键是用来表示唯一一行记录的**主键**，HBase 的数据是按照 RowKey 的**字典顺序**进行全局排序的，所有的查询，这一个排序维度。
 
 因为表的行是按照行键顺序来进行存储的，所以行键的设计相当重要。设计行键的一个重要原则就是相关的行键要存储在接近的位置，例如，设计记录网站的表时，行键需要将域名反转（例如，`org.apache.www`、`org.apache.mail`、`org.apache.jira`），这样的设计能使与 apache 相关的域名在表中存储的位置非常接近。
 
@@ -105,7 +125,7 @@ HBase采用表来组织数据，表由许多行和列组成，列划分为多个
 
 表中的每一行都有相同的列簇，但是不需要每一行的列簇里都有一致的列限定符，所以说是一种稀疏的表结构，这样可以在一定程度上避免数据的冗余。
 
-HBase 中的列簇是一些列的集合。一个列簇的所有列成员都有着相同的前缀，例如，`courses:history` 和 `courses:math` 都是列簇 `courses `的成员。`:`是列簇的分隔符，用来区分前缀和列名。列簇必须在表建立的时候声明，列随时可以新建。
+HBase 中的列簇是一些列的集合。一个列簇的所有列成员都有着相同的前缀，例如，`courses:history` 和 `courses:math` 都是列簇 `courses` 的成员。`:` 是列簇的分隔符，用来区分前缀和列名。列簇必须在表建立的时候声明，列随时可以新建。
 
 #### 5. 列限定符（Column Qualifier）
 
@@ -123,7 +143,7 @@ HBase 中的列簇是一些列的集合。一个列簇的所有列成员都有�
 
 ## HBase 物理模型
 
-一个列族的所有列存储在同一个底层的**存储文件**（store file）里，这个存储文件叫做 HFile。HFile 中存储的是经过排序的键值映射结构。文件内部由连续的块组成，块的索引信息存储在文件的尾部。当把 HFile 打开并加载到内存中时，索引信息会优先加载到内存中，每个块的默认大小是 64KB，可以根据需要配置不同的块大小。
+一个列簇的所有列存储在同一个底层的**存储文件**（store file）里，这个存储文件叫做 HFile。HFile 中存储的是经过排序的键值映射结构。文件内部由连续的块组成，块的索引信息存储在文件的尾部。当把 HFile 打开并加载到内存中时，索引信息会优先加载到内存中，每个块的默认大小是 64KB，可以根据需要配置不同的块大小。
 
 每一个 HFile 都有一个块索引，通过一个磁盘查找就可以实现。首先，在内存的块索引中进行二分查找，确定可能包含给定键的块，然后读取磁盘块找到实际要找的键。
 

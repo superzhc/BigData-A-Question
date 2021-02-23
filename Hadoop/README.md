@@ -1,3 +1,10 @@
+<!--
+ * @Github       : https://github.com/superzhc/BigData-A-Question
+ * @Author       : SUPERZHC
+ * @CreateDate   : 2020-05-21 14:34:26
+ * @LastEditTime : 2021-02-05 15:55:39
+ * @Copyright 2021 SUPERZHC
+-->
 # Hadoop
 
 Hadoop 是一个由 Apache 基金会所开发的分布式系统基础框架。
@@ -19,3 +26,6 @@ Hadoop 是一个由 Apache 基金会所开发的分布式系统基础框架。
 >
 > Hadoop1.x 中 MapReduce 同时处理业务逻辑运算和资源的调度，耦合性较大；在 Hadoop2.x 时代，增加了 Yarn 组件，单独负责资源调度，MapReduce 也只负责运算
 
+## Hadoop 的安全模式
+
+官方地址：<http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SecureMode.html#Permissions_for_both_HDFS_and_local_fileSystem_paths>

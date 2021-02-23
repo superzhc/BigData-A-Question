@@ -1,3 +1,5 @@
+# DataFrame/DataSet 的操作
+
 Spark SQL 中的 DataFrame 类似于一张关系型数据表。在关系型数据库中对单表或进行的查询操作，在DataFrame中都可以通过调用其API接口来实现。
 
 ## Action
@@ -266,6 +268,20 @@ df.union(df2).show()
 ```
 
 ### `join`：联接操作
+
+对于没有joinType的方法，默认使用内连接（inner join）
+
+joinType(连接类型)：
+
+- inner
+- cross
+- out
+- full
+- full_outer
+- left
+- left_outer
+- right
+- right_outer
 
 **笛卡尔积**
 

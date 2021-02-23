@@ -2,7 +2,7 @@
  * @Github       : https://github.com/superzhc/BigData-A-Question
  * @Author       : SUPERZHC
  * @CreateDate   : 2018-11-30 14:53:21
- * @LastEditTime : 2020-12-29 13:38:38
+ * @LastEditTime : 2021-01-25 14:31:54
  * @Copyright 2020 SUPERZHC
 -->
 - [Git](#git)
@@ -232,11 +232,21 @@ Git 在内部有个指向当前版本的 HEAD 指针，当你回退版本的时�
 
 然后把工作区的文件更新下。所以 HEAD 指向哪个版本号，当前工作空间就处于那个版本。
 
+也可以对单个文件进行版本回退的操作，如下所示：
+
+```bash
+git reset --hard HEAD^ test.txt
+```
+
 - **暂存区的修改回退到工作区**
 
-格式：`git reset HEAD <file>`
+格式：
 
-把暂存区的修改撤销掉（unstage），重新放回工作区
+```bash
+git reset HEAD <file>
+```
+
+把暂存区的修改撤销掉（unstage），重新放回工作区。即，撤销先前 `git add` 的操作
 
 ### `git reflog` 记录每次提交命令
 
@@ -246,7 +256,15 @@ Git 在内部有个指向当前版本的 HEAD 指针，当你回退版本的时�
 
 - **撤销修改**
 
-格式：`git checkout -- <file>`
+格式：
+
+```bash
+# 单个文件的修改
+git checkout -- <file>
+# 整个文件夹的修改
+git checkout .
+git checkout src/main/resources
+```
 
 把 file 在工作区的所有修改都撤销，这里有两种情况：
 - 一种是 file 自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
