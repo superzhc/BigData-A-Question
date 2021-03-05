@@ -60,3 +60,12 @@ npm uninstall <Module Name>
 npm list
 ```
 
+## CNPM
+
+> CNPM 是 NPM 在国内的镜像，可以提高下载速度。
+
+安装 CNPM 的命令如下：
+
+```bash
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+```
