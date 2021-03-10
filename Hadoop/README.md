@@ -26,6 +26,23 @@ Hadoop 是一个由 Apache 基金会所开发的分布式系统基础框架。
 >
 > Hadoop1.x 中 MapReduce 同时处理业务逻辑运算和资源的调度，耦合性较大；在 Hadoop2.x 时代，增加了 Yarn 组件，单独负责资源调度，MapReduce 也只负责运算
 
+## 查看 Hadoop 版本
+
+执行如下命令即可查看 Hadoop 的安装版本：
+
+```bash
+hadoop version
+```
+
 ## Hadoop 的安全模式
 
 官方地址：<http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SecureMode.html#Permissions_for_both_HDFS_and_local_fileSystem_paths>
+
+## Windows 环境下配置 `winutils.exe` 和 `hadoop.dll`
+
+Windows 版本下的相关软件地址：
+
+```md
+1. https://github.com/steveloughran/winutils
+2. https://github.com/cdarlint/winutils
+```
