@@ -42,8 +42,8 @@
 **1、解压**
 
 ```bash
-mkdir -p /usr/lib/jvm
-tar -zxvf jdk-8u131-linux-x64.tar.gz -C /usr/lib/jvm
+mkdir -p /usr/local/java
+tar -zxvf jdk-8u131-linux-x64.tar.gz -C /usr/local/java
 ```
 
 **2、设置环境变量**
@@ -51,10 +51,10 @@ tar -zxvf jdk-8u131-linux-x64.tar.gz -C /usr/lib/jvm
 ```bash
 vim /etc/profile
 
-export JAVA_HOME=/usr/lib/jvm/jdk1.8.0_131  
+export JAVA_HOME=/usr/local/java/jdk1.8.0_131  
 export JRE_HOME=${JAVA_HOME}/jre  
 export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib  
-export  PATH=${JAVA_HOME}/bin:$PATH
+export PATH=${JAVA_HOME}/bin:$PATH
 
 # 执行环境变量
 source /etc/profile
