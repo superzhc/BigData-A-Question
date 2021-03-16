@@ -15,7 +15,11 @@ wget archive.apache.org/dist/flink/flink-1.12.1/flink-1.12.1-bin-scala_2.11.tgz
 # 解压压缩包
 mkdir /opt/flink
 tar -zxvf flink-1.12.2-bin-scala_2.11.tgz -C /opt/flink
+```
 
+## 启动 Flink
+
+```bash
 # 启动flink
 /opt/flink/flink-1.12.2/bin/start-cluster.sh
 ```
