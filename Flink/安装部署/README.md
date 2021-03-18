@@ -1,5 +1,7 @@
 # Flink 的安装部署
 
+版本：1.12.2
+
 > **注**：安装 Flink 需提前安装 JDK 环境。
 
 Flink 官网下载地址：<https://flink.apache.org/downloads.html>
@@ -10,7 +12,7 @@ Flink 的安装和部署主要分为*本地模式*和*集群模式*，其中本�
 
 ```bash
 # 下载Flink
-wget archive.apache.org/dist/flink/flink-1.12.1/flink-1.12.1-bin-scala_2.11.tgz
+wget archive.apache.org/dist/flink/flink-1.12.2/flink-1.12.2-bin-scala_2.11.tgz
 
 # 解压压缩包
 mkdir /opt/flink

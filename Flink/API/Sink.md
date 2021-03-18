@@ -1,18 +1,32 @@
 # Sink
 
+## JDBC
+
+**引入依赖**
+
+```xml
+
+```
+
+**代码示例**
+
+```java
+
+```
+
 ## Kafka
 
-### 引入依赖
+**引入依赖**
 
 ```xml
 <dependency>
-    <groupId>org.apache.flink</groupId>
-    <artifactId>flink-connector-kafka-0.11_2.11</artifactId>
-    <version>${flink.version}</version>
+	<groupId>org.apache.flink</groupId>
+	<artifactId>flink-connector-kafka_2.11</artifactId>
+	<version>${flink.version}</version>
 </dependency>
 ```
 
-### 代码示例
+**代码示例**
 
 ```java
 dss.addSink(new FlinkKafkaProducer011<Metrics>(
@@ -25,7 +39,7 @@ dss.addSink(new FlinkKafkaProducer011<Metrics>(
 
 ## Elasticsearch
 
-### 引入依赖
+**引入依赖**
 
 ```xml
 <dependency>
@@ -35,7 +49,7 @@ dss.addSink(new FlinkKafkaProducer011<Metrics>(
 </dependency>
 ```
 
-### 代码示例
+**代码示例**
 
 ```java
 ElasticsearchSink.Builder<T> esSinkBuilder = new ElasticsearchSink.Builder<>(hosts, 
@@ -49,7 +63,7 @@ esSinkBuilder.setBulkFlushMaxActions(bulkFlushMaxActions);
 dss.addSink(esSinkBuilder.build()).setParallelism(parallelism);
 ```
 
-### 常用的配置项
+**常用的配置项**
 
 1. `bulk.flush.backoff.enable`: 用来表示是否开启重试机制
 2. `bulk.flush.backoff.type`: 重试策略，有两种：EXPONENTIAL 指数型（表示多次重试之间的时间间隔按照指数方式进行增长）、CONSTANT 常数型（表示多次重试之间的时间间隔为固定常数）
@@ -61,7 +75,7 @@ dss.addSink(esSinkBuilder.build()).setParallelism(parallelism);
 
 ## Redis
 
-### 代码示例
+**代码示例**
 
 ```java
 // 创建Redis的配置

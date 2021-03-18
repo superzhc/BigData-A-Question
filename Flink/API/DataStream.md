@@ -62,8 +62,7 @@ DataStream<MyEvent> stream = env.readFile(
 ```java
 StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-DataStream<String> dataStream = env
-        .socketTextStream("localhost", 9999); // 监听 localhost 的 9999 端口过来的数据
+DataStream<String> dataStream = env.socketTextStream("localhost", 9999); // 监听 localhost 的 9999 端口过来的数据
 ```
 
 ### 基于集合
@@ -181,6 +180,8 @@ SingleOutputStreamOperator<Student> filter = dss.filter(new FilterFunction<Stude
 
 > 根据指定的 Key 进行分组，Key 相同的数据会进入同一个分区。
 
+注：如果有多个分区，则设置并行度需大于 1，或者在算子上设置 `setParallelism(2)` 前行度，否则算子只有一个并行度，则计算结果始终只有一个分区
+
 keyBy 的两种典型用法如下：
 
 - `dss.keyBy("someKey")`：指定对象中的 someKey 属性作为分组 Key
@@ -193,6 +194,71 @@ KeyedStream<Student, Integer> keyBy = student.keyBy(new KeySelector<Student, Int
         return value.age;
     }
 });
+```
+
+### fold
+
+> 将数据流的每一次输出进行滚动叠加，合并输出结果
+
+```java
+import com.flink.examples.DataSource;
+import org.apache.flink.api.common.functions.FoldFunction;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import java.util.List;
+
+/**
+ * @Description Fold算子：将数据流的每一次输出进行滚动叠加，合并输出结果
+ * （与Reduce的区别是，Reduce是拿前一次聚合结果累加后一次的并输出数据流；Fold是直接将当前数据对象追加到前一次叠加结果上并输出数据流）
+ */
+public class Fold {
+    /**
+     * 遍历集合，分区打印每一次滚动叠加的结果（示例：按性别分区，按排序，未位追加输出）
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(4);
+
+        List<Tuple3<String,String,Integer>> tuple3List = DataSource.getTuple3ToList();
+        //注意：使用Integer进行分区时，会导致分区结果不对，转换成String类型输出key即可正确输出
+        KeyedStream<Tuple3<String,String,Integer>, String> keyedStream = env.fromCollection(tuple3List).keyBy(new KeySelector<Tuple3<String,String,Integer>, String>() {
+            @Override
+            public String getKey(Tuple3<String, String, Integer> tuple3) throws Exception {
+                //f1为性别字段,以相同f1值（性别）进行分区
+                return String.valueOf(tuple3.f1);
+            }
+        });
+
+        SingleOutputStreamOperator<String> result = keyedStream.fold("同学：", new FoldFunction<Tuple3<String, String, Integer>, String>() {
+            @Override
+            public String fold(String s, Tuple3<String, String, Integer> tuple3) throws Exception {
+                if (s.startsWith("男") || s.startsWith("女")){
+                    return s + tuple3.f0 + "、";
+                } else {
+                    return (tuple3.f1.equals("man") ? "男" : "女") + s + tuple3.f0 + "、";
+                }
+            }
+        });
+        result.print();
+        env.execute("flink Fold job");
+    }
+}
+```
+
+**输出结果**
+
+```
+2> 男同学：张三、
+2> 男同学：张三、王五、
+2> 男同学：张三、王五、吴八、
+1> 女同学：李四、
+1> 女同学：李四、刘六、
+1> 女同学：李四、刘六、伍七、
 ```
 
 ### reduce
@@ -239,6 +305,21 @@ KeyedStream.maxBy("key")
 
 max 和 maxBy 之间的区别在于 max 返回流中的最大值，但 maxBy 返回具有最大值的键， min 和 minBy 同理。
 
+### join
+
+> 两个数据流通过内部相同的key分区，将窗口内两个数据流相同key数据元素计算后，合并输出
+
+Flink 支持了两种 Join：
+
+- Window Join（窗口连接）
+- Interval Join（时间间隔连接）
+
+> 官方文档：<https://ci.apache.org/projects/flink/flink-docs-release-1.11/zh/dev/stream/operators/joining.html>
+
+### CoGroup
+
+> 将两个数据流按照 key 进行 group 分组，并将数据流按 key 进行分区的处理，最终合成一个数据流（与 join 有区别，不管 key 有没有关联上，最终都会合并成一个数据流）
+
 ### union
 
 > 合并多个流，新的流会包含所有流中的数据，但是 union 有一个限制，就是所有合并的流类型必须是一致的。
@@ -251,13 +332,82 @@ inputStream.union(inputStream1, inputStream2, ...);
 
 > 和 union 类似，但是只能连接两个流，两个流的数据类型可以不同，会对两个流中的数据应用不同的处理方法。
 
+```java
+import com.flink.examples.DataSource;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.co.CoMapFunction;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * @Description Connect算子：功能与union类似，将两个流（union支持两个或以上）合并为一个流，但区别在于connect不要求数据类型一致
+ */
+public class Connect {
+
+    /**
+     * 将两个不区分数据类型的数据流合并成一个数据流，并打印
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
+        List<Tuple3<String, String, Integer>> tuple3List = DataSource.getTuple3ToList();
+        //dataStream 1
+        DataStream<Tuple3<String, String, Integer>> dataStream1 = env.fromCollection(tuple3List);
+        //dataStream 2
+        DataStream<Tuple3<String, String, Integer>> dataStream2 = env.fromCollection(Arrays.asList(
+                new Tuple3<>("医生", "上海", 2),
+                new Tuple3<>("老师", "北京", 4),
+                new Tuple3<>("工人", "广州", 9)
+        ));
+        //合关两个数据流
+        DataStream<Tuple4<String, String, Integer, String>> dataStream = dataStream1.connect(dataStream2)
+                .map(new CoMapFunction<Tuple3<String, String, Integer>, Tuple3<String, String, Integer>, Tuple4<String, String, Integer, String>>() {
+                    //表示dataStream1的流输入
+                    @Override
+                    public Tuple4<String, String, Integer, String> map1(Tuple3<String, String, Integer> value) throws Exception {
+                        return Tuple4.of(value.f0, value.f1, value.f2, "用户");
+                    }
+                    //表示dataStream2的流输入
+                    @Override
+                    public Tuple4<String, String, Integer, String> map2(Tuple3<String, String, Integer> value) throws Exception {
+                        return Tuple4.of(value.f0, value.f1, value.f2, "职业");
+                    }
+                });
+
+        //打印
+        dataStream.print();
+        env.execute("flink Split job");
+    }
+}
+```
+
+**打印结果**
+
+```
+(张三,man,20,用户)
+(李四,girl,24,用户)
+(王五,man,29,用户)
+(刘六,girl,32,用户)
+(伍七,girl,18,用户)
+(吴八,man,30,用户)
+(医生,上海,2,职业)
+(老师,北京,4,职业)
+(工人,广州,9,职业)
+```
+
 ### coMap 和 coFlatMap
 
 > 在 ConnectedStream 中需要使用这种函数，类似于 map 和 flatMap。
 
-### split
+### ~~split~~【过时】
 
-> 根据规则把一个数据流切分为多个流。
+> 将数据流切分成多个数据流（已过时，并且不能二次切分，不建议使用）
 
 ```java
 SplitStream<Integer> split = inputStream.split(new OutputSelector<Integer>() {
@@ -275,7 +425,7 @@ SplitStream<Integer> split = inputStream.split(new OutputSelector<Integer>() {
 });
 ```
 
-### select
+### ~~select~~
 
 > 和 split 配合使用，选择切分后的流。
 
@@ -283,6 +433,132 @@ SplitStream<Integer> split = inputStream.split(new OutputSelector<Integer>() {
 DataStream<Integer> even = split.select("even"); 
 DataStream<Integer> odd = split.select("odd"); 
 DataStream<Integer> all = split.select("even","odd");
+```
+
+### apply
+
+> 对窗口内的数据流进行处理
+
+```java
+import com.flink.examples.DataSource;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
+import org.apache.flink.util.Collector;
+
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * @Description Apply方法：对窗口内的数据流进行处理
+ */
+public class Apply {
+
+    /**
+     * 遍历集合，分别打印不同性别的总人数与年龄之和
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        List<Tuple3<String, String, Integer>> tuple3List = DataSource.getTuple3ToList();
+        DataStream<String> dataStream = env.fromCollection(tuple3List)
+                .keyBy((KeySelector<Tuple3<String, String, Integer>, String>) k -> k.f1)
+                //按数量窗口滚动，每3个输入窗口数据流，计算一次
+                .countWindow(3)
+                //只能基于Windowed窗口Stream进行调用
+                .apply(
+                        //WindowFunction<IN, OUT, KEY, W extends Window>
+                        new WindowFunction<Tuple3<String, String, Integer>, String, String, GlobalWindow>() {
+                            /**
+                             * 处理窗口数据集合
+                             * @param s         从keyBy里返回的key值
+                             * @param window    窗口类型
+                             * @param input     从窗口获取的所有分区数据流
+                             * @param out       输出数据流对象
+                             * @throws Exception
+                             */
+                            @Override
+                            public void apply(String s, GlobalWindow window, Iterable<Tuple3<String, String, Integer>> input, Collector<String> out) throws Exception {
+                                Iterator<Tuple3<String, String, Integer>> iterator = input.iterator();
+                                int total = 0;
+                                int i = 0;
+                                while (iterator.hasNext()){
+                                    Tuple3<String, String, Integer> tuple3 = iterator.next();
+                                    total += tuple3.f2;
+                                    i ++ ;
+                                }
+                                out.collect(s + "共:"+i+"人，累加总年龄：" + total);
+                            }
+                        });
+        dataStream.print();
+        env.execute("flink Filter job");
+    }
+}
+```
+
+### process
+
+> 处理每个 keyBy（分区）输入到窗口的批量数据流（为 KeyedStream 类型数据流）
+
+```java
+import com.flink.examples.DataSource;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
+import org.apache.flink.util.Collector;
+import java.util.Iterator;
+import java.util.List;
+/**
+ * @Description process算子：处理每个keyBy（分区）输入到窗口的批量数据流（为KeyedStream类型数据流）
+ */
+public class Process {
+
+    /**
+     * 遍历集合，分别打印不同性别的总人数与年龄之和
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        List<Tuple3<String, String, Integer>> tuple3List = DataSource.getTuple3ToList();
+        DataStream<String> dataStream = env.fromCollection(tuple3List)
+                .keyBy((KeySelector<Tuple3<String, String, Integer>, String>) k -> k.f1)
+                //按数量窗口滚动，每3个输入数据流，计算一次
+                .countWindow(3)
+                //处理每keyBy后的窗口数据流，process方法通常应用于KeyedStream类型的数据流处理
+                .process(new ProcessWindowFunction<Tuple3<String, String, Integer>, String, String, GlobalWindow>() {
+                    /**
+                     * 处理窗口数据集合
+                     * @param s         从keyBy里返回的key值
+                     * @param context   窗口的上下文
+                     * @param input     从窗口获取的所有分区数据流
+                     * @param out       输出数据流对象
+                     * @throws Exception
+                     */
+                    @Override
+                    public void process(String s, Context context, Iterable<Tuple3<String, String, Integer>> input, Collector<String> out) throws Exception {
+                        Iterator<Tuple3<String, String, Integer>> iterator = input.iterator();
+                        int total = 0;
+                        int i = 0;
+                        while (iterator.hasNext()){
+                            Tuple3<String, String, Integer> tuple3 = iterator.next();
+                            total += tuple3.f2;
+                            i ++ ;
+                        }
+                        out.collect(s + "共:"+i+"人，平均年龄：" + total/i);
+                    }
+                });
+        dataStream.print();
+        env.execute("flink Process job");
+    }
+}
 ```
 
 ### 数据分区算子
