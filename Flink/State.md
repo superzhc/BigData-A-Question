@@ -17,17 +17,17 @@
 
 在 Flink 中根据数据集是否根据 Key 进行分区，将状态分为 Keyed State 和 Operator State（Non-keyed State）两种类型。
 
-State可以被记录，在失败的情况下数据还可以恢复。Flink中有以下两种基本类型的State：
+State 可以被记录，在失败的情况下数据还可以恢复。Flink 中有以下两种基本类型的 State：
 
 - Keyed State
 - Operator State
 
-Keyed State和Operator State以两种形式存在：
+Keyed State 和 Operator State 以两种形式存在：
 
-- 原始状态（Raw State）：由用户自行管理状态具体的数据结构，框架在做CheckPoint的时候，使用byte[]读写状态内容，对其内部数据结构一无所知。
-- 托管状态（Managed State）：由Flink框架管理的状态。
+- 原始状态（Raw State）：由用户自行管理状态具体的数据结构，框架在做 CheckPoint 的时候，使用 `byte[]` 读写状态内容，对其内部数据结构一无所知。
+- 托管状态（Managed State）：由 Flink 框架管理的状态。
 
-通常在DataStream上推荐使用托管状态，当实现一个用户自定义的Operator时使用到原始状态。
+通常在 DataStream 上推荐使用托管状态，当实现一个用户自定义的 Operator 时使用到原始状态。
 
 ## Keyed State
 

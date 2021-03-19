@@ -4,7 +4,7 @@ Flink 在流程序中支持不同的 Time 概念，有如下 3 种：
 
 - Event Time：事件产生的时间，它通常由事件中的时间戳描述
 - Ingestion Time：事件进入 Flink 的时间
-- Processing Time：事件被处理时当前系统的时间
+- Processing Time：事件被处理时当前系统的时间，默认情况下的时间
 
 这几种时间的对应关系如下图所示：
 

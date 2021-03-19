@@ -19,11 +19,23 @@ Window 根据类型可以分为：
 
 ## DataStream API
 
-Flink DataStream API 将窗口抽象成独立的 Operator，且在 Flink DataStream API 中已经內建了大多数窗口算子。如下代码展示了如何定义 Keyed Windows 算子，在每个窗口算子中包含了 Windows Assigner、Windows Trigger（窗口触发器）、Evictor（数据剔除器）、Lateness（时延设定）、Output Tag（输出标签）以及 Windows Funciton 等组成部分，其中 Windows Assigner 和 WindowsFunciton 是所有窗口算子必须指定的属性，其余的属性都是根据实际情况选择指定。
+Flink DataStream API 将窗口抽象成独立的 Operator，且在 Flink DataStream API 中已经内建了大多数窗口算子。如下代码展示了如何定义 Keyed Windows 算子，在每个窗口算子中包含了 Windows Assigner、Windows Trigger（窗口触发器）、Evictor（数据剔除器）、Lateness（时延设定）、Output Tag（输出标签）以及 Windows Funciton 等组成部分，其中 Windows Assigner 和 WindowsFunciton 是所有窗口算子必须指定的属性，其余的属性都是根据实际情况选择指定。
 
 ```java
-dss.keyBy(...)                      // 是Keyed类型数据集
+// Keyed Window
+dss
+    .keyBy(...)                     // 是Keyed类型数据集
     .window(...)                    // 指定窗口分配器类型
+    [.trigger(...)]                 // 指定触发器类型（可选）
+    [.evictor(...)]                 // 指定evictor或者不指定（可选）
+    [.allowedLateness(...)]         // 指定是否延迟处理数据（可选）
+    [.sideOutputLateData(...)]      // 指定Output Lag（可选）
+    .reduce/aggregate/fold/apply()  // 指定窗口计算函数
+    [.getSideOutput(...)]           // 根据Tag输出数据（可选）
+
+// Non-Keyed Window
+dss
+    .windowAll(...)                 // 指定窗口分配器类型
     [.trigger(...)]                 // 指定触发器类型（可选）
     [.evictor(...)]                 // 指定evictor或者不指定（可选）
     [.allowedLateness(...)]         // 指定是否延迟处理数据（可选）
@@ -39,7 +51,7 @@ dss.keyBy(...)                      // 是Keyed类型数据集
 - Output Tag：标记输出标签，然后在通过getSideOutput将窗口中的数据根据标签输出；
 - Windows Funciton：定义窗口上数据处理的逻辑，例如对数据进行sum操作。
 
-### Windows Assigner
+### 窗口分配器：Windows Assigner
 
 Flink 支持两种类型的窗口，一种是基于时间的窗口，窗口基于起始时间戳（闭区间）和终止时间戳（开区间）来决定窗口的大小，数据根据时间戳被分配到不同的窗口中完成计算。Flink 使用 TimeWindow 类来获取窗口的起始时间和终止时间，以及该窗口允许进入的最新时间戳信息等元数据。另一种是基于数量的窗口，根据固定的数量定义窗口的大小，例如每 5000 条数据形成一个窗口，窗口中接入的数据依赖于数据接入到算子中的顺序，如果数据出现乱序情况，将导致窗口的计算结果不确定。在 Flink 中可以通过调用 DataSteam API 中的 `countWindows()` 来定义基于数量的窗口。
 
@@ -59,7 +71,7 @@ Flink 支持两种类型的窗口，一种是基于时间的窗口，窗口基�
 
 如上图所示，滚动窗口是根据固定时间或大小进行切分，且窗口和窗口之间的元素互不重叠。
 
-DataStream API 中提供了基于 Event Time 和 Process Time 两种时间类型的 Tumbling 窗口，对应的 Assigner 分别为 TumblingEventTimeWindows 和TumblingProcessTimeWindows。调用 DataStream API 的 window 方法来指定相应的 Assigner，并使用每种 Assigner 的 `of()` 方法来定义窗口的大小，其中时间单位可以是 `Time.milliseconds(x)`、`Time.seconds(x)`或 `Time.minutes(x)`，也可以是不同时间单位的组合。
+DataStream API 中提供了基于 Event Time 和 Process Time 两种时间类型的 Tumbling 窗口，对应的 Assigner 分别为 TumblingEventTimeWindows 和TumblingProcessTimeWindows。调用 DataStream API 的 window 方法来指定相应的 Assigner，并使用每种 Assigner 的 `of()` 方法来定义窗口的大小，其中时间单位可以是 `org.apache.flink.streaming.api.windowing.time.Time` 中的 `Time.milliseconds(x)`、`Time.seconds(x)`或 `Time.minutes(x)`，也可以是不同时间单位的组合。
 
 ```java
 // 定义Event Time Tumbling Windows
@@ -77,7 +89,7 @@ dss.keyBy(1)
     .process(...)
 ```
 
-上述对滚动窗口定义相对比较常规，用户还可以直接使用 DataStream API 中 `timeWindow()` 快捷方法、定义 TumblingEventTimeWindows 或 TumblingProcessTimeWindows，时间的类型根据用户事先设定的时间概念确定。
+~~上述对滚动窗口定义相对比较常规，用户还可以直接使用 DataStream API 中 `timeWindow()` 快捷方法、定义 TumblingEventTimeWindows 或 TumblingProcessTimeWindows，时间的类型根据用户事先设定的时间概念确定。~~
 
 ```java
   data.keyBy(1)
@@ -108,7 +120,7 @@ dss.keyBy(1)
     .process(...)
 ```
 
-和滚动窗口一样，Flink DataStream API 中也提供了创建两种窗口的快捷方式，通过调用 DataStream API 的 timeWindow 方法就能够创建对应的窗口。
+~~和滚动窗口一样，Flink DataStream API 中也提供了创建两种窗口的快捷方式，通过调用 DataStream API 的 timeWindow 方法就能够创建对应的窗口。~~
 
 ```java
 data.keyBy(1)
@@ -183,7 +195,7 @@ dss.keyBy(0)
     .process(...)
 ```
 
-### Windows Funciton
+### 窗口处理函数：Windows Funciton
 
 Flink 中提供了四种类型的 Window Function，分别为 ReduceFunction、AggregateFunction、FoldFunction 以及 ProcessWindowFunction。
 
@@ -210,6 +222,31 @@ dss.keyBy(0)
 #### AggregateFunction
 
 和 ReduceFunction 相似，AggregateFunction 也是基于中间状态计算结果的增量计算函数，但 AggregateFunction 在窗口计算上更加通用。AggregateFunction 接口相对 ReduceFunction 更加灵活，实现复杂度也相对较高。AggregateFunction 接口中定义了三个需要复写的方法，其中 `add()` 定义数据的添加逻辑，`getResult` 定义了根据 accumulator 计算结果的逻辑，`merge` 方法定义合并 accumulator 的逻辑。
+
+**源码分析**
+
+```java
+public interface AggregateFunction<IN, ACC, OUT> extends Function, Serializable {
+
+   // 在一次新的aggregate发起时，创建一个新的Accumulator，Accumulator是我们所说的中间状态数据，简称ACC
+   // 这个函数一般在初始化时调用
+   ACC createAccumulator();
+
+   // 当一个新元素流入时，将新元素与状态数据ACC合并，返回状态数据ACC
+   ACC add(IN value, ACC accumulator);
+  
+   // 将两个ACC合并
+   ACC merge(ACC a, ACC b);
+
+   // 将中间数据转成结果数据
+   OUT getResult(ACC accumulator);
+
+}
+```
+
+根据上面的代码，这个类输入类型是 IN，输出类型是 OUT，中间状态数据是 ACC，这样复杂的设计主要是为了解决输入类型、中间状态和输出类型不一致的问题。同时，ACC 可以自定义，可以在 ACC 里构建用户想要的数据结构。
+
+**示例**
 
 ```java
 dss.keyBy(0)
@@ -246,9 +283,65 @@ FoldFunction 已经在 Flink DataStream API 中被标记为 `@Deprecated`，也�
 
 #### ProcessWindowFunction
 
-前面提到的 ReduceFunction 和 AggregateFunction 都是基于中间状态实现增量计算的窗口函数，虽然已经满足绝大多数场景，但在某些情况下，统计更复杂的指标可能需要依赖于窗口中所有的数据元素，或需要操作窗口中的状态数据和窗口元数据，这时就需要使用到 ProcessWindowsFunction，ProcessWindowsFunction 能够更加灵活地支持基于窗口全部数据元素的结果计算，例如统计窗口数据元素中某一字段的中位数和众数。
+前面提到的 ReduceFunction 和 AggregateFunction 都是基于中间状态实现增量计算的窗口函数，虽然已经满足绝大多数场景，但在某些情况下，统计更复杂的指标可能需要依赖于窗口中所有的数据元素，或需要操作窗口中的状态数据和窗口元数据，这时就需要使用到 ProcessWindowsFunction，ProcessWindowsFunction 能够更加灵活地支持基于窗口全部数据元素的结果计算。
 
-### Trigger-窗口触发器
+**源码分析**
+
+```java
+/**
+ * 函数接收四个泛型
+ * IN   输入类型
+ * OUT  输出类型
+ * KEY  keyBy中按照Key分组，Key的类型
+ * W    窗口的类型
+ */
+public abstract class ProcessWindowFunction<IN, OUT, KEY, W extends Window> extends AbstractRichFunction {
+
+  /**
+   * 对一个窗口内的元素进行处理，窗口内的元素缓存在Iterable<IN>，进行处理后输出到Collector<OUT>中
+   * 我们可以输出一到多个结果
+   */
+	public abstract void process(KEY key, Context context, Iterable<IN> elements, Collector<OUT> out) throws Exception;
+  
+  /** 
+    * 当窗口执行完毕被清理时，删除各类状态数据。
+  	*/
+	public void clear(Context context) throws Exception {}
+
+  /**
+   * 一个窗口的上下文，包含窗口的一些元数据、状态数据等。
+   */
+	public abstract class Context implements java.io.Serializable {
+	
+        // 返回当前正在处理的Window
+        public abstract W window();
+
+        // 返回当前Process Time
+        public abstract long currentProcessingTime();
+
+        // 返回当前Event Time对应的Watermark
+        public abstract long currentWatermark();
+
+        // 返回某个Key下的某个Window的状态
+        public abstract KeyedStateStore windowState();
+
+        // 返回某个Key下的全局状态
+        public abstract KeyedStateStore globalState();
+
+        // 迟到数据发送到其他位置
+        public abstract <X> void output(OutputTag<X> outputTag, X value);
+	}
+}
+```
+
+使用时，需要实现 `process()` 方法，Flink 将某个 Key 下某个窗口的所有元素都缓存在 `Iterable<IN> 中，需要对其进行处理，然后用 `Collector<OUT>` 收集输出。可以使用 Context 获取窗口内更多的信息，包括时间、状态、迟到数据发送位置等。
+
+Context 中有两种状态：一种是针对 Key 的全局状态，它是跨多个窗口的，多个窗口都可以访问，通过 `Context.globalState()` 获取；另一种是该 Key 下的单窗口的状态，通过 `Context.windowState()` 获取。单窗口的状态只保存该窗口的数据，主要是针对 `process()` 函数多次被调用的场景，比如处理迟到数据或自定义 Trigger 等场景。当使用单个窗口状态时，要在 `clear()` 方法中清理状态。
+
+ProcessWindowFunction 相比 AggregateFunction 和 ReduceFunction 的应用场景更广，能解决的问题也更复杂。但 ProcessWindowFunction 需要将窗口中所有元素缓存起来，这将占用大量的存储资源，尤其是在数据量大窗口多的场景下，使用不慎可能导致整个作业崩溃。假如每天的数据在 TB 级别，需要 Slide 为十分钟 Size 为一小时的滑动窗口，这种设置会导致窗口数量很多，而且一个元素会被复制好多份分给每个所属窗口，这将带来巨大的内存压力。
+
+
+### 窗口触发器：Trigger
 
 数据接入窗口后，窗口是否触发 Window Funciton 计算，取决于窗口是否满足触发条件，每种类型的窗口都有对应的窗口触发机制，保障每一次接入窗口的数据都能够按照规定的触发逻辑进行统计计算。Flink 在内部定义了窗口触发器来控制窗口的触发机制，分别有 EventTimeTrigger、ProcessTimeTrigger 以及 CountTrigger 等。每种触发器都对应于不同的 Window Assigner，例如 Event Time 类型的 Windows 对应的触发器是 EventTimeTrigger，其基本原理是判断当前的 Watermark 是否超过窗口的 EndTime，如果超过则触发对窗口内数据的计算，反之不触发计算。以下对 Flink 自带的窗口触发器进行分类整理，用户可以根据需要选择合适的触发器：
 
@@ -260,7 +353,7 @@ FoldFunction 已经在 Flink DataStream API 中被标记为 `@Deprecated`，也�
 - DeltaTrigger：根据接入数据计算出来的 Delta 指标是否超过指定的 Threshold，判断是否触发窗口计算；
 - PurgingTrigger：可以将任意触发器作为参数转换为 Purge 类型触发器，计算完成后数据将被清理。
 
-### Evictors-数据剔除器
+### 数据剔除器：Evictors
 
 Evictors 是 Flink 窗口机制中一个可选的组件，其主要作用是对进入 Window Fuction 前后的数据进行剔除处理，Flink 内部实现 CountEvictor、DeltaEvictor、TimeEvitor 三种 Evictors。在 Flink 中 Evictors 通过调用 DataStream API 中 `evictor()` 方法使用，且默认的 Evictors 都是在 Windows Function 计算之前对数据进行剔除处理。
 
