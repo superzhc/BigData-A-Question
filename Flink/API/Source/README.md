@@ -1,21 +1,19 @@
 # Source
 
-## JDBC
+## ~~JDBC~~
 
 **引入依赖**
 
 ```xml
 <dependency>
 	<groupId>org.apache.flink</groupId>
-	<artifactId>flink-jdbc_2.11</artifactId>
+	<artifactId>flink-connector-jdbc_2.11</artifactId>
 	<version>${flink.version}</version>
 </dependency>
-
-<!-- mysql驱动包 -->
 <dependency>
 	<groupId>mysql</groupId>
 	<artifactId>mysql-connector-java</artifactId>
-	<version>5.1.47</version>
+	<version>8.0.15</version>
 </dependency>
 ```
 
@@ -25,7 +23,7 @@
 
 ```
 
-## Kafka
+## [Kafka](Flink/API/Source/Kafka连接器.md)
 
 **引入依赖**
 
