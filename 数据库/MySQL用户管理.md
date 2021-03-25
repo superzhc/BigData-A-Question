@@ -16,7 +16,7 @@ CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
 ## 查看用户
 
 ```sql
-select `host`,`user`,`password` from mysql.user;
+select `host`,`user` from mysql.user;
 ```
 
 ## 密码操作
@@ -60,17 +60,28 @@ mysql> set global validate_password_policy=0; 这个参数可以设为0、1、2�
 
 ### 新增权限
 
+**8.0版本以下的授权语句**
+
 ```sql
-GRANT privileges ON databasename.tablename TO 'username'@'localhost'
--- privileges：用户的操作权限，如：SELECT  INSERT  UPDATE 等，如果要授予所有的权限则使用ALL
+GRANT  privileges ON databasename.tablename TO 'username'@'localhost'
+-- privileges：用户的操作权限，如：SELECT、INSERT、UPDATE、 等，如果要授予所有的权限则使用 [ALL PRIVILEGES]
 -- databasename：数据库名
 -- tablename ：表名
 
 -- 示例：给用户username授予所有数据库所有表可查可增可更新的权限
-GRANT ALL ON *.* TO 'username'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'username'@'%' IDENTIFIED BY 'password';
 ```
 
 注意：权限操作完成后，要进行一步刷新权限表 `flush privileges;`。
+
+**8.0版本的授权语句**
+
+```sql
+use mysql;
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%';
+FLUSH PRIVILEGES;
+```
 
 ### 查看权限
 

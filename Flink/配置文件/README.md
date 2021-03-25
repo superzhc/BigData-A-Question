@@ -1,6 +1,6 @@
 # 配置文件
 
-配置文件位于 `${FLINK_HOME}/conf` 文件夹下，主要有 flink-conf.yaml 配置、日志的配置文件、zk 配置、Flink SQL Client 配置，如下图所示：
+配置文件位于 `${FLINK_HOME}/conf` 文件夹下，主要有 `flink-conf.yaml` 配置、日志的配置文件、zk 配置、Flink SQL Client 配置，如下图所示：
 
 ![image-20201120015522072](images/image-20201120015522072.png)
 

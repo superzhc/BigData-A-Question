@@ -334,7 +334,7 @@ public abstract class ProcessWindowFunction<IN, OUT, KEY, W extends Window> exte
 }
 ```
 
-使用时，需要实现 `process()` 方法，Flink 将某个 Key 下某个窗口的所有元素都缓存在 `Iterable<IN> 中，需要对其进行处理，然后用 `Collector<OUT>` 收集输出。可以使用 Context 获取窗口内更多的信息，包括时间、状态、迟到数据发送位置等。
+使用时，需要实现 `process()` 方法，Flink 将某个 Key 下某个窗口的所有元素都缓存在 `Iterable<IN>` 中，需要对其进行处理，然后用 `Collector<OUT>` 收集输出。可以使用 Context 获取窗口内更多的信息，包括时间、状态、迟到数据发送位置等。
 
 Context 中有两种状态：一种是针对 Key 的全局状态，它是跨多个窗口的，多个窗口都可以访问，通过 `Context.globalState()` 获取；另一种是该 Key 下的单窗口的状态，通过 `Context.windowState()` 获取。单窗口的状态只保存该窗口的数据，主要是针对 `process()` 函数多次被调用的场景，比如处理迟到数据或自定义 Trigger 等场景。当使用单个窗口状态时，要在 `clear()` 方法中清理状态。
 
