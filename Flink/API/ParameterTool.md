@@ -17,3 +17,13 @@ Flink Job 支持传入参数，格式如下：
 通过 `ParameterTool.fromSystemProperties()` 方法读取系统属性。
 
 ## 读取配置文件
+
+```java
+ParameterTool.fromPropertiesFile(...)
+```
+
+## 合并多个配置项
+
+```java
+paramterTool.mergeWith(paramterTool2)
+```

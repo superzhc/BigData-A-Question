@@ -1,12 +1,12 @@
 # DataStream API
 
-DataStream API 主要分为3块：DataSource、Transformation、Sink。
+DataStream API 主要分为3块：Source、Transformation、Sink。
 
-- DataSource 是程序的数据源输入，可以通过 `StreamExecutionEnvironment.addSource(sourceFunction)` 为程序添加一个数据源。
+- Source 是程序的数据源输入，可以通过 `StreamExecutionEnvironment.addSource(sourceFunction)` 为程序添加一个数据源。
 - Transformation 是具体的操作，它对一个或多个输入数据源进行计算处理，比如 map、flatMap 和 filter 等操作。
 - Sink 是程序的输出，它可以把 Transformation 处理之后的数据输出到指定的存储介质中。
 
-## DataSource
+## Source
 
 Flink 针对 DataStream 提供了大量的已经实现的 DataSource（数据源）接口，比如下面 4 种：
 

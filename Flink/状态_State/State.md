@@ -29,31 +29,6 @@ Keyed State 和 Operator State 以两种形式存在：
 
 通常在 DataStream 上推荐使用托管状态，当实现一个用户自定义的 Operator 时使用到原始状态。
 
-## Keyed State
-
-Keyed State，顾名思义就是基于 KeyedStream 上的状态，这个状态是跟特定的 Key 绑定的。KeyedStream 流上的每一个 Key，都对应一个 State。
-
-`dss.keyBy(……)` 这个代码会返回一个 KeyedStream 对象。
-
-Flink 针对 Keyed State 提供了以下可以保存 State 的数据结构。
-
-- `ValueState<T>`：类型为 T 的单值状态，这个状态与对应的 Key 绑定，是最简单的状态。它可以通过 update 方法更新状态值，通过 `value()` 方法获取状态值。
-- `ListState<T>`：Key 上的状态值为一个列表，这个列表可以通过 add 方法往列表中附加值，也可以通过 `get()` 方法返回一个 `Iterable<T>` 来遍历状态值。
-- `ReducingState<T>`：每次调用 add 方法添加值的时候，会调用用户传入的 reduceFunction，最后合并到一个单一的状态值。
-- `MapState<UK, UV>`：状态值为一个 Map，用户通过 put 或 putAll 方法添加元素。
-
-需要注意的是，以上所述的 State 对象，仅仅用于与状态进行交互（更新、删除、清空等），而真正的状态值有可能存在于内存、磁盘或者其他分布式存储系统中，相当于我们只是持有了这个状态的句柄。
-
-## Operator State
-
-Operator State 与 Key 无关，而是与 Operator 绑定，整个 Operator 只对应一个 State。
-
-Flink 针对 Operator State 提供了以下可以保存 State 的数据结构。
-
-```java
-ListState<T>
-```
-
 ## 容错
 
 当程序出现问题需要恢复Sate数据的时候，只有程序提供支持才可以实现State的容错。

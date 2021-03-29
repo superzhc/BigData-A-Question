@@ -1,6 +1,6 @@
 # Source
 
-## ~~JDBC~~
+## JDBC
 
 **引入依赖**
 
