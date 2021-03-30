@@ -1,4 +1,4 @@
-# CDH6.2.0 集成安装 `flink on yarn` 服务（编译源码，制作 parcel）
+# ~~CDH6.2.0 集成安装 `flink on yarn` 服务（编译源码，制作 parcel）~~【1.12.2 版本下编译成功，但部署不可用】
 
 > 引用 <https://blog.csdn.net/qq_31454379/article/details/110440037>
 

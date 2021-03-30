@@ -59,3 +59,37 @@ YARN 客户端需要访问 Hadoop 配置，从而连接 YARN 资源管理器和 
 
 1. 测试是否设置了 `YARN_CONF_DIR`、`HADOOP_CONF_DIR` 或 `HADOOP_CONF_PATH` 环境变量（按该顺序测试）。如果设置了任意一个，就会用其来读取配置。
 2. 如果上面的策略失败了（在正确安装 YARN 的情况下，这不会发生），客户端就会使用 HADOOP_HOME 环境变量。如果已经设置了该变量，客户端就会尝试访问 `$HADOOP_HOME/etc/Hadoop`(Hadoop 2) 和 `$HADOOP_HOME/conf`(Hadoop 1)。
+
+## FAQ
+
+### 报错信息为 `java.lang.NoClassDefFoundError: org/apache/hadoop/yarn/exceptions/YarnException`
+
+**报错信息**
+
+```
+Error: A JNI error has occurred, please check your installation and try again
+Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/hadoop/yarn/exceptions/YarnException
+        at java.lang.Class.getDeclaredMethods0(Native Method)
+        at java.lang.Class.privateGetDeclaredMethods(Class.java:2701)
+        at java.lang.Class.privateGetMethodRecursive(Class.java:3048)
+        at java.lang.Class.getMethod0(Class.java:3018)
+        at java.lang.Class.getMethod(Class.java:1784)
+        at sun.launcher.LauncherHelper.validateMainClass(LauncherHelper.java:544)
+        at sun.launcher.LauncherHelper.checkAndLoadMain(LauncherHelper.java:526)
+Caused by: java.lang.ClassNotFoundException: org.apache.hadoop.yarn.exceptions.YarnException
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:382)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:349)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+        ... 7 more
+```
+
+**解决方法**
+
+在 `/etc/profile` 中添加
+
+```
+export HADOOP_CLASSPATH=`/opt/cloudera/parcels/CDH/bin/hadoop classpath`
+```
+
+**注**：hadoop 是 Hadoop 安装目录 bin 下可执行的文件，需要用反向单引号包裹住。
