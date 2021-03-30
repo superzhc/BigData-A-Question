@@ -5,14 +5,19 @@
 - [多线程](Java/多线程/README.md)
 - [JVM](JVM/README.md)
 - [MySQL](数据库/README.md)
+<!--
 - [Hadoop](Hadoop/README.md)
 - [YARN](Hadoop/YARN/README.md)
 - [Hive](Hive/README.md)
 - [HBase](HBase/README.md)
 - [Zookeeper](Zookeeper/README.md)
+-->
 - [Kafka](Kafka/README.md)
+<!--
 - [Spark](Spark/README.md)
+-->
 - [Flink](Flink/README.md)
+<!--
 - [Kylin](Kylin/README.md)
 - [ElasticSearch](ElasticSearch/README.md)
-
+-->
