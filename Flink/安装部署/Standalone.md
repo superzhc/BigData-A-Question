@@ -87,3 +87,9 @@ flink3
 访问：<http://flink1:8081>
 
 ![](images/Standalone-20210317105956.png)
+
+## 5. 提交任务
+
+```bash
+${FLINK_HOME}/bin/flink run -c com.github.superzhc.flink.test.WordCount ~/superz-flink-1.0-SNAPSHOT-jar-with-dependencies.jar
+```

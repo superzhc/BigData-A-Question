@@ -199,7 +199,7 @@ dss.keyBy(0)
 
 Flink 中提供了四种类型的 Window Function，分别为 ReduceFunction、AggregateFunction、FoldFunction 以及 ProcessWindowFunction。
 
-四种类型的 Window Fucntion 按照计算原理的不同可以分为两大类，一类是增量聚合函数，对应有 ReduceFunction、AggregateFunction 和 FoldFunction；另一类是全量窗口函数，对应有 ProcessWindowFunction。增量聚合函数计算性能较高，占用存储空间少，主要因为基于中间状态的计算结果，窗口中只维护中间结果状态值，不需要缓存原始数据。而全量窗口函数使用的代价相对较高，性能比较弱，主要因为此时算子需要对所有属于该窗口的接入数据进行缓存，然后等到窗口触发的时候，对所有的原始数据进行汇总计算。如果接入数据量比较大或窗口时间比较长，就比较有可能导致计算性能的下降。
+四种类型的 Window Fucntion 按照计算原理的不同可以分为两大类，一类是**增量聚合函数**，对应有 ReduceFunction、AggregateFunction 和 FoldFunction；另一类是**全量窗口函数**，对应有 ProcessWindowFunction。增量聚合函数计算性能较高，占用存储空间少，主要因为基于中间状态的计算结果，窗口中只维护中间结果状态值，不需要缓存原始数据。而全量窗口函数使用的代价相对较高，性能比较弱，主要因为此时算子需要对所有属于该窗口的接入数据进行缓存，然后等到窗口触发的时候，对所有的原始数据进行汇总计算。如果接入数据量比较大或窗口时间比较长，就比较有可能导致计算性能的下降。
 
 #### ReduceFunction
 
@@ -339,7 +339,6 @@ public abstract class ProcessWindowFunction<IN, OUT, KEY, W extends Window> exte
 Context 中有两种状态：一种是针对 Key 的全局状态，它是跨多个窗口的，多个窗口都可以访问，通过 `Context.globalState()` 获取；另一种是该 Key 下的单窗口的状态，通过 `Context.windowState()` 获取。单窗口的状态只保存该窗口的数据，主要是针对 `process()` 函数多次被调用的场景，比如处理迟到数据或自定义 Trigger 等场景。当使用单个窗口状态时，要在 `clear()` 方法中清理状态。
 
 ProcessWindowFunction 相比 AggregateFunction 和 ReduceFunction 的应用场景更广，能解决的问题也更复杂。但 ProcessWindowFunction 需要将窗口中所有元素缓存起来，这将占用大量的存储资源，尤其是在数据量大窗口多的场景下，使用不慎可能导致整个作业崩溃。假如每天的数据在 TB 级别，需要 Slide 为十分钟 Size 为一小时的滑动窗口，这种设置会导致窗口数量很多，而且一个元素会被复制好多份分给每个所属窗口，这将带来巨大的内存压力。
-
 
 ### 窗口触发器：Trigger
 
