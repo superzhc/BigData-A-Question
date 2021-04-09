@@ -2,15 +2,15 @@
 
 Flink 针对 DataStream 提供了大量的已经实现的数据目的地（Sink）。
 
-### writeAsText
+## writeAsText
 
 > 将元素以字符串形式逐行写入，这些字符串通过调用每个元素的 `toString()` 方法来获取
 
-### `print/printToErr`
+## `print/printToErr`
 
 > 打印每个元素的 `toString()` 方法的值到标准输出或者标准错误输出流中
 
-### 自定义输出
+## 自定义输出
 
 > 通过 addSink 可以实现把数据输出到第三方存储介质中
 
