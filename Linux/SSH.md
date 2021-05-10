@@ -22,7 +22,7 @@ ssh [-1246AaCfgKkMNnqsTtVvXxYy] [-b bind_address] [-c cipher_spec]
 
 ```
 1.登录                   
-    ssh -p22 omd@192.168.25.137               
+    ssh -p 22 omd@192.168.25.137               
 2.直接执行命令  -->最好全路径                   
     ssh root@192.168.25.137 ls -ltr /backup/data                       
         ==>ssh root@192.168.25.137 /bin/ls -ltr /backup/data               
@@ -96,7 +96,6 @@ ssh-keygen -t rsa     # 一路回车即可
 #   id_dsa         -->私钥(钥匙) 
 #   id_dsa.pub     -->公钥(锁)
 # 2. 拷贝公钥给目标服务器
-ssh-copy-id -i id_dsa.pub omd@192.168.25.110              【 使用ssh登录的默认端口22】
+ssh-copy-id -i id_dsa.pub omd@192.168.25.110             #【使用ssh登录的默认端口22】
 # ssh-copy-id -i id_dsa.pub –p 666 omd@192.168.25.120    #【使用ssh登录设置的端口666】
-
 ```

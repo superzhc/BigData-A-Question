@@ -1,8 +1,12 @@
 > `kafka-topics` 用于创建、删除、描述或修改一个主题
 
+|     日期     | 版本           | 备注                                                                   |
+| :----------: | -------------- | ---------------------------------------------------------------------- |
+| 2021年5月8日 | 2.2.1-cdh6.3.2 | 经测试，连接Kafka的参数已支持 `--bootstrap-server`，等同 `--zookeeper` |
+
 该命令包含以下参数：
 
-```sh
+```bash
 Option                                   Description
 ------                                   -----------
 --alter                                  Alter the number of partitions,
@@ -87,16 +91,16 @@ Command Usage:
 -----------------------------------------------------
 ```
 
-| Option                           | Description                                                  |
-| -------------------------------- | ------------------------------------------------------------ |
-| `--alter`                        | 更改分区数、副本配置和(/或)主题的配置                        |
+| Option                           | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--alter`                        | 更改分区数、副本配置和(/或)主题的配置                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `--config <String: name=value>`  | 覆盖主题的配置信息。<br>可覆盖的配置项有如下：<br>`cleanup.policy`,`compression.type`,`delete.retention.ms`,`file.delete.delay.ms`,`flush.messages`,`flush.ms`,`follower.replication.throttled.replicas`,`index.interval.bytes`,`leader.replication.throttled.replicas`, `max.message.bytes`,`message.format.version`,`message.timestamp.difference.max.ms`,`message.timestamp.type`,`min.cleanable.dirty.ratio`,`min.compaction.lag.ms`,`min.insync.replicas`,`preallocate,retention.bytes`,`retention.ms`,`segment.bytes`,`segment.index.bytes`,`segment.jitter.ms`,`segment.ms`,`unclean.leader.election.enable` |
-| `--create`                       | 创建一个新的主题                                             |
-| `--delete`                       | 删除一个主题                                                 |
-| `--delete-config <String: name>` | 删除已有主题中的配置（详细的配置见`--config`中的选项）       |
-| `--describe`                     | 列出给定主题的详细信息                                       |
-| `--disable-rack-aware`           |                                                              |
-| `--force`                        |                                                              |
+| `--create`                       | 创建一个新的主题                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `--delete`                       | 删除一个主题                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `--delete-config <String: name>` | 删除已有主题中的配置（详细的配置见`--config`中的选项）                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `--describe`                     | 列出给定主题的详细信息                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `--disable-rack-aware`           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `--force`                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 **描述主题的配置**
 
