@@ -105,17 +105,17 @@ Command Usage:
 **描述主题的配置**
 
 ```sh
-bin/kafka-configs.sh --zookeeper 192.168.186.40:24002/kafka --describe --entity-type topics --entity-name xumaosheng
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --describe --entity-type topics --entity-name xumaosheng
 ```
 
 **设置保留时间**
 
 ```sh
 # Deprecated way
-bin/kafka-topics.sh --zookeeper 192.168.186.40:24002/kafka --alter --topic xumaosheng --config retention.ms=1000
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --alter --topic xumaosheng --config retention.ms=1000
 
 # Modern way
-bin/kafka-configs.sh --zookeeper 192.168.186.40:24002/kafka --alter --entity-type topics --entity-name xumaosheng --add-config retention.ms=1000
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --alter --entity-type topics --entity-name xumaosheng --add-config retention.ms=1000
 ```
 
 如果需要删除主题中所有消息，则可以利用保留时间。首先将保留时间设置为非常低，等待几秒，然后将保留时间恢复为上一个值。
@@ -125,7 +125,7 @@ bin/kafka-configs.sh --zookeeper 192.168.186.40:24002/kafka --alter --entity-typ
 **删除主题**
 
 ```sh
-bin/kafka-configs.sh --zookeeper 192.168.186.40:24002/kafka --delete --topic xumaosheng
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --delete --topic xumaosheng
 ```
 
 注意：需要在 Broker 的配置文件 `server.peoperties` 中配置 `delete.topic.enable=true` 才能删除主题
@@ -133,24 +133,24 @@ bin/kafka-configs.sh --zookeeper 192.168.186.40:24002/kafka --delete --topic xum
 **主题信息**
 
 ```sh
-bin/kafka-configs.sh --zookeeper 192.168.186.40:24002/kafka --describe --topic xumaosheng
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --describe --topic xumaosheng
 ```
 
 **添加分区**
 
 ```sh
-bin/kafka-configs.sh --zookeeper 192.168.186.40:24002/kafka --alter --topic xumaosheng --partitions 3
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --alter --topic xumaosheng --partitions 3
 ```
 
 **创建主题**
 
 ```sh
-bin/kafka-configs.sh --zookeeper 192.168.186.40:24002/kafka --create --replication-factor 1 --partitions 3 --topic xumaosheng
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --create --replication-factor 1 --partitions 3 --topic xumaosheng
 ```
 
 **列出主题**
 
 ```sh
-bin/kafka-configs.sh --zookeeper 192.168.186.40:24002/kafka --list
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --list
 ```
 

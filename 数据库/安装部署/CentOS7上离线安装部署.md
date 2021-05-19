@@ -52,7 +52,7 @@ rpm -ivh mysql-community-common-5.7.32-1.el7.x86_64.rpm
 rpm -ivh mysql-community-libs-5.7.32-1.el7.x86_64.rpm
 rpm -ivh mysql-community-libs-compat-5.7.32-1.el7.x86_64.rpm
 ~~rpm -ivh mysql-community-devel-5.7.32-1.el7.x86_64.rpm~~
-~~rpm -ivh mysql-community-client-5.7.32-1.el7.x86_64.rpm~~ #???，服务器有这个必要么
+rpm -ivh mysql-community-client-5.7.32-1.el7.x86_64.rpm
 rpm -ivh mysql-community-server-5.7.32-1.el7.x86_64.rpm
 ~~rpm -ivh mysql-community-embedded-compat-5.7.32-1.el7.x86_64.rpm~~ #???，服务器有这个必要么
 ```

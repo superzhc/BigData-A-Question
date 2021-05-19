@@ -86,9 +86,10 @@ Caused by: java.lang.ClassNotFoundException: org.apache.hadoop.yarn.exceptions.Y
 
 **解决方法**
 
-在 `/etc/profile` 中添加
+在 `~/.bashrc` 中添加
 
-```
+```bash
+export HADOOP_CONF_DIR=/etc/hadoop/conf
 export HADOOP_CLASSPATH=`/opt/cloudera/parcels/CDH/bin/hadoop classpath`
 ```
 

@@ -38,15 +38,15 @@ adm:x:3:4:adm:/var/adm:/sbin/nologin
 用户名:密码:UID（用户ID）:GID（组ID）:描述性信息:主目录:默认Shell
 ```
 
-### 密码
+**密码**
 
 "x" 表示此用户设有密码，但不是真正的密码，真正的密码保存在 `/etc/shadow` 文件中。
 
-### 主目录
+**主目录**
 
 也就是用户登录后有操作权限的访问目录，通常称为用户的主目录。
 
-### 默认的 Shell
+**默认的 Shell**
 
 Shell 就是 Linux 的命令解释器，是用户和 Linux 内核之间沟通的桥梁。
 
@@ -71,3 +71,25 @@ daemon:x:2:
 ```bash
 组名:密码:GID:该用户组中的用户列表
 ```
+
+## 用户组操作
+
+[添加用户组](Linux/用户和用户组管理/添加用户组.md ':include')
+
+[修改用户组](Linux/用户和用户组管理/修改用户组.md ':include')
+
+[删除用户组](Linux/用户和用户组管理/删除用户组.md ':include')
+
+## 用户操作
+
+[新增用户](Linux/用户和用户组管理/新增用户.md ':include')
+
+[修改用户信息](Linux/用户和用户组管理/修改用户信息.md ':include')
+
+[修改用户密码](Linux/用户和用户组管理/修改用户密码.md ':include')
+
+[删除用户](Linux/用户和用户组管理/删除用户.md ':include')
+
+[查看用户的 UID 和 GID](Linux/用户和用户组管理/查看用户的UID和GID.md ':include')
+
+[用户间切换](Linux/用户和用户组管理/用户间切换.md ':include')

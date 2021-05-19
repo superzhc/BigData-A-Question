@@ -1,4 +1,8 @@
+# 安装部署
+
 > Kafka 官网地址：`https://kafka.apache.org/`
+
+**本文是基于 2.2.1 版本**
 
 ### 1、安装 JDK
 
@@ -12,18 +16,18 @@ JDK 要求 1.8 版本以上
 
 #### 下载 Kafka
 
-从官网地址下载 Kafka【本文下载的版本为2.11-2.3.0】
+从官网地址下载 Kafka【本文下载的版本为2.11-2.2.1】
 
 #### 解压 tar 文件
 
 ```sh
-tar -zxf kafka_2.11-2.3.0.tar.gz
+tar -zxf kafka_2.11-2.2.1.tar.gz
 ```
 
 #### 重命名解压文件夹
 
 ```sh
-mv kafka_2.11-2.3.0 kafka
+mv kafka_2.11-2.2.1 kafka
 ```
 
 #### 进入解压文件
@@ -32,16 +36,16 @@ mv kafka_2.11-2.3.0 kafka
 cd kafka
 ```
 
-#### 修改 broker 的配置文件 `$KAFKA_HOME/conf/server.properties`
+#### 修改 broker 的配置文件 `$KAFKA_HOME/config/server.properties`
 
 ```properties
-# broker 的编号，如果集群中有多个broker ，则每个broker 的编号需要设置的不同
-broker.id=O
-# broker 对外提供的服务入口地址，一定需要配置，不然客户端会找不到 Kafka节点
+# broker 的编号，如果集群中有多个broker ，则每个broker的编号需要设置的不同
+broker.id=0
+# broker 对外提供的服务入口地址，一定需要配置，不然客户端会找不到Kafka节点，若外网需要访问的话，需要配置成服务器的地址
 listeners= PLAINTEXT://localhost:9092
 # 存放消息日志文件的地址
-log.dirs= /tmp/kafka-logs
-# Kafka 所需的ZooKeeper 集群地址，为了方便演示，我们假设Kafka 和ZooKeeper 都安装在本机
+log.dirs= /usr/local/data/kafka/kafka-logs
+# Kafka所需的ZooKeeper集群地址，为了方便演示，我们假设Kafka和ZooKeeper都安装在本机
 zookeeper.connect=localhost:2181/kafka
 ```
 
@@ -60,6 +64,12 @@ log.preallocate = false
 security.inter.broker.protocol = PLAINTEXT
 …………………………………………….
 …………………………………………….
+```
+
+**后台运行模式**
+
+```bash
+bin/kafka-server-start.sh -daemon config/server.properties
 ```
 
 #### 停止服务器

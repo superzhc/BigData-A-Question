@@ -19,7 +19,7 @@ mkdir /opt/flink
 tar -zxvf flink-1.12.2-bin-scala_2.11.tgz -C /opt/flink
 ```
 
-## 启动 Flink
+**启动 Flink**
 
 ```bash
 # 启动flink
@@ -45,3 +45,7 @@ jps
 ```bash
 /opt/flink/flink-1.12.2/bin/stop-cluster.sh
 ```
+
+[Standalone 模式](./Standalone.md ':include')
+
+[Flink On Yarn 模式](./Flink_on_Yarn.md ':include')
