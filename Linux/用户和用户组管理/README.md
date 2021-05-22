@@ -74,22 +74,22 @@ daemon:x:2:
 
 ## 用户组操作
 
-[添加用户组](Linux/用户和用户组管理/添加用户组.md ':include')
+[添加用户组](添加用户组.md ':include')
 
-[修改用户组](Linux/用户和用户组管理/修改用户组.md ':include')
+[修改用户组](修改用户组.md ':include')
 
-[删除用户组](Linux/用户和用户组管理/删除用户组.md ':include')
+[删除用户组](删除用户组.md ':include')
 
 ## 用户操作
 
-[新增用户](Linux/用户和用户组管理/新增用户.md ':include')
+[新增用户](新增用户.md ':include')
 
-[修改用户信息](Linux/用户和用户组管理/修改用户信息.md ':include')
+[修改用户信息](修改用户信息.md ':include')
 
-[修改用户密码](Linux/用户和用户组管理/修改用户密码.md ':include')
+[修改用户密码](修改用户密码.md ':include')
 
-[删除用户](Linux/用户和用户组管理/删除用户.md ':include')
+[删除用户](删除用户.md ':include')
 
-[查看用户的 UID 和 GID](Linux/用户和用户组管理/查看用户的UID和GID.md ':include')
+[查看用户的 UID 和 GID](查看用户的UID和GID.md ':include')
 
-[用户间切换](Linux/用户和用户组管理/用户间切换.md ':include')
+[用户间切换](用户间切换.md ':include')

@@ -13,6 +13,7 @@
 - [Spring](Java/Spring/README.md)
 - Linux
   - [Linux 文件目录结构](Linux/文件目录结构.md)
+  - [文件和目录管理](Linux/文件和目录管理/README.md)
   - [用户组和用户管理](Linux/用户和用户组管理/README.md)
   - [安装软件命令](Linux/安装软件命令.md)
   - [设置环境变量](Linux/设置环境变量和区别.md)
