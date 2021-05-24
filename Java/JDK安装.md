@@ -37,6 +37,8 @@
 
 ## Linux
 
+### 安装包安装
+
 下载对应的 Linux JDK 版本，这里使用 `jdk-8u131-linux-x64.tar.gz` 安装包。
 
 **1、解压**
@@ -59,6 +61,16 @@ export PATH=${JAVA_HOME}/bin:$PATH
 # 执行环境变量
 source /etc/profile
 ```
+
+### 安装 openjdk1.8
+
+直接执行如下命令：
+
+```bash
+yum install java-1.8.0-openjdk-devel -y
+```
+
+上面这种方式安装的 JDK 是不需要设置 `JAVA_HOME` 变量，需要通过 `find / -name jre` 来查找，这个过程会有很多结果，其主要包含了软连接，需要进行一些判断。
 
 ## 测试环境
 
